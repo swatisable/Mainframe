@@ -1,0 +1,1579 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CASNCTD9.
+       AUTHOR. JXZ.
+       INSTALLATION. HMS.
+       DATE-WRITTEN. 10/19/2020.
+      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      * THIS PGM WILL UPDATE DB2 TABLES FROM THE NEW CURRENT GDG OF
+      * PCFCASE CLAIMS FILE (NCTCLMS1 300 FILE).
+      * THIS PROGRAM CLONED FROM CASNCTD7 FOR NY ONLY
+      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      *  DB2 TABLES USED :  DB2AR01.ARTCTPK - PRIMARY KEY TABLE
+      *                             ARTCCLM - CLAIM TABLE
+      *                             ARTCLKP - CLAIM LOOKUP TABLE
+0028  *                     CTSPROD.SEC.ARTSPRF - PREFERENCES TABLE
+      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      *  MODIFICATION HISTORY:
+      *
+      * CHG#  DATE    PGM PM    DESCRIPTION
+      *----------------------------------------------------------------
+000   * 000  10/07/03 LLL RXV  IN THE BEGINNING .............
+0001  * 0001 11/20/03 LLL      INCREASE DB2 COMMIT FREQUENCY
+0002  * 0002 02/27/04 LLL      CHANGE SET TIME-STAMP TO SELECT: SET DOE
+      *                        NOT WORK IN ECDBP (DB2P ON NT SERVER)
+0003  * 0003 06/03/04 YZG      ADD PROCESSING OF ESTATE CASES FOR CO
+0004  * 0004 07/23/04 LLL      ADD PCFCASE RECORDS SKIP PROCESSING.
+0005  * 0004 07/23/04 LLL      ADD CCLM-SOURCE-CREATE-NM POPULATION
+0005  * 0006 07/23/04 YZG      INCREASE DB2 COMMIT FREQUENCY TO 300
+0007  * 0007 06/08/10 YZG      ADD PROCESSING AL
+0008  * 0008 05/04/11 SQK      ADD CONTEXT CODE FOR AL
+0009  * 0009 06/01/15 MXM      ADD PROCESSING AR,CAS AND FL CAS,EST,TRS
+      * 0010 04/13/15 BJW      ADD ICD VERSION POPULATION
+      * 0011 09/15/15 BJW      ADD RC 0998 GOOD COMPLETION WHEN THERE
+      *                         IS NO DATA IN THE INPUT FILE NCTC-IN.
+      * 0012 11/2/15  BJW      ADD STATUS TO INITIAL CLAIM LOOK-UP
+      *                         SO WE GET SPECIFIC LOOK-UP.  WILL ADD
+      *                         INSERTS TO MAESTRO SHOWING HISTORY.
+      *      11/6/15  BJW      CLONE OF CASNCTD2.
+      * 0013 01/21/16 MXM      ADD PROCESSING NM CAS
+0013  * 0013 03/01/16 BJW      ADD NEW STATE CTSCASEX-NY
+0014  * 0014 05/02/16 BJW      ADD NEW STATE WV.
+0015  * 0015 05/17/16 BJW      ADD NEW STATE NV.
+0016  * 0016 06/30/16 BJW      ADD OH CARESOURCE.
+0019  * 0019 02/17/17 JHW      UPDATE NEW RELATE COLUMN IN ARTCLKP
+0019  *                        WHEN INSERTING ROWS
+0020  * 0020 08/18/17 JHW      UPDATE THE POSTING OF SVC-CODE INTO
+0020  *                        ICD9P-RF WHICH ARE GREATER THAN 10
+0020  *                        POSITIONS TO MAKE THEM ONLY 10
+0020  *                        POSITIONS DUE TO LENGTH OF THE COLUMN
+0020  *                        IN THE CCLM TABLE
+00XX  * 00XX **/**/** JHW      UPDATE CREATE COLUMNS IN BOTH ARTCCLM
+00XX  *  WAS 0018              AND ARTCLKP WHEN INSERTING ROWS
+00XX  *                        THIS CHANGE WILL BE INSTALLED AT A
+00XX  *                        LATER TIME
+0021  * 0021 04/18/19 JHW BJW  CHANGES TO ADD 2 NEW CONTEXT CODE TO
+0021  * 0021                   NY PROCESSING - CTSESTNY (CTSEEN) AND
+0021  * 0021                   CTSESTEX-NY (CTSECN)
+0022  * 0022 05/16/19 BJW      ADD P-MONITOR ENHANCEMENT.
+0023  * 0023 07/11/19 JHW BJW  CHANGES TO ADD A NEW CONTEXT CODE TO
+0023  * 0023                   FL PROCESSING - CTSCASMT-FL (CTSMST)
+0024  * 0024 08/08/19 JHW BJW  CHANGES TO ADD A NEW CONTEXT CODE TO
+0024  * 0024                   WV PROCESSING - CTSESTWV (ESTATES)
+      * 0025 03/20/20 BJW BJW  CHANGES FOR AGENCY CODE
+      * 0025
+0026  * 0026 10/19/20 JXZ JXZ  CLAIM PULL/LINKING FOR ENCOUNTER/CCLM
+0026  * 0026 CLAIMS FOR CTSCASNY ONLY.
+      * 0027
+0027  * 0027 07/10/25 SXS SXS  CUS0181504 - POPULATE ARTCCLM
+0027  * 0027 RX_WRITTEN_DT FOR NY CONTEXTS
+0028  * 0028 09/15/25 SXS SXS  EXCLUDE NY ENCOUNTER RX CLAIMS BASED ON
+0028  * 0028                   CTSPROD.SEC.ARTSPRF PREFERENCES TABLE.
+0028  * 0028                   WHEN NAME_CD='NY_RX_ENCOUNTER_EXCLUSION'
+0028  * 0028                   AND UPPER(VALUE_TXT)='TRUE', EXCLUDE
+0028  * 0028                   CLAIMS WHERE CLM-CLAIM-TYPE='12' FOR THE
+0028  * 0028                   LISTED CONTEXT CODES.
+      *****************************************************************
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT  NCTC-IN     ASSIGN   TO  NCTCLMI.
+0004  *     SELECT  CNTL-OUT    ASSIGN   TO  DB2CNTLO.
+0004       SELECT  CNTL-IO     ASSIGN   TO  DB2CNTLO.
+      **
+       DATA DIVISION.
+       FILE SECTION.
+       FD  NCTC-IN
+           LABEL RECORDS ARE STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+0027       RECORD CONTAINS 316 CHARACTERS
+           DATA RECORD IS NCTCLAIM-RECORD.
+       01  NCTCLAIM-RECORD.
+0027     COPY  NCTCLMS9   REPLACING   ==(PREFIX)==  BY  ==CLM== .
+
+0004  * FD  CNTL-OUT
+0004   FD  CNTL-IO
+           LABEL RECORDS ARE STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           DATA RECORD IS CNTL-RECORD.
+       01  CNTL-RECORD           PIC X(38).
+      *
+       WORKING-STORAGE SECTION.
+       01  WS-FIELDS.
+           05  DUMP-CODE                PIC S9(04) COMP  VALUE +3645.
+           05  WS-SQLCODE               PIC +(7)9(3)  VALUE ZERO.
+           05  WS-CLM-EOF-FLAG          PIC  X(01)    VALUE 'N'.
+              88  CLM-EOF                             VALUE 'Y'.
+0004>      05  WS-CNTL-EOF-FLAG         PIC  X(01)    VALUE 'N'.
+              88  CNTL-EOF                            VALUE 'Y'.
+0006       05  SQL-COMMIT-FREQ          PIC S9(05) COMP-3  VALUE +300.
+0006*****  05  SQL-COMMIT-FREQ          PIC S9(05) COMP-3  VALUE +1000.
+RAT   **   05  SQL-COMMIT-FREQ          PIC S9(05) COMP-3  VALUE +10.
+           05  WS-CNTL-RECS-OUT         PIC S9(07) COMP-3  VALUE ZERO.
+           05  WS-CNTL-RECS-OUT-HOLD    PIC S9(07) COMP-3  VALUE ZERO.
+           05  WS-CNTL-RECS-OUT-TOT     PIC S9(07) COMP-3  VALUE ZERO.
+<0004      05  CRP-IN                   PIC S9(07) COMP-3  VALUE ZERO.
+           05  WS-MOVE                  PIC  X(20)  VALUE SPACES.
+           05  WS-CONTEXT-CD            PIC  X(16)  VALUE SPACES.
+           05  WS-CONTEXT-CD-1          PIC  X(16)  VALUE SPACES.
+           05  WS-CONTEXT-CD-2          PIC  X(16)  VALUE SPACES.
+           05  WS-CONTEXT-CD-3          PIC  X(16)  VALUE SPACES.
+           05  WS-CONTEXT-CD-4          PIC  X(16)  VALUE SPACES.
+           05  WS-CONTEXT-CD-5          PIC  X(16)  VALUE SPACES.
+0026       05  WS-CONTEXT-CD-6          PIC  X(16)  VALUE SPACES.
+0026       05  WS-CONTEXT-CD-7          PIC  X(16)  VALUE SPACES.
+0003       05  WS-CONTEXT-CD6           PIC  X(06)  VALUE SPACES.
+           05  WS-LAST-UPDATE-NM        PIC  X(08)  VALUE SPACES.
+           05  WS-UNSTRING-L            PIC S9(4) COMP  VALUE +0.
+           05  WS-UNSTRING-T            PIC  X(20)  VALUE SPACES.
+           05  WS-DE-EDIT               PIC  S9(07)V99  VALUE ZERO.
+           05  WK-DIAG-CODE             PIC X(7) VALUE SPACES.
+           05  WS-DIAG-CODE-4 REDEFINES WK-DIAG-CODE.
+               10  WS-DIAG-CODE-41      PIC X(3).
+               10  FILLER               PIC X.
+               10  WS-DIAG-CODE-42      PIC X(3).
+           05  WS-DIAG-CODE-412.
+               10  WS-DIAG-CODE-411     PIC X(3).
+               10  WS-DIAG-CODE-422     PIC X(3).
+           05  WS-DIAG-CODE-N REDEFINES WS-DIAG-CODE-412
+                                        PIC X(6).
+           05  COUNT-M                  PIC S9(3)   COMP-3  VALUE ZERO.
+           05  WS-STATUS-TXT            PIC X(20) VALUE 'SUCCESS'.
+
+0028  *----------------------------------------------------------------
+0028  *  NY RX ENCOUNTER EXCLUSION - PREFERENCE TABLE STORAGE
+0028  *  POPULATED AT PGM START FROM CTSPROD.SEC.ARTSPRF WHERE
+0028  *    NAME_CD = 'NY_RX_ENCOUNTER_EXCLUSION'
+0028  *    AND UPPER(VALUE_TXT) = 'TRUE'
+0028  *  USED TO SKIP INSERTS OF RX (CLM-CLAIM-TYPE = '12')
+0028  *  CLAIMS INTO ARTCCLM/ARTCLKP FOR CONFIGURED CONTEXTS.
+0028  *----------------------------------------------------------------
+0028   01  WS-RX-EXCL-TABLE.
+0028       05  WS-RX-EXCL-CNT           PIC S9(04) COMP  VALUE ZERO.
+0028       05  WS-RX-EXCL-MAX           PIC S9(04) COMP  VALUE +50.
+0028       05  WS-RX-IDX                PIC S9(04) COMP  VALUE ZERO.
+0028       05  WS-RX-EXCL-ENTRY  OCCURS 50 TIMES.
+0028           10  WS-RX-EXCL-CONTEXT-CD  PIC X(16).
+0028
+0028   01  WS-RX-EXCL-FLAGS.
+0028       05  WS-RX-EXCL-FOUND-SW      PIC X(01)  VALUE 'N'.
+0028           88  RX-EXCL-FOUND                   VALUE 'Y'.
+0028           88  RX-EXCL-NOT-FOUND               VALUE 'N'.
+0028       05  WS-CSR-EOF-SW            PIC X(01)  VALUE 'N'.
+0028           88  CSR-EOF                         VALUE 'Y'.
+0028           88  CSR-NOT-EOF                     VALUE 'N'.
+0028       05  WS-RX-EXCL-SKIP-CTR      PIC S9(07) COMP-3 VALUE ZERO.
+
+       01  WS-COMPILE-DATE-TIME.
+           05  WS-WHEN-COMPILED      PIC X(26)   VALUE SPACES.
+           05  WS-WHEN-COMPILED-DISP.
+             10  WS-WHEN-COMPILED-MM-DD-YY.
+               15 WS-COMP-MM      PIC X(02)  VALUE SPACES.
+               15 FILLER          PIC X(01)  VALUE '/'.
+               15 WS-COMP-DD      PIC X(02)  VALUE SPACES.
+               15 FILLER          PIC X(01)  VALUE '/'.
+               15 WS-COMP-YY      PIC X(02)  VALUE SPACES.
+             10  FILLER           PIC X(01)  VALUE SPACE.
+             10  WS-WHEN-COMPILED-HH-MM.
+               15 WS-COMP-HH      PIC X(02)  VALUE SPACES.
+               15 FILLER          PIC X(01)  VALUE ':'.
+               15 WS-COMP-MI      PIC X(02)  VALUE SPACES.
+      *
+       01  WS-CONTROL-RECORD.
+0004  *    05  FILLER                     PIC  X(01)  VALUE '-'.
+0004       05  CNTL-PROC-FLAG             PIC  X(01)  VALUE '-'.
+           05  NUM-REC-OUT                PIC ZZZ,ZZZ,ZZ9  VALUE ZERO.
+           05  FILLER                     PIC  X(02)  VALUE '++'.
+           05  WS-CURRENT-TIMESTAMP       PIC  X(26)  VALUE SPACES.
+0027   01  RX-WRITTEN-DT-VALUE            PIC X(10).
+0027   01  RX-WRITTEN-DT-INDICATOR        PIC S9(4) COMP.
+
+      **  "GET HMS CONTRACT" SUBROUTINE AREA :
+YGYG***01  DPSGTCON-CALLING-AREA.
+YGYG***    05  HMS-3BYTE-CONTRACT-NUM    PIC X(03)  VALUE  SPACES.
+0007***    05  FILLER                    PIC X(08)  VALUE  SPACES.
+0007***    05  FILLER                    PIC X(04)  VALUE  SPACES.
+0007***    05  FILLER                    PIC X(64)  VALUE  SPACES.
+0007***    05  DPSGTCON-RETURN-CODE      PIC X(01)  VALUE  SPACE.
+
+0007   01  WS-CASGETCC                   PIC X(08) VALUE 'CASGETCC'.
+0007   01  CASGETCC-CALLING-AREA.
+0007       05  HMS-3BYTE-CONTRACT-NUM    PIC X(03)  VALUE  SPACES.
+0007       05  FILLER                    PIC X(08)  VALUE  SPACES.
+0007       05  FILLER                    PIC X(04)  VALUE  SPACES.
+0007       05  FILLER                    PIC X(64)  VALUE  SPACES.
+0007       05  CASGETCC-RETURN-CODE      PIC X(01)  VALUE  SPACE.
+
+       01  WS-COUNTERS.
+           05  REC-READ-CTR              PIC S9(07) COMP-3  VALUE ZERO.
+           05  SQL-INSERT-CTR            PIC S9(09) COMP-3  VALUE ZERO.
+           05  SQL-UPDATE-CTR            PIC S9(07) COMP-3  VALUE ZERO.
+           05  SQL-NOT-COMMITED-YET-CTR  PIC S9(05) COMP-3  VALUE ZERO.
+           05  SQL-INSERT-COMMITTED-CTR  PIC S9(09) COMP-3  VALUE ZERO.
+           05  WS-CONTEXT-CD-1-CNT       PIC S9(12) COMP-3  VALUE ZERO.
+           05  WS-CONTEXT-CD-2-CNT       PIC S9(12) COMP-3  VALUE ZERO.
+           05  WS-CONTEXT-CD-3-CNT       PIC S9(12) COMP-3  VALUE ZERO.
+           05  WS-CONTEXT-CD-4-CNT       PIC S9(12) COMP-3  VALUE ZERO.
+           05  WS-CONTEXT-CD-5-CNT       PIC S9(12) COMP-3  VALUE ZERO.
+0026       05  WS-CONTEXT-CD-6-CNT       PIC S9(12) COMP-3  VALUE ZERO.
+0026       05  WS-CONTEXT-CD-7-CNT       PIC S9(12) COMP-3  VALUE ZERO.
+           05  SQL-UPDATE-COMMITTED-CTR  PIC S9(07) COMP-3  VALUE ZERO.
+           05  SQL-TOT-COMMITTED-CTR     PIC S9(07) COMP-3  VALUE ZERO.
+           05  TIME-OUT-CTR              PIC S9(01) COMP-3  VALUE ZERO.
+           05  WS-CLKP-PROCESS-NM.
+               10  WS-CLKP-TITLE  PIC X(19).
+               10  WS-CLKP-REST   PIC X(16).
+           05  WS-CLKP-PROCESS-NM-WHOLE REDEFINES WS-CLKP-PROCESS-NM
+                                  PIC X(35).
+      *
+      ******  DB2  AREA  START  ******
+      **  ERROR MESSAGE VARIABLES TO BE PASSED TO DSNTIAR :
+       01 ERROR-MESSAGE.
+           05 ERROR-MESSAGE-LENGTH   PIC S9(4) COMP   VALUE +560.
+           05 ERROR-MESSAGE-LINE     PIC X(80)  OCCURS 7 TIMES
+                                                 INDEXED BY EML-INDEX.
+       01 ERROR-LINE-LENGTH          PIC S9(9) COMP   VALUE +80.
+      *
+           EXEC SQL  INCLUDE  SQLCA     END-EXEC.
+      *
+0009*******EXEC SQL  INCLUDE  ARTCTPK   END-EXEC.
+0009       EXEC SQL  INCLUDE  CARTCTPK  END-EXEC.
+      *
+           EXEC SQL  INCLUDE  ARTCCLM   END-EXEC.
+      *
+           EXEC SQL  INCLUDE  ARTCLKP   END-EXEC.
+      *
+0028  *  DCLGEN FOR CTSPROD.SEC.ARTSPRF PREFERENCES TABLE
+0028       EXEC SQL  INCLUDE  ARTSPRF   END-EXEC.
+      *
+           EXEC SQL
+                INCLUDE  PMONITOR
+           END-EXEC.
+      *
+0028  *  CURSOR TO READ NY_RX_ENCOUNTER_EXCLUSION PREFERENCE ROWS
+0028  *  FROM CTSPROD.SEC.ARTSPRF. USES DCLGEN HOST VARIABLES:
+0028  *    NAME-CD  (VARCHAR 50)  - INPUT
+0028  *    VALUE-TXT (VARCHAR 4096) - INPUT (VIA UPPER FUNCTION)
+0028  *    CONTEXT-CD (VARCHAR 16) - OUTPUT
+0028       EXEC SQL
+0028           DECLARE  ARTSPRF-CSR  CURSOR  FOR
+0028             SELECT  CONTEXT_CD
+0028               FROM  CTSPROD.SEC.ARTSPRF
+0028              WHERE  NAME_CD           = :NAME-CD
+0028                AND  UPPER(VALUE_TXT)  = 'TRUE'
+0028              ORDER  BY  CONTEXT_CD
+0028       END-EXEC.
+
+      ******  DB2  AREA  END  ******
+
+       PROCEDURE DIVISION.
+       0000-MAIN.
+           DISPLAY '+++'
+           MOVE FUNCTION WHEN-COMPILED    TO  WS-WHEN-COMPILED
+           MOVE  WS-WHEN-COMPILED (5:2)    TO  WS-COMP-MM
+           MOVE  WS-WHEN-COMPILED (7:2)    TO  WS-COMP-DD
+           MOVE  WS-WHEN-COMPILED (3:2)    TO  WS-COMP-YY
+           MOVE  WS-WHEN-COMPILED (9:2)    TO  WS-COMP-HH
+           MOVE  WS-WHEN-COMPILED (11:2)   TO  WS-COMP-MI
+0026       DISPLAY '** PGM CASNCTD9 COMPILED ON ' WS-WHEN-COMPILED-DISP
+                                                           ' START  **'
+0007*****  CALL 'DPSGTCON'  USING  DPSGTCON-CALLING-AREA.
+0007*****  IF  DPSGTCON-RETURN-CODE  NOT =  '0'
+0007*****     DISPLAY '** ERR: RETRIEVE CONTRACT NUMBER **'
+0007*****     MOVE  +0999  TO  DUMP-CODE
+0007****      GO TO  Z9999-ERROR-EXIT
+0007*****  END-IF.
+
+0007       CALL WS-CASGETCC USING  CASGETCC-CALLING-AREA.
+0007       DISPLAY 'CALLING_AREA CONTRACT NUM =' CASGETCC-CALLING-AREA.
+0007
+0007       IF  CASGETCC-RETURN-CODE  NOT =  '0'
+0007          DISPLAY '** ERR: RETRIEVE CONTRACT NUMBER **'
+0007          MOVE  +0999  TO  DUMP-CODE
+0007          GO TO  Z9999-ERROR-EXIT
+0007       END-IF.
+
+           DISPLAY 'HMS-3BYTE-CONTRACT-NUM : ' HMS-3BYTE-CONTRACT-NUM.
+
+           EVALUATE  HMS-3BYTE-CONTRACT-NUM
+             WHEN  '320'  MOVE  'CTSCASNY'   TO   WS-CONTEXT-CD
+                          MOVE  'WNYCDF40'   TO   WS-LAST-UPDATE-NM
+TEST         WHEN  '300'  MOVE  'CTSCASTST'  TO   WS-CONTEXT-CD
+TEST                      MOVE  'WTTCDF40'   TO   WS-LAST-UPDATE-NM
+             WHEN  '326'  MOVE  'CTSCASCO'   TO   WS-CONTEXT-CD
+                          MOVE  'WCOCDF40'   TO   WS-LAST-UPDATE-NM
+             WHEN  '341'  MOVE  'CTSCASOH'   TO   WS-CONTEXT-CD
+                          MOVE  'WOHCDF40'   TO   WS-LAST-UPDATE-NM
+0016         WHEN  '535'  MOVE  'CTSCASOH'   TO   WS-CONTEXT-CD
+0016                      MOVE  'WCXCDF40'   TO   WS-LAST-UPDATE-NM
+             WHEN  '313'  MOVE  'CTSCASFL'   TO   WS-CONTEXT-CD
+                          MOVE  'WFLCDF40'   TO   WS-LAST-UPDATE-NM
+             WHEN  '319'  MOVE  'CTSCASCT'   TO   WS-CONTEXT-CD
+                          MOVE  'WCTCDF40'   TO   WS-LAST-UPDATE-NM
+             WHEN  '317'  MOVE  'CTSWRCCA'   TO   WS-CONTEXT-CD
+                          MOVE  'WCACDF40'   TO   WS-LAST-UPDATE-NM
+0007         WHEN  '590'  MOVE  'CTSCASAL'   TO   WS-CONTEXT-CD
+0007                      MOVE  'WALCDF40'   TO   WS-LAST-UPDATE-NM
+0009         WHEN  '330'  MOVE  'CTSCASAR'   TO   WS-CONTEXT-CD
+0009                      MOVE  'WARCDF40'   TO   WS-LAST-UPDATE-NM
+0015         WHEN  '358'  MOVE  'CTSCASNV'   TO   WS-CONTEXT-CD
+0015                      MOVE  'WNVCDF40'   TO   WS-LAST-UPDATE-NM
+             WHEN  '359'  MOVE  'CTSCASNM'   TO   WS-CONTEXT-CD
+                          MOVE  'WNMCDF40'   TO   WS-LAST-UPDATE-NM
+0014         WHEN  '645'  MOVE  'CTSCASWV'   TO   WS-CONTEXT-CD
+0014                      MOVE  'WWVCDF40'   TO   WS-LAST-UPDATE-NM
+             WHEN OTHER
+                 DISPLAY '** ERR: UNKNOWN HMS-3BYTE-CONTRACT-NUM **'
+                 MOVE  +0999  TO  DUMP-CODE
+                 GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+           DISPLAY 'WS-CONTEXT-CD : ' WS-CONTEXT-CD
+           DISPLAY '+'.
+      *
+0028  *    LOAD NY RX ENCOUNTER EXCLUSION LIST FROM CTSPROD.SEC.ARTSPRF
+0028       PERFORM  0600-LOAD-RX-EXCLUSIONS  THRU  0600-LOAD-EXIT.
+      *
+0004       OPEN INPUT   CNTL-IO
+0004       PERFORM  0500-CREATE-INFILE-CRP  THRU  0500-CRP-EXIT
+0004       CLOSE     CNTL-IO .
+      *
+           OPEN INPUT   NCTC-IN
+0004> *          OUTPUT   CNTL-OUT.
+                OUTPUT   CNTL-IO.
+           COMPUTE  CRP-IN  =  WS-CNTL-RECS-OUT-TOT + 1
+           PERFORM  CRP-IN  TIMES
+             READ  NCTC-IN
+               AT END
+                 IF  REC-READ-CTR  =  ZERO
+                   DISPLAY '** ERR: PCFCASE CLAIMS FILE IS EMPTY.'
+                 ELSE
+                   MOVE  REC-READ-CTR  TO  NUM-REC-OUT
+                   DISPLAY '** ERR: ALL ' NUM-REC-OUT '  INPUT RECORDS'
+                   DISPLAY '**      HAVE BEEN PROCESSED PREVIOUSLY.'
+                 END-IF
+                 DISPLAY '+'
+0011             MOVE  +0998  TO  DUMP-CODE
+                 GO TO  Z9999-ERROR-EXIT
+               NOT  AT END   ADD  1  TO  REC-READ-CTR
+             END-READ
+<0004      END-PERFORM.
+      *
+           PERFORM  1000-MAINLINE  THRU  1000-MAINLINE-EXIT
+                    UNTIL  CLM-EOF   OR   TIME-OUT-CTR  >=  5 .
+           IF  TIME-OUT-CTR  >=  5
+             GO TO  Z9999-ERROR-EXIT
+           END-IF.
+           IF  SQL-NOT-COMMITED-YET-CTR  NOT =  ZERO
+             PERFORM  1900-IMPLICIT-COMMIT  THRU  1900-COMMIT-EXIT
+           END-IF.
+           MOVE 7 TO PMONITOR-STATUS-TXT-LEN.
+           MOVE 'SUCCESS' TO WS-STATUS-TXT.
+           PERFORM  8000-P-MONITOR    THRU  8000-P-MONITOR-EXIT.
+           PERFORM  9000-TERMINATION  THRU  9000-TERMINATION-EXIT.
+           CLOSE     NCTC-IN
+0004  *                CNTL-OUT.
+0004                  CNTL-IO.
+           GOBACK.
+      **
+0004>  0500-CREATE-INFILE-CRP.
+           READ  CNTL-IO  INTO  WS-CONTROL-RECORD
+             AT END   DISPLAY '** INFO: DB2 CONTROL FILE IS EMPTY **'
+             DISPLAY '+'
+             GO TO  0500-CRP-EXIT
+           END-READ.
+           PERFORM  UNTIL  CNTL-EOF
+             IF  CNTL-PROC-FLAG  =  '-'
+               MOVE  NUM-REC-OUT  TO  WS-CNTL-RECS-OUT
+               IF  WS-CNTL-RECS-OUT  >  WS-CNTL-RECS-OUT-HOLD
+                 MOVE  WS-CNTL-RECS-OUT  TO  WS-CNTL-RECS-OUT-HOLD
+               ELSE
+                 ADD   WS-CNTL-RECS-OUT-HOLD  TO  WS-CNTL-RECS-OUT-TOT
+                 MOVE  WS-CNTL-RECS-OUT       TO  WS-CNTL-RECS-OUT-HOLD
+               END-IF
+             END-IF
+
+             READ  CNTL-IO  INTO  WS-CONTROL-RECORD
+               AT END   SET CNTL-EOF  TO TRUE
+                    ADD  WS-CNTL-RECS-OUT-HOLD  TO WS-CNTL-RECS-OUT-TOT
+             END-READ
+           END-PERFORM.
+
+           IF  CNTL-PROC-FLAG  =  'N'
+             DISPLAY '** INFO: BYPASS DB2 CONTROL FILE PROCESSING ; **'
+           END-IF.
+
+           MOVE  WS-CNTL-RECS-OUT-TOT  TO  NUM-REC-OUT
+           DISPLAY '** INFO: ' NUM-REC-OUT
+                                         ' PREVIOUSLY PROCESSED RECORDS'
+           DISPLAY '**        WILL BE SKIPPED.'
+           DISPLAY '+' .
+<0004  0500-CRP-EXIT.     EXIT.
+      *
+0028  *****************************************************************
+0028  *  0600-LOAD-RX-EXCLUSIONS
+0028  *  READ CTSPROD.SEC.ARTSPRF WHERE
+0028  *    NAME_CD = 'NY_RX_ENCOUNTER_EXCLUSION'
+0028  *    AND UPPER(VALUE_TXT) = 'TRUE'
+0028  *  STORE CONTEXT_CDS (SPACE-PADDED TO 16 CHARS FOR CONSISTENT
+0028  *  COMPARISON WITH WS-CONTEXT-CD) IN WS-RX-EXCL-TABLE FOR LATER
+0028  *  EXCLUSION OF RX (CLAIM-TYPE = '12') CLAIMS.
+0028  *
+0028  *  USES DCLGEN HOST VARIABLES FROM ARTSPRF:
+0028  *    NAME-CD (VARCHAR 50) - SET TO SEARCH VALUE
+0028  *    CONTEXT-CD (VARCHAR 16) - RECEIVES FETCHED VALUE
+0028  *****************************************************************
+0028   0600-LOAD-RX-EXCLUSIONS.
+0028       MOVE  ZERO  TO  WS-RX-EXCL-CNT
+0028       SET   CSR-NOT-EOF  TO  TRUE
+0028
+0028  *    POPULATE NAME-CD VARCHAR HOST VARIABLE
+0028       MOVE  'NY_RX_ENCOUNTER_EXCLUSION'  TO  NAME-CD-TEXT
+0028       MOVE  +25                          TO  NAME-CD-LEN
+0028
+0028       EXEC SQL  OPEN  ARTSPRF-CSR  END-EXEC
+0028       IF  SQLCODE  NOT =  +0
+0028          MOVE  SQLCODE  TO  WS-SQLCODE
+0028          DISPLAY 'ERR: OPEN ARTSPRF-CSR, SQLCODE = ' WS-SQLCODE
+0028          GO TO  Z9999-ERROR-EXIT
+0028       END-IF
+0028
+0028       PERFORM  UNTIL  CSR-EOF
+0028          EXEC SQL
+0028             FETCH  ARTSPRF-CSR
+0028              INTO  :CONTEXT-CD
+0028          END-EXEC
+0028          EVALUATE  SQLCODE
+0028             WHEN +0
+0028                IF  WS-RX-EXCL-CNT  <  WS-RX-EXCL-MAX
+0028                   ADD  +1  TO  WS-RX-EXCL-CNT
+0028  *                MOVE ONLY THE VALID VARCHAR PORTION AND
+0028  *                LET COBOL SPACE-PAD TO 16 CHARS FOR COMPARE
+0028                   MOVE  SPACES
+0028                     TO  WS-RX-EXCL-CONTEXT-CD(WS-RX-EXCL-CNT)
+0028                   IF  CONTEXT-CD-LEN  >  0
+0028                      MOVE  CONTEXT-CD-TEXT (1:CONTEXT-CD-LEN)
+0028                        TO  WS-RX-EXCL-CONTEXT-CD(WS-RX-EXCL-CNT)
+0028                   END-IF
+0028                ELSE
+0028                   DISPLAY '** WRN: RX EXCLUSION TABLE FULL, '
+0028                           'ADDITIONAL ROWS IGNORED **'
+0028                END-IF
+0028             WHEN +100
+0028                SET  CSR-EOF  TO  TRUE
+0028             WHEN OTHER
+0028                MOVE  SQLCODE  TO  WS-SQLCODE
+0028                DISPLAY 'ERR: FETCH ARTSPRF-CSR, SQLCODE = '
+0028                         WS-SQLCODE
+0028                GO TO  Z9999-ERROR-EXIT
+0028          END-EVALUATE
+0028       END-PERFORM
+0028
+0028       EXEC SQL  CLOSE  ARTSPRF-CSR  END-EXEC
+0028       IF  SQLCODE  NOT =  +0
+0028          MOVE  SQLCODE  TO  WS-SQLCODE
+0028          DISPLAY 'WRN: CLOSE ARTSPRF-CSR, SQLCODE = ' WS-SQLCODE
+0028       END-IF
+0028
+0028       DISPLAY '** INFO: NY_RX_ENCOUNTER_EXCLUSION CONTEXT COUNT: '
+0028                WS-RX-EXCL-CNT
+0028       IF  WS-RX-EXCL-CNT  >  0
+0028          PERFORM VARYING WS-RX-IDX FROM 1 BY 1
+0028                  UNTIL WS-RX-IDX > WS-RX-EXCL-CNT
+0028             DISPLAY '   EXCL CONTEXT: '
+0028                      WS-RX-EXCL-CONTEXT-CD(WS-RX-IDX)
+0028          END-PERFORM
+0028       END-IF
+0028       DISPLAY '+'.
+0028   0600-LOAD-EXIT.  EXIT.
+      *
+       1000-MAINLINE.
+           INITIALIZE  DCLARTCTPK   DCLARTCCLM   DCLARTCLKP.
+
+0016  * OH CARESOURCE IS CXT.  OH IS 341.  SPACES IS THE
+0016  * DEFAULT.
+
+0024  *    THIS CODING IF FOR CLIENTS WITH MULTIPLE
+0024  *    CONTEXT CODES
+
+0003       IF HMS-3BYTE-CONTRACT-NUM = '326'
+0008       OR HMS-3BYTE-CONTRACT-NUM = '590'
+0023  *    OR HMS-3BYTE-CONTRACT-NUM = '313'
+0009       OR HMS-3BYTE-CONTRACT-NUM = '359'
+0024       OR HMS-3BYTE-CONTRACT-NUM = '645'
+0003          MOVE CLM-HMS-CLIENT-ID      TO WS-CONTEXT-CD6
+0003          MOVE WS-CONTEXT-CD6         TO WS-CONTEXT-CD (1:6)
+0003       END-IF
+
+0021  ** 320 IS NY WHICH CURRENTLY HAS 5 CONTEXT CODES 3 OF WHICH
+0021  ** ARE GREATER THAN THE 6 POSITIONS IN THE OUTPUT FILE AND ALL
+0021  ** OF THE CONTEXTS CODES ARE FOR 'CASUALTY' AND 'ESTATES'
+0021  *
+0021       IF HMS-3BYTE-CONTRACT-NUM = 320
+0021           EVALUATE  CLM-HMS-CLIENT-ID
+0021  *
+0021  ** CEN STANDS FOR C IS CASUALTY, E IS EXCHANGE, & N IS NEW YORK
+0021               WHEN  'CTSCEN'
+0021                   MOVE 'CTSCASEX-NY'  TO WS-CONTEXT-CD
+0021  *
+0021  ** CCN STANDS FOR C IS CASUALTY, C IS CITY, & N IS NEW YORK
+0021               WHEN  'CTSCCN'
+0021                   MOVE 'CTSCASNYC'  TO WS-CONTEXT-CD
+0021  *
+0021  ** ECN STANDS FOR E IS ESTATE, C IS CITY, & N IS NEW YORK CITY
+0021               WHEN  'CTSECN'
+0021                   MOVE 'CTSESTNY'  TO  WS-CONTEXT-CD
+0021  *
+0021  ** EEN STANDS FOR E IS ESTATE, E IS EXCHANGE, & N IS NEW YORK
+0021               WHEN  'CTSEEN'
+0021                   MOVE 'CTSESTEX-NY' TO  WS-CONTEXT-CD
+0026  *
+0026  ** CON STANDS FOR C IS CASUALTY,O IS OPTION 1, & N IS NEW YORK
+0026               WHEN  'CTSCON'
+0026                   MOVE 'CTSCASNYOP1' TO  WS-CONTEXT-CD
+0026  *
+0026  *
+0026  ** EON STANDS FOR E IS EXCHANGE,O IS OPTION 1, & N IS NEW YORK
+0026               WHEN  'CTSEON'
+0026                   MOVE 'CTSESTNYOP1' TO  WS-CONTEXT-CD
+0026  *
+0021  ** CAS DEFAULT IS FOR 'CTSCASNY' - CASUALTY NEW YORK
+0021               WHEN  OTHER
+0021                   MOVE 'CTSCASNY'  TO  WS-CONTEXT-CD
+0021           END-EVALUATE
+0021       END-IF.
+0021
+      *    IF HMS-3BYTE-CONTRACT-NUM = '320'
+0013  ** CEN STANDS FOR C IS CAS, E IS EXCHANGE, & N IS NEW YORK
+0013  *       IF CLM-HMS-CLIENT-ID = 'CTSCEN'
+0013  *         MOVE 'CTSCASEX-NY'          TO WS-CONTEXT-CD
+0013  *         DISPLAY 'WS-CONTEXT-CD : ' WS-CONTEXT-CD
+0013  ** CEN STANDS FOR C IS CAS, C IS CITY, & N IS NEW YORK
+      *       ELSE IF CLM-HMS-CLIENT-ID = 'CTSCCN'
+      *         MOVE 'CTSCASNYC'            TO WS-CONTEXT-CD
+0013  *         DISPLAY 'WS-CONTEXT-CD : ' WS-CONTEXT-CD
+0013  *       ELSE
+      *         MOVE 'CTS'                  TO WS-CONTEXT-CD
+      *         MOVE CLM-HMS-CLIENT-ID      TO WS-CONTEXT-CD (4:6)
+      *         MOVE 'CTSCASNY'             TO WS-CONTEXT-CD
+      *            END-IF
+0013  *       END-IF
+      *    END-IF
+
+0023  ** 313 IS FL WHICH CURRENTLY HAS 4 CONTEXT CODES 3 OF WHICH
+0023  ** ARE NOT GREATER THAN 6 POSITIONS BUT 1 IS GREATER THAN 6
+0023  ** POSITIONS
+0023  *
+0023       IF HMS-3BYTE-CONTRACT-NUM = 313
+0023           EVALUATE  CLM-HMS-CLIENT-ID
+0023  *
+0023  ** CAS STANDS FOR CASUALTY
+0023               WHEN  'CTSCAS'
+0023                   MOVE 'CTSCASFL'  TO WS-CONTEXT-CD
+0023  *
+0023  ** EST STANDS FOR ESTATE
+0023               WHEN  'CTSEST'
+0023                   MOVE 'CTSESTFL'  TO WS-CONTEXT-CD
+0023  *
+0023  ** TRS STANDS FOR TRUST
+0023               WHEN  'CTSTRS'
+0023                   MOVE 'CTSTRSFL'  TO WS-CONTEXT-CD
+0023  *
+0023  ** MST STANDS FOR MASS TORT
+0023               WHEN  'CTSMST'
+0023                   MOVE 'CTSCASMT-FL'  TO WS-CONTEXT-CD
+0023  *
+0023  ** CAS STANDS FOR CASUALTY (DEFAULT)
+0023               WHEN  OTHER
+0023                   MOVE  'CTSCASFL'  TO  WS-CONTEXT-CD
+0023           END-EVALUATE
+0023       END-IF.
+
+           MOVE  SPACES                 TO  WS-UNSTRING-T
+           MOVE  +0                     TO  WS-UNSTRING-L
+           UNSTRING  WS-CONTEXT-CD           DELIMITED  BY  ALL SPACES
+               INTO   WS-UNSTRING-T
+               COUNT IN  WS-UNSTRING-L
+           END-UNSTRING
+           MOVE  WS-UNSTRING-T      TO  CCLM-CONTEXT-CD-T
+                                           CTPK-CONTEXT-CD-TEXT
+                                            CLKP-CONTEXT-CD-T
+           MOVE  WS-UNSTRING-L      TO  CCLM-CONTEXT-CD-L
+                                           CTPK-CONTEXT-CD-LEN
+                                            CLKP-CONTEXT-CD-L.
+
+           UNSTRING  CLM-ICN                 DELIMITED  BY  ALL SPACES
+               INTO   CCLM-ICN-NUM-T
+               COUNT IN  CCLM-ICN-NUM-L
+           END-UNSTRING
+
+           MOVE  CLM-HMS-CASE-KEY     TO  CLKP-CASE-ID.
+
+           MOVE  WS-LAST-UPDATE-NM    TO  CCLM-LAST-UPDATE-NM-T
+00XX  *                                   CCLM-CREATE-NM-T
+                                           CTPK-LAST-UPDATE-NM-TEXT
+                                            CLKP-LAST-UPDATE-NM-T
+00XX  *                                     CLKP-CREATE-NM-T
+           MOVE  8                    TO  CCLM-LAST-UPDATE-NM-L
+00XX  *                                   CCLM-CREATE-NM-L
+                                           CTPK-LAST-UPDATE-NM-LEN
+0018                                        CLKP-LAST-UPDATE-NM-L.
+00XX  *                                     CLKP-CREATE-NM-L.
+      ***
+           UNSTRING  CLM-FORMER-ICN          DELIMITED  BY  ALL SPACES
+               INTO   CCLM-PREV-ICN-NUM-T
+               COUNT IN  CCLM-PREV-ICN-NUM-L
+           END-UNSTRING
+
+    ****** MOVE  SPACES                 TO  WS-UNSTRING-T
+           UNSTRING  CLM-RECIPIENT-ID-NUM    DELIMITED  BY  ALL SPACES
+    *******    INTO  WS-UNSTRING-T
+               INTO  CCLM-RECIP-MA-NUM-T
+               COUNT IN  CCLM-RECIP-MA-NUM-L
+           END-UNSTRING
+    ****** MOVE  WS-UNSTRING-T          TO  CCLM-RECIP-MA-NUM-T
+    ****** IF  CCLM-RECIP-MA-NUM-L  >  16
+    ******   MOVE  16  TO  CCLM-RECIP-MA-NUM-L
+    ****** END-IF
+
+           UNSTRING  CLM-PROVIDER-NUM         DELIMITED  BY  ALL SPACES
+               INTO   CCLM-PROVIDER-ID-T
+               COUNT IN  CCLM-PROVIDER-ID-L
+           END-UNSTRING
+
+           MOVE  CLM-CLAIM-STATUS       TO  CCLM-CLMST-RF-T
+           MOVE  1                      TO  CCLM-CLMST-RF-L
+
+           MOVE  CLM-TRANSACTION-TYPE   TO  CCLM-TRNTP-RF-T
+           MOVE  1                      TO  CCLM-TRNTP-RF-L
+
+           UNSTRING  CLM-CLAIM-TYPE           DELIMITED  BY  ALL SPACES
+               INTO   CCLM-CLMTP-RF-T
+               COUNT IN  CCLM-CLMTP-RF-L
+           END-UNSTRING
+
+           UNSTRING  CLM-UNITS-OF-SERVICE     DELIMITED  BY  ALL SPACES
+               INTO   CCLM-UNITS-NUM-T
+               COUNT IN  CCLM-UNITS-NUM-L
+           END-UNSTRING
+
+           MOVE  CLM-CHARGE-AMT         TO  WS-DE-EDIT
+           MOVE  WS-DE-EDIT             TO  CCLM-CHARGE-AMT
+           MOVE  CLM-PAID-AMT           TO  WS-DE-EDIT
+           MOVE  WS-DE-EDIT             TO  CCLM-PAID-AMT
+
+           MOVE  CLM-DOR-A (1:4)        TO  CCLM-REMIT-DT (1:4)
+           MOVE  '-'                    TO  CCLM-REMIT-DT (5:1)
+           MOVE  CLM-DOR-A (5:2)        TO  CCLM-REMIT-DT (6:2)
+           MOVE  '-'                    TO  CCLM-REMIT-DT (8:1)
+           MOVE  CLM-DOR-A (7:2)        TO  CCLM-REMIT-DT (9:2)
+
+           MOVE  CLM-SERVICE-DATE-FROM-A (1:4)
+                                        TO  CCLM-SERVICE-FROM-DT (1:4)
+           MOVE  '-'                    TO  CCLM-SERVICE-FROM-DT (5:1)
+           MOVE  CLM-SERVICE-DATE-FROM-A (5:2)
+                                        TO  CCLM-SERVICE-FROM-DT (6:2)
+           MOVE  '-'                    TO  CCLM-SERVICE-FROM-DT (8:1)
+           MOVE  CLM-SERVICE-DATE-FROM-A (7:2)
+                                        TO  CCLM-SERVICE-FROM-DT (9:2)
+
+           MOVE  CLM-SERVICE-DATE-TO-A (1:4) TO CCLM-SERVICE-TO-DT (1:4)
+           MOVE  '-'                         TO CCLM-SERVICE-TO-DT (5:1)
+           MOVE  CLM-SERVICE-DATE-TO-A (5:2) TO CCLM-SERVICE-TO-DT (6:2)
+           MOVE  '-'                         TO CCLM-SERVICE-TO-DT (8:1)
+           MOVE  CLM-SERVICE-DATE-TO-A (7:2) TO CCLM-SERVICE-TO-DT (9:2)
+
+           IF  CLM-CLAIM-TYPE  = '12'
+             UNSTRING  CLM-SVC-CODE          DELIMITED  BY  ALL SPACES
+                 INTO  CCLM-NDCCD-RF-T
+                 COUNT IN  CCLM-NDCCD-RF-L
+             END-UNSTRING
+           ELSE
+             UNSTRING  CLM-SVC-CODE          DELIMITED  BY  ALL SPACES
+                 INTO  CCLM-ICD9P-RF-T
+                 COUNT IN  CCLM-ICD9P-RF-L
+             END-UNSTRING
+0020
+0020         IF CCLM-ICD9P-RF-L  GREATER THAN +10
+0020             MOVE +10  TO  CCLM-ICD9P-RF-L
+0020         END-IF
+           END-IF
+
+0010       MOVE CLM-PRIMARY-DIAG-CODE TO WK-DIAG-CODE
+0010       MOVE 0 TO COUNT-M
+0010       INSPECT  WK-DIAG-CODE
+0010                 TALLYING   COUNT-M   FOR CHARACTERS
+0010                            BEFORE INITIAL '.'
+0010       IF COUNT-M = 3
+0010          MOVE WS-DIAG-CODE-41 TO WS-DIAG-CODE-411
+0010          MOVE WS-DIAG-CODE-42 TO WS-DIAG-CODE-422
+0010          UNSTRING WS-DIAG-CODE-N DELIMITED  BY  ALL SPACES
+0010             INTO   CCLM-ICD9D-RF-T
+0010             COUNT IN  CCLM-ICD9D-RF-L
+0010          END-UNSTRING
+0010       ELSE
+               IF COUNT-M  GREATER THAN  ZERO
+                  IF CLM-PRIMARY-DIAG-CODE (1:1)  EQUAL SPACE
+                      MOVE CLM-PRIMARY-DIAG-CODE (2:6)  TO
+                           CLM-PRIMARY-DIAG-CODE (1:6)
+                      MOVE SPACE  TO  CLM-PRIMARY-DIAG-CODE (7:1)
+                  END-IF
+               END-IF
+              UNSTRING CLM-PRIMARY-DIAG-CODE DELIMITED  BY  ALL SPACES
+                 INTO   CCLM-ICD9D-RF-T
+                 COUNT IN  CCLM-ICD9D-RF-L
+              END-UNSTRING
+0010       END-IF
+
+0010       MOVE CLM-SECOND-DIAG-CODE TO WK-DIAG-CODE
+0010       MOVE 0 TO COUNT-M
+0010       INSPECT  WK-DIAG-CODE
+0010                 TALLYING   COUNT-M   FOR CHARACTERS
+0010                            BEFORE INITIAL '.'
+0010       IF COUNT-M = 3
+0010          MOVE WS-DIAG-CODE-41 TO WS-DIAG-CODE-411
+0010          MOVE WS-DIAG-CODE-42 TO WS-DIAG-CODE-422
+0010          UNSTRING WS-DIAG-CODE-N DELIMITED  BY  ALL SPACES
+0010             INTO   CCLM-ICD9D-2ND-RF-T
+0010             COUNT IN  CCLM-ICD9D-2ND-RF-L
+0010          END-UNSTRING
+0010       ELSE
+               IF COUNT-M  GREATER THAN  ZERO
+                  IF CLM-SECOND-DIAG-CODE (1:1)  EQUAL SPACE
+                      MOVE CLM-SECOND-DIAG-CODE (2:6)  TO
+                           CLM-SECOND-DIAG-CODE (1:6)
+                      MOVE SPACE  TO  CLM-SECOND-DIAG-CODE (7:1)
+                  END-IF
+               END-IF
+              UNSTRING CLM-SECOND-DIAG-CODE DELIMITED  BY  ALL SPACES
+                 INTO   CCLM-ICD9D-2ND-RF-T
+                 COUNT IN  CCLM-ICD9D-2ND-RF-L
+              END-UNSTRING
+0010       END-IF
+
+0005       EVALUATE CLM-CREATE-SOURCE
+            WHEN '00'
+              MOVE 'STANDARD MEDICAID' TO CCLM-CREATE-SOURCE-NM
+            WHEN '01'
+              MOVE 'DSS' TO CCLM-CREATE-SOURCE-NM
+0005       END-EVALUATE
+
+0010       UNSTRING  CLM-CDE-ICD-VERSION DELIMITED  BY  ALL SPACES
+0010           INTO   CCLM-ICD-VERSION-T
+0010           COUNT IN  CCLM-ICD-VERSION-L
+0010       END-UNSTRING
+
+0010       UNSTRING  CLM-AGENCY-CODE DELIMITED  BY  ALL SPACES
+0010           INTO   CCLM-AGENCY-CD-T
+0010           COUNT IN  CCLM-AGENCY-CD-L
+0010       END-UNSTRING
+
+0026       MOVE CLM-COUNTY-CD   TO CCLM-COUNTY-CD.
+
+0016       IF HMS-3BYTE-CONTRACT-NUM = '535'
+0016          MOVE '535' TO CCLM-ALT-CLIENT-CD
+0016       ELSE
+0016          MOVE SPACES TO CCLM-ALT-CLIENT-CD
+0016       END-IF.
+  *******
+    ****  MAIN LOGIC SELECT ****
+
+           EXEC SQL
+1.           SELECT  L.CLAIM_ID
+               INTO  :CCLM-CLAIM-ID
+               FROM  ARTCCLM C, ARTCLKP L
+              WHERE  C.CONTEXT_CD  =  :CCLM-CONTEXT-CD
+                AND  C.ICN_NUM     =  :CCLM-ICN-NUM
+0012            AND  C.CLMST_RF    =  :CCLM-CLMST-RF
+                AND  L.CONTEXT_CD  =  :CLKP-CONTEXT-CD
+                AND  L.CASE_ID     =  :CLKP-CASE-ID
+                AND  C.CONTEXT_CD  =  L.CONTEXT_CD
+                AND  C.CLAIM_ID    =  L.CLAIM_ID
+           END-EXEC
+           EVALUATE  SQLCODE
+             WHEN +0
+               PERFORM  1100-UPDATE-ARTCCLM  THRU  1100-UPDATE-EXIT
+             WHEN +100
+               PERFORM  1200-INSERT-ARTCCLM  THRU  1200-INSERT-EXIT
+             WHEN -811
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: SELECT FROM ARTCCLM, SQLCODE = ' WS-SQLCODE
+               DISPLAY 'MULTIPLE CLAIM_ID FOR ICN_NUM = ' CCLM-ICN-NUM-T
+               DISPLAY 'MULTI CLAIMID PREV ICN_NUM = ' CCLM-PREV-ICN-NUM
+               GO TO  Z9999-ERROR-EXIT
+             WHEN -904
+             WHEN -911
+             WHEN -913
+LLL   * ==> UNFORTUNATELY WE WILL NEVER RECEIVE -913 IN OUR INSTALLATIO
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: SELECT FROM ARTCCLM, SQLCODE = ' WS-SQLCODE
+               IF  SQL-NOT-COMMITED-YET-CTR  =  ZERO
+                 ADD 1  TO  TIME-OUT-CTR
+                DISPLAY 'DB2 ACCESS ATTEMPTED ' TIME-OUT-CTR ' TIME(S)'
+                 DISPLAY '+'
+                 GO TO  1000-MAINLINE-EXIT
+               ELSE
+LLL   ** ==> I.E. ANOTHER APPLIC. UPDATES THIS TABLE DURING CURRENT LUW
+                 GO TO  Z9999-ERROR-EXIT
+               END-IF
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: SELECT FROM ARTCCLM, SQLCODE = ' WS-SQLCODE
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+
+           ADD  +1  TO  SQL-NOT-COMMITED-YET-CTR
+0001  **     IF  SQL-NOT-COMMITED-YET-CTR  >=  5000
+0001  **   IF  SQL-NOT-COMMITED-YET-CTR  >=  1000
+0004       IF  SQL-NOT-COMMITED-YET-CTR  >=  SQL-COMMIT-FREQ
+             PERFORM  1900-IMPLICIT-COMMIT  THRU  1900-COMMIT-EXIT
+           END-IF.
+      *
+           READ  NCTC-IN
+             AT END   SET   CLM-EOF  TO TRUE
+             NOT  AT END   ADD  1  TO  REC-READ-CTR
+           END-READ.
+       1000-MAINLINE-EXIT.      EXIT.
+      *
+       1100-UPDATE-ARTCCLM.
+
+0027         INITIALIZE RX-WRITTEN-DT-VALUE
+0027                    RX-WRITTEN-DT-INDICATOR
+0027         IF CLM-RX-WRITTEN-DATE    = SPACES
+                OR CLM-RX-WRITTEN-DATE = ZEROS
+                OR CLM-RX-WRITTEN-DATE = LOW-VALUES
+                  MOVE SPACES TO RX-WRITTEN-DT-VALUE
+                  MOVE -1 TO RX-WRITTEN-DT-INDICATOR
+             ELSE
+0027           MOVE CLM-RX-WRITTEN-DATE TO RX-WRITTEN-DT-VALUE
+               MOVE +1 TO RX-WRITTEN-DT-INDICATOR
+             END-IF
+2.         EXEC SQL  UPDATE  ARTCCLM
+             SET  PREV_ICN_NUM    = :CCLM-PREV-ICN-NUM
+                 ,RECIP_MA_NUM    = :CCLM-RECIP-MA-NUM
+                 ,PROVIDER_ID     = :CCLM-PROVIDER-ID
+
+                 ,CLMST_RF        = :CCLM-CLMST-RF
+                 ,TRNTP_RF        = :CCLM-TRNTP-RF
+                 ,CLMTP_RF        = :CCLM-CLMTP-RF
+                 ,UNITS_NUM       = :CCLM-UNITS-NUM
+                 ,CHARGE_AMT      = :CCLM-CHARGE-AMT
+                 ,PAID_AMT        = :CCLM-PAID-AMT
+                 ,REMIT_DT        = :CCLM-REMIT-DT
+                 ,SERVICE_FROM_DT = :CCLM-SERVICE-FROM-DT
+                 ,SERVICE_TO_DT   = :CCLM-SERVICE-TO-DT
+
+                 ,ICD9P_RF        = :CCLM-ICD9P-RF
+                 ,ICD9D_RF        = :CCLM-ICD9D-RF
+                 ,ICD9D_2ND_RF    = :CCLM-ICD9D-2ND-RF
+                 ,NDCCD_RF        = :CCLM-NDCCD-RF
+                 ,LAST_UPDATE_NM  = :CCLM-LAST-UPDATE-NM
+                 ,LAST_UPDATE_DTM = CURRENT TIMESTAMP
+                 ,CREATE_SOURCE_NM = :CCLM-CREATE-SOURCE-NM
+
+                 ,ICD_VERSION     = :CCLM-ICD-VERSION
+0016             ,ALT_CLIENT_CD   = :CCLM-ALT-CLIENT-CD
+                 ,AGENCY_CD       = :CCLM-AGENCY-CD
+0026             ,COUNTY_CD       = :CCLM-COUNTY-CD
+0027             ,RX_WRITTEN_DT   = (:RX-WRITTEN-DT-VALUE
+                                    :RX-WRITTEN-DT-INDICATOR)
+             WHERE  CONTEXT_CD  = :CCLM-CONTEXT-CD
+               AND  CLAIM_ID    = :CCLM-CLAIM-ID
+               AND  ICN_NUM     = :CCLM-ICN-NUM
+           END-EXEC
+           EVALUATE  SQLCODE
+             WHEN +0
+               ADD  +1  TO  SQL-UPDATE-CTR
+             WHEN -904
+             WHEN -911
+             WHEN -913
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: UPDATE ARTCCLM, SQLCODE = ' WS-SQLCODE
+               IF  SQL-NOT-COMMITED-YET-CTR  =  ZERO
+                 ADD 1  TO  TIME-OUT-CTR
+                DISPLAY 'DB2 ACCESS ATTEMPTED ' TIME-OUT-CTR ' TIME(S)'
+                 DISPLAY '+'
+                 GO TO  1000-MAINLINE-EXIT
+               ELSE
+LLL   ** ==> I.E. ANOTHER APPLIC. UPDATES THIS TABLE DURING CURRENT LUW
+                 GO TO  Z9999-ERROR-EXIT
+               END-IF
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: UPDATE ARTCCLM, SQLCODE = ' WS-SQLCODE
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+       1100-UPDATE-EXIT.    EXIT.
+      *
+       1200-INSERT-ARTCCLM.
+0028  *
+0028  *    CHECK IF THIS IS AN RX ENCOUNTER CLAIM THAT SHOULD BE
+0028  *    EXCLUDED BASED ON CTSPROD.SEC.ARTSPRF PREFERENCE SETTINGS.
+0028  *    CLM-CLAIM-TYPE '12' = RX. IF CURRENT WS-CONTEXT-CD IS IN
+0028  *    THE EXCLUSION LIST, SKIP INSERTS TO ARTCCLM AND ARTCLKP.
+0028  *
+0028       SET  RX-EXCL-NOT-FOUND  TO  TRUE
+0028       IF  CLM-CLAIM-TYPE  =  '12'  AND  WS-RX-EXCL-CNT  >  0
+0028          PERFORM VARYING WS-RX-IDX FROM 1 BY 1
+0028             UNTIL WS-RX-IDX > WS-RX-EXCL-CNT
+0028                OR RX-EXCL-FOUND
+0028             IF  WS-CONTEXT-CD  =
+0028                 WS-RX-EXCL-CONTEXT-CD(WS-RX-IDX)
+0028                SET  RX-EXCL-FOUND  TO  TRUE
+0028             END-IF
+0028          END-PERFORM
+0028       END-IF
+0028
+0028       IF  RX-EXCL-FOUND
+0028          ADD  +1  TO  WS-RX-EXCL-SKIP-CTR
+0028          GO TO  1200-INSERT-EXIT
+0028       END-IF
+0028  *
+3.         EXEC SQL  UPDATE  ARTCTPK
+             SET  PK_NEXT_NUM  =  PK_NEXT_NUM + 1
+                 ,LAST_UPDATE_NM  =  :CTPK-LAST-UPDATE-NM
+                 ,LAST_UPDATE_DTM  =  CURRENT TIMESTAMP
+              WHERE  CONTEXT_CD  =  :CTPK-CONTEXT-CD
+                AND  PK_TYPE_CD  =  'CLM'
+           END-EXEC
+           EVALUATE  SQLCODE
+             WHEN +0
+               CONTINUE
+             WHEN +100
+LLL   **  THIS MAY HAPPEN ONLY ONCE, WHEN THERE IS NO ENTRIES FOR SOME
+LLL   **  PARTICULAR CONTRACT .
+               PERFORM  1210-INSERT-ARTCTPK  THRU  1210-INS-ARTCTPK-EXIT
+             WHEN -904
+             WHEN -911
+             WHEN -913
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: UPDATE ARTCTPK, SQLCODE = ' WS-SQLCODE
+               IF  SQL-NOT-COMMITED-YET-CTR  =  ZERO
+                 ADD 1  TO  TIME-OUT-CTR
+                DISPLAY 'DB2 ACCESS ATTEMPTED ' TIME-OUT-CTR ' TIME(S)'
+                 DISPLAY '+'
+                 GO TO  1000-MAINLINE-EXIT
+               ELSE
+LLL   ** ==> I.E. ANOTHER APPLIC. ACCESS THIS TABLE DURING CURRENT LUW.
+                 GO TO  Z9999-ERROR-EXIT
+               END-IF
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: UPDATE ARTCTPK, SQLCODE = ' WS-SQLCODE
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+      *
+
+4.         EXEC SQL
+             SELECT  PK_NEXT_NUM - 1
+                    ,LAST_UPDATE_NM
+                    ,LAST_UPDATE_DTM
+               INTO  :CTPK-PK-NEXT-NUM
+                    ,:CTPK-LAST-UPDATE-NM
+                    ,:CTPK-LAST-UPDATE-DTM
+               FROM  ARTCTPK
+              WHERE  CONTEXT_CD  =  :CTPK-CONTEXT-CD
+                AND  PK_TYPE_CD  =  'CLM'
+           END-EXEC
+LLL   **  PK_NEXT_NUM IS THE NUMBER THAT SHOULD BE USED, BUT WE'VE JUST
+LLL   **  SET IT UP BY 1, SO WE NEED IT DOWN BY 1 TO INSERT TO ARTCCLM
+LLL   **  AND ARTCLKP TABLES.
+           EVALUATE  SQLCODE
+             WHEN +0
+               CONTINUE
+             WHEN -904
+             WHEN -911
+             WHEN -913
+               MOVE  SQLCODE   TO  WS-SQLCODE
+              DISPLAY 'ERR: SELECT FROM ARTCTPK, SQLCODE = ' WS-SQLCODE
+               IF  SQL-NOT-COMMITED-YET-CTR  =  ZERO
+LLL   ** ==> I.E. ANOTHER APPLIC. UPDATES THIS TABLE DURING CURRENT LUW
+LLL   ** ==> BUT WE'VE UPDATED T. S TABLE JUST ONCE, AND DID NOT TOUCH
+LLL   ** ==> OTHER TABLES YET DUHING CURRENT LUW.
+                 ADD 1  TO  TIME-OUT-CTR
+                DISPLAY 'DB2 ACCESS ATTEMPTED ' TIME-OUT-CTR ' TIME(S)'
+                 DISPLAY '+'
+                 IF  TIME-OUT-CTR  <  5
+                   EXEC  SQL   ROLLBACK   END-EXEC
+                 END-IF
+LLL   ** ==> ROLLBACK JUST THIS ONE UPDATE
+                 GO TO  1000-MAINLINE-EXIT
+               ELSE
+                 GO TO  Z9999-ERROR-EXIT
+LLL   ** ==> I.E. ANOTHER APPLIC. UPDATES THIS TABLE DURING CURRENT LUW
+LLL   ** ==> ROLLBACK ALL UPDATES DURING CURRENT LUW.
+               END-IF
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: SELECT FROM ARTCTPK, SQLCODE = ' WS-SQLCODE
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+           IF  CTPK-LAST-UPDATE-NM-TEXT (1:CTPK-LAST-UPDATE-NM-LEN )
+                 NOT =   WS-LAST-UPDATE-NM
+LLL   ** ==> I.E. ANOTHER APPLIC. UPDATED THIS TABLE DURING CURRENT LUW
+             DISPLAY 'ERR: UNCOMMITTED INTERVENTION TO ARTCTPK TABLE;'
+             DISPLAY '     LAST-UPDATE-NM = ' CTPK-LAST-UPDATE-NM-TEXT
+             DISPLAY '    LAST-UPDATE-DTM = ' CTPK-LAST-UPDATE-DTM
+             GO TO  Z9999-ERROR-EXIT
+           END-IF.
+      *
+           MOVE  CTPK-PK-NEXT-NUM  TO  CCLM-CLAIM-ID
+                                       CLKP-CLAIM-ID.
+0027         INITIALIZE RX-WRITTEN-DT-VALUE
+0027                    RX-WRITTEN-DT-INDICATOR
+
+0027          IF CLM-RX-WRITTEN-DATE = SPACES
+                 OR CLM-RX-WRITTEN-DATE = ZEROS
+                 OR CLM-RX-WRITTEN-DATE = LOW-VALUES
+                MOVE SPACES TO RX-WRITTEN-DT-VALUE
+                MOVE -1 TO RX-WRITTEN-DT-INDICATOR
+             ELSE
+0027           MOVE CLM-RX-WRITTEN-DATE TO RX-WRITTEN-DT-VALUE
+               MOVE +1 TO RX-WRITTEN-DT-INDICATOR
+             END-IF
+
+5.         EXEC SQL  INSERT  INTO  ARTCCLM  (
+                  CONTEXT_CD
+                 ,CLAIM_ID
+                 ,ICN_NUM
+                 ,PREV_ICN_NUM
+                 ,RECIP_MA_NUM
+                 ,PROVIDER_ID
+
+                 ,CLMST_RF
+                 ,TRNTP_RF
+                 ,CLMTP_RF
+                 ,UNITS_NUM
+                 ,CHARGE_AMT
+                 ,PAID_AMT
+                 ,REMIT_DT
+                 ,SERVICE_FROM_DT
+                 ,SERVICE_TO_DT
+
+                 ,ICD9P_RF
+                 ,ICD9D_RF
+                 ,ICD9D_2ND_RF
+                 ,NDCCD_RF
+                 ,LAST_UPDATE_NM
+                 ,LAST_UPDATE_DTM
+                 ,CREATE_SOURCE_NM
+                 ,ICD_VERSION
+0016             ,ALT_CLIENT_CD
+                 ,AGENCY_CD
+0026             ,COUNTY_CD
+0027             ,RX_WRITTEN_DT
+00XX  *          ,CREATE_NM
+00XX  *          ,CREATE_DTM
+               )  VALUES  (
+                  :CCLM-CONTEXT-CD
+                 ,:CCLM-CLAIM-ID
+                 ,:CCLM-ICN-NUM
+                 ,:CCLM-PREV-ICN-NUM
+                 ,:CCLM-RECIP-MA-NUM
+                 ,:CCLM-PROVIDER-ID
+
+                 ,:CCLM-CLMST-RF
+                 ,:CCLM-TRNTP-RF
+                 ,:CCLM-CLMTP-RF
+                 ,:CCLM-UNITS-NUM
+                 ,:CCLM-CHARGE-AMT
+                 ,:CCLM-PAID-AMT
+                 ,:CCLM-REMIT-DT
+                 ,:CCLM-SERVICE-FROM-DT
+                 ,:CCLM-SERVICE-TO-DT
+
+                 ,:CCLM-ICD9P-RF
+                 ,:CCLM-ICD9D-RF
+                 ,:CCLM-ICD9D-2ND-RF
+                 ,:CCLM-NDCCD-RF
+                 ,:CCLM-LAST-UPDATE-NM
+                 ,CURRENT TIMESTAMP
+                 ,:CCLM-CREATE-SOURCE-NM
+                 ,:CCLM-ICD-VERSION
+0016             ,:CCLM-ALT-CLIENT-CD
+                 ,:CCLM-AGENCY-CD
+0026             ,:CCLM-COUNTY-CD
+0026  *          ,:CCLM-RX-WRITTEN-DT
+0027             ,(:RX-WRITTEN-DT-VALUE :RX-WRITTEN-DT-INDICATOR)
+00XX  *          ,:CCLM-CREATE-NM
+00XX  *          ,CURRENT TIMESTAMP
+                  )
+           END-EXEC
+           EVALUATE  SQLCODE
+             WHEN +0
+               ADD  +1  TO  SQL-INSERT-CTR
+
+               IF WS-CONTEXT-CD-1-CNT = 0
+                  MOVE WS-CONTEXT-CD TO WS-CONTEXT-CD-1
+               END-IF
+               IF WS-CONTEXT-CD-2-CNT = 0
+                  MOVE WS-CONTEXT-CD TO WS-CONTEXT-CD-2
+               END-IF
+               IF WS-CONTEXT-CD-3-CNT = 0
+                  MOVE WS-CONTEXT-CD TO WS-CONTEXT-CD-3
+               END-IF
+               IF WS-CONTEXT-CD-4-CNT = 0
+                  MOVE WS-CONTEXT-CD TO WS-CONTEXT-CD-4
+               END-IF
+               IF WS-CONTEXT-CD-5-CNT = 0
+                  MOVE WS-CONTEXT-CD TO WS-CONTEXT-CD-5
+               END-IF
+0026           IF WS-CONTEXT-CD-6-CNT = 0
+0026              MOVE WS-CONTEXT-CD TO WS-CONTEXT-CD-6
+0026           END-IF
+0026           IF WS-CONTEXT-CD-7-CNT = 0
+0026              MOVE WS-CONTEXT-CD TO WS-CONTEXT-CD-7
+0026           END-IF
+
+               IF WS-CONTEXT-CD = WS-CONTEXT-CD-1
+                  ADD +1 TO WS-CONTEXT-CD-1-CNT
+               ELSE
+                IF WS-CONTEXT-CD = WS-CONTEXT-CD-2
+                 ADD +1 TO WS-CONTEXT-CD-2-CNT
+                ELSE
+                 IF WS-CONTEXT-CD = WS-CONTEXT-CD-3
+                  ADD +1 TO WS-CONTEXT-CD-3-CNT
+                 ELSE
+                  IF WS-CONTEXT-CD = WS-CONTEXT-CD-4
+                   ADD +1 TO WS-CONTEXT-CD-4-CNT
+                  ELSE
+                   IF WS-CONTEXT-CD = WS-CONTEXT-CD-5
+                    ADD +1 TO WS-CONTEXT-CD-5-CNT
+0026               ELSE
+0026                IF WS-CONTEXT-CD = WS-CONTEXT-CD-6
+0026                 ADD +1 TO WS-CONTEXT-CD-6-CNT
+0026                ELSE
+0026                IF WS-CONTEXT-CD = WS-CONTEXT-CD-7
+0026                 ADD +1 TO WS-CONTEXT-CD-7-CNT
+0026                END-IF
+                  END-IF
+                 END-IF
+                END-IF
+               END-IF
+0026          END-IF
+0026         END-IF
+             WHEN -904
+             WHEN -911
+             WHEN -913
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: INSERT INTO ARTCCLM, SQLCODE = ' WS-SQLCODE
+               IF  SQL-NOT-COMMITED-YET-CTR  =  ZERO
+                 ADD 1  TO  TIME-OUT-CTR
+                DISPLAY 'DB2 ACCESS ATTEMPTED ' TIME-OUT-CTR ' TIME(S)'
+                 DISPLAY '+'
+                 IF  TIME-OUT-CTR  <  5
+                   EXEC  SQL   ROLLBACK   END-EXEC
+                 END-IF
+LLL   **  SEE COMMENTS ABOVE
+                 GO TO  1000-MAINLINE-EXIT
+               ELSE
+                 GO TO  Z9999-ERROR-EXIT
+               END-IF
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: INSERT INTO ARTCCLM, SQLCODE = ' WS-SQLCODE
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+      *
+
+6.         EXEC SQL  INSERT  INTO  ARTCLKP   (
+                  CONTEXT_CD
+                 ,CASE_ID
+                 ,CLAIM_ID
+                 ,RELATE_IND
+                 ,LAST_UPDATE_NM
+                 ,LAST_UPDATE_DTM
+0019             ,IS_AUTO_CHECKED
+00XX  *          ,CREATE_NM
+00XX  *          ,CREATE_DTM
+               )  VALUES  (
+                  :CLKP-CONTEXT-CD
+                 ,:CLKP-CASE-ID
+                 ,:CLKP-CLAIM-ID
+                 ,'0'
+                 ,:CLKP-LAST-UPDATE-NM
+                 ,CURRENT TIMESTAMP
+0019             ,'N'
+00XX  *          ,:CLKP-CREATE-NM
+00XX  *          ,CURRENT TIMESTAMP
+                  )
+           END-EXEC
+           EVALUATE  SQLCODE
+             WHEN +0
+               CONTINUE
+             WHEN -904
+             WHEN -911
+             WHEN -913
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: INSERT INTO ARTCLKP, SQLCODE = ' WS-SQLCODE
+               IF  SQL-NOT-COMMITED-YET-CTR  =  ZERO
+                 ADD 1  TO  TIME-OUT-CTR
+                DISPLAY 'DB2 ACCESS ATTEMPTED ' TIME-OUT-CTR ' TIME(S)'
+                 DISPLAY '+'
+                 IF  TIME-OUT-CTR  <  5
+                   EXEC  SQL   ROLLBACK   END-EXEC
+                 END-IF
+LLL   **  SEE COMMENTS ABOVE
+                 GO TO  1000-MAINLINE-EXIT
+               ELSE
+                 GO TO  Z9999-ERROR-EXIT
+               END-IF
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: INSERT INTO ARTCLKP, SQLCODE = ' WS-SQLCODE
+XXXX  *        DISPLAY ' CLKP-CONTEXT-CD - ' CLKP-CONTEXT-CD
+XXXX  *        DISPLAY '    CLKP-CASE-ID - ' CLKP-CASE-ID
+XXXX  *        DISPLAY '   CLKP-CLAIM-ID - ' CLKP-CLAIM-ID
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+       1200-INSERT-EXIT.    EXIT.
+      *
+       1210-INSERT-ARTCTPK.
+
+7.         EXEC SQL  INSERT  INTO  ARTCTPK   (
+                  CONTEXT_CD
+                 ,PK_TYPE_CD
+                 ,PK_DSC
+                 ,PK_MASK_TXT
+                 ,PK_NEXT_NUM
+                 ,LAST_UPDATE_NM
+                 ,LAST_UPDATE_DTM
+               )  VALUES  (
+                  :CTPK-CONTEXT-CD
+                 ,'CLM'
+                 ,'CASE TRACKING SYSTEM CLAIM'
+                 ,:CTPK-PK-MASK-TXT
+                 , +2
+                 ,:CTPK-LAST-UPDATE-NM
+                 ,CURRENT TIMESTAMP
+                  )
+           END-EXEC
+           EVALUATE  SQLCODE
+             WHEN +0
+               DISPLAY 'WRN: NEW PK_TYPE_CD = "CLM" INSERTED TO ARTCTPK'
+               DISPLAY '+'
+             WHEN -904
+             WHEN -911
+             WHEN -913
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: INSERT INTO ARTCTPK, SQLCODE = ' WS-SQLCODE
+               IF  SQL-NOT-COMMITED-YET-CTR  =  ZERO
+                 ADD 1  TO  TIME-OUT-CTR
+                DISPLAY 'DB2 ACCESS ATTEMPTED ' TIME-OUT-CTR ' TIME(S)'
+                 DISPLAY '+'
+LLL   **  SEE COMMENTS ABOVE
+                 GO TO  1000-MAINLINE-EXIT
+               ELSE
+                 GO TO  Z9999-ERROR-EXIT
+               END-IF
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: INSERT INTO ARTCTPK, SQLCODE = ' WS-SQLCODE
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+       1210-INS-ARTCTPK-EXIT.    EXIT.
+      *
+       1900-IMPLICIT-COMMIT.
+           EXEC SQL  COMMIT  END-EXEC
+           IF  SQLCODE   NOT =  +0
+             MOVE  SQLCODE   TO  WS-SQLCODE
+             DISPLAY 'ERR: UNSUCCESSFUL COMMIT, SQLCODE = ' WS-SQLCODE
+             GO TO  Z9999-ERROR-EXIT
+           END-IF.
+0002  ***  EXEC SQL
+0002  ***    SET  :WS-CURRENT-TIMESTAMP  =  CURRENT TIMESTAMP
+0002  ***  END-EXEC
+0002  *
+0002       EXEC SQL
+0002           SELECT  DISTINCT(CURRENT TIMESTAMP)
+0002             INTO :WS-CURRENT-TIMESTAMP
+0002             FROM  SYSIBM.SYSDUMMY1
+0002       END-EXEC
+      **
+           IF  SQLCODE   NOT =  +0
+             MOVE  SQLCODE   TO  WS-SQLCODE
+0002  ***    DISPLAY 'ERR: SET CURRENT TIMESTAMP, SQLCODE = ' WS-SQLCODE
+0002         DISPLAY 'ERR: SELECT CURRENT TIMESTAMP FROM '
+0002         DISPLAY '    SYSIBM.SYSDUMMY, SQLCODE = '   WS-SQLCODE
+             MOVE  FUNCTION CURRENT-DATE  TO  WS-CURRENT-TIMESTAMP
+           END-IF.
+
+0004       MOVE  '-'  TO  CNTL-PROC-FLAG
+           ADD  SQL-NOT-COMMITED-YET-CTR  TO  SQL-TOT-COMMITTED-CTR
+           MOVE  SQL-TOT-COMMITTED-CTR  TO  NUM-REC-OUT
+           WRITE  CNTL-RECORD  FROM  WS-CONTROL-RECORD
+
+           ADD  SQL-INSERT-CTR  TO  SQL-INSERT-COMMITTED-CTR
+           ADD  SQL-UPDATE-CTR  TO  SQL-UPDATE-COMMITTED-CTR
+
+           MOVE  ZERO  TO  SQL-NOT-COMMITED-YET-CTR
+                            SQL-INSERT-CTR
+                             SQL-UPDATE-CTR
+                              TIME-OUT-CTR.
+       1900-COMMIT-EXIT.       EXIT.
+
+       8000-P-MONITOR.
+           DISPLAY 'CD-1:     ' WS-CONTEXT-CD-1
+           DISPLAY 'CD-2:     ' WS-CONTEXT-CD-2
+           DISPLAY 'CD-3:     ' WS-CONTEXT-CD-3
+           DISPLAY 'CD-4:     ' WS-CONTEXT-CD-4
+           DISPLAY 'CD-5:     ' WS-CONTEXT-CD-5
+0026       DISPLAY 'CD-6:     ' WS-CONTEXT-CD-6
+0027       DISPLAY 'CD-7:     ' WS-CONTEXT-CD-7
+           DISPLAY 'CD-1-CNT: ' WS-CONTEXT-CD-1-CNT
+           DISPLAY 'CD-2-CNT: ' WS-CONTEXT-CD-2-CNT
+           DISPLAY 'CD-3-CNT: ' WS-CONTEXT-CD-3-CNT
+           DISPLAY 'CD-4-CNT: ' WS-CONTEXT-CD-4-CNT
+           DISPLAY 'CD-5-CNT: ' WS-CONTEXT-CD-5-CNT
+0026       DISPLAY 'CD-6-CNT: ' WS-CONTEXT-CD-6-CNT
+0026       DISPLAY 'CD-7-CNT: ' WS-CONTEXT-CD-7-CNT
+           MOVE 8 TO PMONITOR-STATUS-TXT-LEN
+           MOVE WS-STATUS-TXT TO PMONITOR-STATUS-TXT-TEXT
+
+           EXEC SQL  UPDATE  MISC.P_MONITOR
+            SET END_DTM          = CURRENT TIMESTAMP
+                ,TASK_STEP_TXT   = 'LOAD'
+                ,STATUS_TXT      = :PMONITOR-STATUS-TXT
+                ,DATA_CNT        = 0
+            WHERE  CLIENT_CD     = :HMS-3BYTE-CONTRACT-NUM
+              AND  PROCESS_NM  LIKE 'CLKP_LOAD_DURATION_%'
+           END-EXEC
+
+           IF WS-CONTEXT-CD-1 NOT = SPACES
+            EXEC SQL  UPDATE  MISC.P_MONITOR
+             SET END_DTM          = CURRENT TIMESTAMP
+                 ,TASK_STEP_TXT   = 'LOAD'
+                 ,STATUS_TXT      = :PMONITOR-STATUS-TXT
+                 ,DATA_CNT        = :WS-CONTEXT-CD-1-CNT
+             WHERE  CLIENT_CD     = :HMS-3BYTE-CONTRACT-NUM
+               AND  CONTEXT_CD    = :WS-CONTEXT-CD-1
+               AND  PROCESS_NM  LIKE 'CLKP_LOAD_DURATION_%'
+            END-EXEC
+           END-IF
+           IF WS-CONTEXT-CD-2 NOT = SPACES
+            IF WS-CONTEXT-CD-2 NOT = WS-CONTEXT-CD-1
+             EXEC SQL  UPDATE  MISC.P_MONITOR
+             SET END_DTM          = CURRENT TIMESTAMP
+                 ,TASK_STEP_TXT   = 'LOAD'
+                 ,STATUS_TXT      = :PMONITOR-STATUS-TXT
+                 ,DATA_CNT        = :WS-CONTEXT-CD-2-CNT
+             WHERE  CLIENT_CD     = :HMS-3BYTE-CONTRACT-NUM
+               AND  CONTEXT_CD    = :WS-CONTEXT-CD-2
+               AND  PROCESS_NM  LIKE 'CLKP_LOAD_DURATION_%'
+             END-EXEC
+            END-IF
+           END-IF
+           IF WS-CONTEXT-CD-3 NOT = SPACES
+            IF WS-CONTEXT-CD-3 NOT = WS-CONTEXT-CD-2
+             EXEC SQL  UPDATE  MISC.P_MONITOR
+             SET END_DTM          = CURRENT TIMESTAMP
+                 ,TASK_STEP_TXT   = 'LOAD'
+                 ,STATUS_TXT      = :PMONITOR-STATUS-TXT
+                 ,DATA_CNT        = :WS-CONTEXT-CD-3-CNT
+             WHERE  CLIENT_CD     = :HMS-3BYTE-CONTRACT-NUM
+               AND  CONTEXT_CD    = :WS-CONTEXT-CD-3
+               AND  PROCESS_NM  LIKE 'CLKP_LOAD_DURATION_%'
+             END-EXEC
+            END-IF
+           END-IF
+           IF WS-CONTEXT-CD-4 NOT = SPACES
+            IF WS-CONTEXT-CD-4 NOT = WS-CONTEXT-CD-3
+             EXEC SQL  UPDATE  MISC.P_MONITOR
+             SET END_DTM          = CURRENT TIMESTAMP
+                 ,TASK_STEP_TXT   = 'LOAD'
+                 ,STATUS_TXT      = :PMONITOR-STATUS-TXT
+                 ,DATA_CNT        = :WS-CONTEXT-CD-4-CNT
+             WHERE  CLIENT_CD     = :HMS-3BYTE-CONTRACT-NUM
+               AND  CONTEXT_CD    = :WS-CONTEXT-CD-4
+               AND  PROCESS_NM  LIKE 'CLKP_LOAD_DURATION_%'
+             END-EXEC
+            END-IF
+           END-IF
+           IF WS-CONTEXT-CD-5 NOT = SPACES
+            IF WS-CONTEXT-CD-5 NOT = WS-CONTEXT-CD-4
+             EXEC SQL  UPDATE  MISC.P_MONITOR
+             SET END_DTM          = CURRENT TIMESTAMP
+                 ,TASK_STEP_TXT   = 'LOAD'
+                 ,STATUS_TXT      = :PMONITOR-STATUS-TXT
+                 ,DATA_CNT        = :WS-CONTEXT-CD-5-CNT
+             WHERE  CLIENT_CD     = :HMS-3BYTE-CONTRACT-NUM
+               AND  CONTEXT_CD    = :WS-CONTEXT-CD-5
+               AND  PROCESS_NM  LIKE 'CLKP_LOAD_DURATION_%'
+             END-EXEC
+            END-IF
+           END-IF
+0026       IF WS-CONTEXT-CD-6 NOT = SPACES
+0026        IF WS-CONTEXT-CD-6 NOT = WS-CONTEXT-CD-5
+0026         EXEC SQL  UPDATE  MISC.P_MONITOR
+0026         SET END_DTM          = CURRENT TIMESTAMP
+0026             ,TASK_STEP_TXT   = 'LOAD'
+0026             ,STATUS_TXT      = :PMONITOR-STATUS-TXT
+0026             ,DATA_CNT        = :WS-CONTEXT-CD-6-CNT
+0026         WHERE  CLIENT_CD     = :HMS-3BYTE-CONTRACT-NUM
+0026           AND  CONTEXT_CD    = :WS-CONTEXT-CD-6
+0026           AND  PROCESS_NM  LIKE 'CLKP_LOAD_DURATION_%'
+0026         END-EXEC
+0026        END-IF
+0026       END-IF
+0026       IF WS-CONTEXT-CD-7 NOT = SPACES
+0026        IF WS-CONTEXT-CD-7 NOT = WS-CONTEXT-CD-6
+0026         EXEC SQL  UPDATE  MISC.P_MONITOR
+0026         SET END_DTM          = CURRENT TIMESTAMP
+0026             ,TASK_STEP_TXT   = 'LOAD'
+0026             ,STATUS_TXT      = :PMONITOR-STATUS-TXT
+0026             ,DATA_CNT        = :WS-CONTEXT-CD-7-CNT
+0026         WHERE  CLIENT_CD     = :HMS-3BYTE-CONTRACT-NUM
+0026           AND  CONTEXT_CD    = :WS-CONTEXT-CD-7
+0026           AND  PROCESS_NM  LIKE 'CLKP_LOAD_DURATION_%'
+0026         END-EXEC
+0026        END-IF
+0026       END-IF
+
+           EVALUATE  SQLCODE
+             WHEN +0
+                DISPLAY 'UPDATED P-MONITOR'
+                EXEC SQL
+                    COMMIT
+                END-EXEC
+             WHEN +100
+                DISPLAY 'P-MONITOR ROW NON-EXISTANT'
+                DISPLAY 'PLEASE UPDATE THE BUSINESS THE FACT'
+                DISPLAY 'THAT THIS COMPLETED BUT THE MONITOR'
+                DISPLAY 'ROW WAS DELETED PRIOR TO THIS.'
+      *         MOVE 0 TO WS-WRITTEN-CONTEXT-CNT
+      *         PERFORM 8100-P-MONITOR-INS THRU 8100-PM-INS-EXIT
+             WHEN OTHER
+                DISPLAY 'ERR: 8000-P-MONITOR, SQLCODE = ' WS-SQLCODE
+                MOVE 0 TO SQLCODE
+                MOVE SQLCODE  TO  WS-SQLCODE
+                DISPLAY 'PLEASE UPDATE THE BUSINESS THE FACT'
+                DISPLAY 'THAT THIS COMPLETED BUT THE MONITOR'
+                DISPLAY 'ROW WAS DELETED PRIOR TO THIS.'
+      *         GO TO Z9999-ERROR-EXIT
+           END-EVALUATE.
+
+       8000-P-MONITOR-EXIT.  EXIT.
+
+      *8100-P-MONITOR-INS.
+      *    MOVE 35 TO PMONITOR-PROCESS-NM-LEN
+      *    MOVE 4 TO PMONITOR-TASK-TXT-LEN
+      *    MOVE 8 TO PMONITOR-STATUS-TXT-LEN
+      *    MOVE 3 TO PMONITOR-CLIENT-CD-LEN
+      *    MOVE 16 TO PMONITOR-CONTEXT-CD-LEN
+      *    MOVE 1 TO PMONITOR-TASK-DESC-LEN
+      *    MOVE 1 TO PMONITOR-PARAM-LIST-LEN
+      *
+      *    MOVE 'CLKP_LOAD_DURATION_'  TO WS-CLKP-TITLE
+      *    MOVE PMONITOR-CONTEXT-CD-TEXT TO WS-CLKP-REST
+      *    MOVE WS-CLKP-PROCESS-NM-WHOLE TO PMONITOR-PROCESS-NM-TEXT
+      *    MOVE HMS-3BYTE-CONTRACT-NUM TO PMONITOR-CLIENT-CD-TEXT
+      *    MOVE 0                      TO PMONITOR-PROCESS-ID
+      *    MOVE 'LOAD'                 TO PMONITOR-TASK-TXT-TEXT
+      *    MOVE 'SUCCESS'              TO PMONITOR-STATUS-TXT-TEXT
+      *    MOVE 0                      TO PMONITOR-DATA-CNT
+      *    MOVE SPACES                 TO PMONITOR-TASK-DESC-TEXT
+      *    MOVE SPACES                 TO PMONITOR-PARAM-LIST-TEXT
+      *    EXEC  SQL
+      *         INSERT  INTO  MISC.P_MONITOR
+      *         VALUES (:PMONITOR-PROCESS-NM
+      *         ,NULL
+      *         ,CURRENT TIMESTAMP
+      *         ,DEFAULT
+      *         ,NULL
+      *         ,:PMONITOR-TASK-STEP-TXT
+      *         ,:PMONITOR-STATUS-TXT
+      *         ,:PMONITOR-DATA-CNT
+      *         ,:PMONITOR-CLIENT-CD
+      *         ,:PMONITOR-CONTEXT-CD
+      *         ,:PMONITOR-TASK-DESC-TXT
+      *         ,:PMONITOR-PARAM-LIST-TXT
+      *          )
+      *    END-EXEC.
+      *    EVALUATE  SQLCODE
+      *       WHEN  ZERO
+      *         EXEC SQL
+      *             COMMIT
+      *         END-EXEC
+      *       WHEN  OTHER
+      *           MOVE SQLCODE  TO  WS-SQLCODE
+      *         DISPLAY 'ERR: 8100-P-MONITOR-INS, SQLCODE = ' WS-SQLCODE
+      *           GO TO Z9999-ERROR-EXIT
+      *    END-EVALUATE.
+      *
+      *8100-PM-INS-EXIT.     EXIT.
+      *
+       9000-TERMINATION.
+           PERFORM  9100-DISPLAY-COUNTERS  THRU  9100-DISPLAY-EXIT
+0026       DISPLAY '*****  PGM  CASNCTD9  NORMAL  END  *****'
+           DISPLAY '+++'.
+       9000-TERMINATION-EXIT.        EXIT.
+      *
+       9100-DISPLAY-COUNTERS.
+           DISPLAY '================================================'.
+0026       DISPLAY '       CASNCTD9 - PROGRAM COUNTERS'
+           DISPLAY '      -----------------------------'
+           MOVE     REC-READ-CTR           TO  NUM-REC-OUT
+           DISPLAY 'PCFCASE CLAIMS RECORD READ (INCLUDING SKIPPED) . .:'
+                                               NUM-REC-OUT
+           MOVE     SQL-INSERT-COMMITTED-CTR   TO  NUM-REC-OUT
+           DISPLAY 'NUMBER OF INSERTED  ARTCCLM  RECS COMMITTED . . . :'
+                                               NUM-REC-OUT
+           MOVE     WS-CONTEXT-CD-1-CNT        TO  NUM-REC-OUT
+           DISPLAY '1ST CONTEXT         ARTCCLM  RECS COMMITTED . . . :'
+                                               NUM-REC-OUT
+           MOVE     WS-CONTEXT-CD-2-CNT        TO  NUM-REC-OUT
+           DISPLAY '2ND CONTEXT         ARTCCLM  RECS COMMITTED . . . :'
+                                               NUM-REC-OUT
+           MOVE     WS-CONTEXT-CD-3-CNT        TO  NUM-REC-OUT
+           DISPLAY '3RD CONTEXT         ARTCCLM  RECS COMMITTED . . . :'
+                                               NUM-REC-OUT
+           MOVE     WS-CONTEXT-CD-4-CNT        TO  NUM-REC-OUT
+           DISPLAY '4TH CONTEXT         ARTCCLM  RECS COMMITTED . . . :'
+                                               NUM-REC-OUT
+           MOVE     WS-CONTEXT-CD-5-CNT        TO  NUM-REC-OUT
+           DISPLAY '5TH CONTEXT         ARTCCLM  RECS COMMITTED . . . :'
+                                               NUM-REC-OUT
+0026       MOVE     WS-CONTEXT-CD-6-CNT        TO  NUM-REC-OUT
+0026       DISPLAY '6TH CONTEXT         ARTCCLM  RECS COMMITTED . . . :'
+0026                                           NUM-REC-OUT
+0026       MOVE     WS-CONTEXT-CD-7-CNT        TO  NUM-REC-OUT
+0026       DISPLAY '7TH CONTEXT         ARTCCLM  RECS COMMITTED . . . :'
+0026                                           NUM-REC-OUT
+           MOVE     SQL-UPDATE-COMMITTED-CTR   TO  NUM-REC-OUT
+           DISPLAY 'NUMBER OF UPDATED  ARTCCLM  RECS COMMITTED . . . .:'
+                                               NUM-REC-OUT
+           MOVE     SQL-TOT-COMMITTED-CTR  TO  NUM-REC-OUT
+           DISPLAY 'TOTAL NUMBER OF  ARTCCLM  RECORDS COMMITTED . . . :'
+                                               NUM-REC-OUT
+0028       MOVE     WS-RX-EXCL-SKIP-CTR        TO  NUM-REC-OUT
+0028       DISPLAY 'NY RX ENCOUNTER CLAIMS EXCLUDED (SKIPPED) . . . . :'
+0028                                           NUM-REC-OUT
+           DISPLAY '================================================'
+           DISPLAY ' '
+                   .
+       9100-DISPLAY-EXIT.       EXIT.
+      *
+       Z9999-ERROR-EXIT.
+           IF  SQLCODE   NOT =  +0
+              CALL 'DSNTIAR'  USING  SQLCA
+                                     ERROR-MESSAGE
+                                     ERROR-LINE-LENGTH
+              DISPLAY '++'
+              DISPLAY ERROR-MESSAGE-LINE (1)
+              DISPLAY ERROR-MESSAGE-LINE (2)
+              DISPLAY ERROR-MESSAGE-LINE (3)
+              DISPLAY ERROR-MESSAGE-LINE (4)
+              DISPLAY ERROR-MESSAGE-LINE (5)
+              DISPLAY ERROR-MESSAGE-LINE (6)
+              DISPLAY ERROR-MESSAGE-LINE (7)
+              DISPLAY '++'
+           END-IF.
+           EXEC SQL  ROLLBACK  END-EXEC.
+           PERFORM  9100-DISPLAY-COUNTERS  THRU  9100-DISPLAY-EXIT
+0026       DISPLAY '************  PGM  CASNCTD9  ABENDED  **********'
+           DISPLAY ' '
+           MOVE 7 TO PMONITOR-STATUS-TXT-LEN
+           MOVE 'FAILURE' TO WS-STATUS-TXT
+           PERFORM  8000-P-MONITOR    THRU  8000-P-MONITOR-EXIT
+           CALL   'ILBOABN0'  USING  DUMP-CODE
+           GOBACK.
