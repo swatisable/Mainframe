@@ -1,0 +1,1367 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.    CASPCFAL.
+       AUTHOR. BJW.
+       INSTALLATION. HMS.
+       DATE-WRITTEN. 07/02/2015.
+      ******************************************************************
+      *   PROGRAM ABSTRACT:
+      *
+      *   THIS PROGRAM EXTRACTS PCF CLAIM DATA BASED ON
+      *   CASE DATA FROM CAS2000 SYSTEM
+      *
+      ******************************************************************
+      *   MODIFICATION HISTORY:
+      *----------------------------------------------------------------
+      * CHG#  DATE    PGM PM    DESCRIPTION
+      *----------------------------------------------------------------
+      *0000 07/02/15 BJW BJW   ORIGINAL CLONED FROM CASPCFM1
+      *0001 10/07/16 BJW BJW
+      *0012 09/11/17 JHW BJW   UPDATE CLIENT-ID IN OUTPUT FILE
+      *0013 10/18/17 JHW BJW   STOP PROCESSING WHEN CASE-EOF OCCURS
+      ******************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT SRCPCF-IN       ASSIGN   TO  SRCPCFI.
+           SELECT CASEFL-IN       ASSIGN   TO  CASEFLI.
+           SELECT SRCPCF-OUT      ASSIGN   TO  SRCPCFO.
+0002       SELECT CASE-PCF-MATCH  ASSIGN   TO  MATCHO.
+0005       SELECT CNTL-CARDS      ASSIGN   TO  SYS004.                  DPS9020
+
+       DATA DIVISION.
+       FILE SECTION.
+
+0005   FD  CNTL-CARDS                                                   DPS9020
+0005       RECORD CONTAINS 80 CHARACTERS                                DPS9020
+0005       RECORDING MODE IS F                                          DPS9020
+0005       LABEL RECORDS ARE OMITTED .                                  DPS9020
+0005   01  CNTL-REC        PIC X(80).                                   DPS9020
+
+       FD  SRCPCF-IN
++CB2++     BLOCK CONTAINS 0 CHARACTERS
+           RECORD IS VARYING  FROM 4   TO 32752 CHARACTERS
+             DEPENDING ON PCF-DEP
+0006       RECORDING MODE IS S
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS CLMI-RECORD.
+       01  CLMI-RECORD                 PIC X(32752).
+      *01  CLMI-RECORD                 PIC X(4400).
+
+       FD  CASEFL-IN
++CB2++     BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS CLMI-RECORD.
+       01  CASE-RECORD          PIC X(384).
+
+      *
+       FD  SRCPCF-OUT
++CB2++     BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS CLMO-RECORD.
+       01  CLMO-RECORD                     PIC X(754).
+
+      *
+0002>  FD  CASE-PCF-MATCH
+           BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS MATCH-RECORD.
+<0002  01  MATCH-RECORD                    PIC X(80).
+
+      *
+       WORKING-STORAGE SECTION.
+      *
+
+       01  FILLER                          PIC X(30)  VALUE
+                       'WORKING-STORAGE BEGINS HERE'.
+       01  WORK-FIELDS.
+           05  WS-LPR          PIC S9(4)   VALUE ZERO.
+
+0008  ********************************
+0008  * ICN REFORMAT AREA FOR SUFFIX*
+0008  ********************************
+0008
+0008   01  WS-ICN-GROUP-19.
+0008       10  WS-ICN-17 PIC X(17) VALUE SPACES.
+0008       10  WS-ICN-02 PIC X(02) VALUE SPACES.
+
+      ********************************
+      * COPYBOOK FOR CASE TABLE INPUT*
+      ********************************
+
+       01  NCTCASE.
+           03  WS-CASE-TABLE   OCCURS 30 TIMES.
+           COPY NCTCASE REPLACING ==(PREFIX)== BY ==CASET==.
+0004         05  CASE-PCF-MATCH-FLAG     PIC X(01).
+
+      *****************************
+      * COPYBOOK FOR CLAIM INPUT  *
+      *****************************
+      * CLAIMS RECORDS ARE IN 3 PIECES.
+       01  WS-CLMI-RECORD.
+      * 1ST 127 IS A 20
+           COPY TPLPREFX REPLACING ==(PFX)== BY ==PFX==.
+0002       02  CLMI-HMS-600.
+      * 2ND 600 IS A 20
+0002       COPY FDPCF602 REPLACING ==(PREFIX)== BY ==CLMI==.
+      * CLIENT SIDE DATA REMAINDER OF SPACE.
+           02  CLMI-CLIENT-DATA                PIC X(32025).
+      *
+      * "AL" CLIENT SIDE COPYBOOKS UP TO VERSION 5
+      *    03  INSTITUT-REC.
+       01  INST-REC5.
+           COPY FDALINH5 REPLACING ==(ALT)== BY ==AL5==.
+       01  INST-REC4.
+           COPY FDALINH4 REPLACING ==(ALT)== BY ==AL4==.
+       01  INST-REC3.
+           COPY FDALINH3 REPLACING ==(ALT)== BY ==AL3==.
+      *01  INST-REC2.
+      *    COPY FDALINHD REPLACING ==(ALT)== BY ==AL2==.
+      *01  INST-REC1.
+      *    COPY FDALCLMS.
+      *    03  PROFESS-REC.
+       01  PROF-REC5.
+           COPY FDALPHY5 REPLACING ==(ALT)== BY ==AL5==.
+       01  PROF-REC4.
+           COPY FDALPHY4 REPLACING ==(ALT)== BY ==AL4==.
+       01  PROF-REC3.
+           COPY FDALPHY3 REPLACING ==(ALT)== BY ==AL3==.
+      *01  PROF-REC2.
+      *    COPY FDALPHYS REPLACING ==(ALT)== BY ==AL2==.
+      *01  PROF-REC1.
+      *    COPY FDALCLMS.
+      *    03 PHARM-REC.
+       01  RX-REC5.
+           COPY FDALRXR5 REPLACING ==(ALT)== BY ==AL5==.
+       01  RX-REC4.
+           COPY FDALRXR4 REPLACING ==(ALT)== BY ==AL4==.
+       01  RX-REC3.
+           COPY FDALRXR3 REPLACING ==(ALT)== BY ==AL3==.
+      *01  RX-REC2.
+      *    COPY FDALRXRX REPLACING ==(ALT)== BY ==AL2==.
+      *01  RX-REC1.
+      *    COPY FDALCLMS REPLACING ==(ALT)== BY ==AL1==.
+
+      *****************************
+      * COPYBOOK FOR CASE INPUT   *
+      *****************************
+
+       01  WS-CASE-RECORD.
+           COPY NCTCASE REPLACING ==(PREFIX)== BY ==CASE==.
+
+      *****************************
+      * COPYBOOK FOR CLAIM OUTPUT *
+      *****************************
+
+       01  WS-SRCPCF-OUT.
+           COPY CLMPREFX REPLACING ==(PREFIX)== BY ==PRO==.
+      *    WITHOUT INCREASED SIZE DIAG CODE
+0002  *    03  CLM-HMS-600.
+0002  *    COPY FDPCF600 REPLACING ==(PREFIX)== BY ==CLM==.
+      *    WITH INCREASED SIZE DIAG CODE
+0002       03  CLM-HMS-601.
+0002       COPY FDPCF601 REPLACING ==(PREFIX)== BY ==CLM==.
+
+0002>  01  WS-MATCH-OUT.
+           05  F                            PIC X(03)  VALUE ' * '.
+           05  MATCH-CASE-ID-OUT            PIC X(20)  VALUE 'CASE ID'.
+           05  F                            PIC X(03)  VALUE ' * '.
+           05  MATCH-TOT-PCF-REC-OUT        PIC X(19)  VALUE
+                                                 'PCF RECORDS MATCHED'.
+           05  F                            PIC X(03)  VALUE ' * '.
+           05  MATCH-TOT-PCF-MA-PAID-OUT    PIC X(18)  VALUE
+                                                 'PCF TOT $$ MA PAID'.
+<0002      05  F                            PIC X(02)  VALUE ' *'.
+
+0005   01  CARD-REC .                                                   DPS9020
+0005       05 CARD-TAG             PIC X(01).
+0005       05 FILLER               PIC X(02).
+0005       05 CARD-COMMENT         PIC X(30).
+0005       05 FILLER               PIC X(1).
+0005       05 CARD-DATA            PIC X(02).
+
+0005   01  WS-SAVE-CREATE-SOURCE   PIC X(2).
+
+       01  WK-DIAG.
+      *    05  WK-DIAG-ICN            PIC X(20) VALUE SPACES.
+      *    05  WK-DIAG-TYP            PIC X(03) VALUE '010'.
+      *    05  WK-DIAG-SEQ            PIC 9(03) VALUE 0.
+           05  WK-DIAG-CODE           PIC X(7) VALUE SPACES.
+           05  WK-PROC-CODE           PIC X(7) VALUE SPACES.
+           05  WK-ICD-VERSION         PIC X(2) VALUE SPACES.
+      *    05  WK-DIAG-FILLER         PIC X(64) VALUE SPACES.
+
+       01  WS-SWITCHES-FLAGS.
+0005       05 EOC-SWITCH                    PIC X(01) VALUE 'N'.
+0005          88 END-OF-CARDS                         VALUE 'Y'.
+           05 WS-PCF-EOF-SW                 PIC X(01) VALUE 'N'.
+              88 PCF-EOF                            VALUE 'Y'.
+           05 WS-CASE-EOF-SW                PIC X(01) VALUE 'N'.
+              88 CASE-EOF                           VALUE 'Y'.
+           05 WS-RECIPIENT-SW               PIC X(01) VALUE 'N'.
+              88 RECIPIENT-END                      VALUE 'Y'.
+           05 WS-PROCESSED-SW               PIC X(01) VALUE 'N'.
+           05 PCF-DEP                       PIC 9(05) VALUE 32752.
+      *    05 PCF-DEP                       PIC 9(05) VALUE 4400.
+
+       01  WS-COUNTERS.
+           05  PCF-REC-READ-CTR             PIC 9(09) VALUE ZEROS.
+           05  CASE-REC-READ-CTR            PIC 9(09) VALUE ZEROS.
+           05  REC-WRITE-CTR                PIC 9(09) VALUE ZEROS.
+0007       05  REC-SKIP-PROV                PIC 9(09) VALUE ZEROS.
+0010       05  REC-SKIP-DSS                 PIC 9(09) VALUE ZEROS.
+           05  TABLE-ENTRIES                PIC 9(09) VALUE ZEROS.
+           05  VER-5-INST-ILOAC             PIC 9(09) VALUE ZEROS.
+           05  VER-5-PROC-CD                PIC 9(09) VALUE ZEROS.
+           05  VER-5-PROF-MB                PIC 9(09) VALUE ZEROS.
+           05  VER-5-RX-PQ                  PIC 9(09) VALUE ZEROS.
+           05  VER-4-INST-ILOAC             PIC 9(09) VALUE ZEROS.
+           05  VER-4-PROC-CD                PIC 9(09) VALUE ZEROS.
+           05  VER-4-PROF-MB                PIC 9(09) VALUE ZEROS.
+           05  VER-4-RX-PQ                  PIC 9(09) VALUE ZEROS.
+           05  VER-3-INST-ILOAC             PIC 9(09) VALUE ZEROS.
+           05  VER-3-PROC-CD                PIC 9(09) VALUE ZEROS.
+           05  VER-3-PROF-MB                PIC 9(09) VALUE ZEROS.
+           05  VER-3-RX-PQ                  PIC 9(09) VALUE ZEROS.
+           05  OTHER-VERS                   PIC 9(09) VALUE ZEROS.
+           05  VER-2                        PIC 9(09) VALUE ZEROS.
+           05  VER-1                        PIC 9(09) VALUE ZEROS.
+           05  SUB-I                        PIC 9(09) VALUE ZEROS.
+           05  NUM-REC-OUT                  PIC ZZZ,ZZZ,ZZ9.
+
+       01  WS-COMPARE-DATES.
+           05  WS-INCIDENT-DATE.
+               10 WS-IN-YYYY                PIC  9(04).
+               10 WS-IN-MM                  PIC  9(02).
+               10 WS-IN-DD                  PIC  9(02).
+           05  WS-INCIDENT-DATE-N  REDEFINES  WS-INCIDENT-DATE
+                                            PIC   9(08).
+
+0001       05  WS-INCIDENT-DATE-NEW.
+0001           10 WS-IN-NEW-YYYY            PIC  9(04).
+0001           10 WS-IN-NEW-MM              PIC  9(02).
+0001           10 WS-IN-NEW-DD              PIC  9(02).
+0001       05  WS-INCIDENT-DATE-NEW-RE REDEFINES WS-INCIDENT-DATE-NEW
+                                            PIC   9(08).
+
+           05  WS-CLM-THRU-DATE.
+               10 WS-THRU-YYYY              PIC  9(04).
+               10 WS-THRU-MM                PIC  9(02).
+               10 WS-THRU-DD                PIC  9(02).
+           05  WS-CLM-THRU-DATE-N  REDEFINES  WS-CLM-THRU-DATE
+                                            PIC   9(08).
+0004>  01  WS-CASE-PCF-MATCH-CTRS.
+           05  OPEN-CASES-READ-CTR       PIC S9(9) COMP-3  VALUE ZERO.
+           05  OPEN-CASES-MATCH-OK-CTR   PIC S9(9) COMP-3  VALUE ZERO.
+<0004      05  OPEN-CASES-NO-MATCH-CTR   PIC S9(9) COMP-3  VALUE ZERO.
+
+
+0002>  01  WS-CASE-PCF-MATCH.
+           05  WS-CASE-ID              PIC X(20)     VALUE SPACES.
+           05  WS-TOT-PCF-REC-MATCH    PIC S9(5)  COMP-3   VALUE ZERO.
+           05  WS-TOT-PCF-MA-PAID      PIC S9(11)V99  COMP-3 VALUE ZERO.
+
+       01  WS-MATCH-PROCESS-FIELDS.
+           05  WS-CONVERT-MATCH        PIC ZZZZ9      VALUE ZERO.
+           05  WS-CONVERT-PCF-PAID     PIC $$$,$$$,$$$,$$9.99
+                                                      VALUE ZERO.
+           05  COUNT-M                 PIC S9(3)   COMP-3  VALUE ZERO.
+           05  COUNT-P                 PIC S9(3)   COMP-3  VALUE ZERO.
+
+        01  WS-SIZE-ERROR-FLAG         PIC X(01)     VALUE 'N'.
+                88  SIZE-OK               VALUE 'N'.
+<0002           88  SIZE-ERROR            VALUE 'Y'.
+
+      *****
+      *
+       PROCEDURE DIVISION.
+      *
+       0000-MAIN.
+      *****************
+           PERFORM 1000-INITIALIZE   THRU 1000-INITIALIZE-EXIT
+           PERFORM 2000-MAINLINE     THRU 2000-MAINLINE-EXIT
+                   UNTIL PCF-EOF
+0013                  OR CASE-EOF
+           PERFORM 9000-TERMINATION  THRU 9000-TERMINATION-EXIT
+           STOP RUN
+           .
+       0000-MAIN-EXIT.
+           EXIT.
+
+       1000-INITIALIZE.
+      *****************
+      *
+           OPEN INPUT   SRCPCF-IN
+                        CASEFL-IN
+0005                    CNTL-CARDS
+                OUTPUT  SRCPCF-OUT
+0002                    CASE-PCF-MATCH
+
+            INITIALIZE    WS-COUNTERS
+
+           PERFORM 1500-READ-SRCPCF-IN  THRU 1500-READ-EXIT
+           PERFORM 1600-READ-CASEFL-IN  THRU 1600-READ-EXIT
+0005       PERFORM 1650-READ-CARDS THRU 1650-EXIT
+0005           UNTIL END-OF-CARDS.
+           PERFORM 3000-INITIALIZE-TABLE THRU 3000-EXIT
+              VARYING SUB-I FROM 1 BY 1 UNTIL SUB-I > 30
+0002       PERFORM   1700-WRITE-MATCH-HEADER   THRU
+0002                 1700-WRITE-HEADER-EXIT
+           .
+       1000-INITIALIZE-EXIT.
+           EXIT.
+      *
+       1500-READ-SRCPCF-IN.
+
+           READ SRCPCF-IN  INTO WS-CLMI-RECORD
+                AT END SET PCF-EOF     TO TRUE
+                GO TO 1500-READ-EXIT
+           END-READ
+              ADD  1       TO   PCF-REC-READ-CTR
+           .
+       1500-READ-EXIT.
+           EXIT.
+      *
+       1600-READ-CASEFL-IN.
+
+           READ CASEFL-IN INTO WS-CASE-RECORD
+                AT END SET CASE-EOF    TO TRUE
+                GO TO 1600-READ-EXIT
+           END-READ
+              ADD  1       TO   CASE-REC-READ-CTR
+0004>      IF  CASE-CASE-STATUS-CODE  =  'O'  OR   X'96'
+              ADD  1   TO   OPEN-CASES-READ-CTR
+<0004      END-IF
+           .
+       1600-READ-EXIT.
+           EXIT.
+
+0005   1650-READ-CARDS.
+0005       READ CNTL-CARDS INTO CARD-REC
+0005            AT END MOVE 'Y' TO EOC-SWITCH
+0005            CLOSE CNTL-CARDS
+0005            GO TO 1650-EXIT .
+0005
+0005       IF CARD-TAG = '1'
+0005          DISPLAY CARD-REC
+0005          MOVE CARD-DATA(1:2)  TO WS-SAVE-CREATE-SOURCE.
+0005
+0005   1650-EXIT.
+0005       EXIT.
+
+0002>  1700-WRITE-MATCH-HEADER.
+
+           WRITE  MATCH-RECORD  FROM  WS-MATCH-OUT
+           MOVE  SPACES  TO  WS-MATCH-OUT
+           WRITE  MATCH-RECORD  FROM  WS-MATCH-OUT.
+
+<0002  1700-WRITE-HEADER-EXIT.      EXIT.
+
+       2000-MAINLINE.
+      *****************
+           IF CASE-RECIPIENT-ID-NUM < PFX-APP-MEDICAID-NO
+               PERFORM 1600-READ-CASEFL-IN THRU 1600-READ-EXIT
+                  UNTIL CASE-RECIPIENT-ID-NUM >= PFX-APP-MEDICAID-NO
+003                  OR CASE-EOF.
+
+      *    IF CASE-EOF
+
+           IF (PFX-SYS-EXIT-FROM-REF-STATUS NOT = 'Y')
+PCM   **   OR (PFX-NET-CLAIM-TRANS-TYPE  = 'D')
+             PERFORM 1500-READ-SRCPCF-IN   THRU 1500-READ-EXIT
+             GO TO 2000-MAINLINE-EXIT.
+
+0010       IF  CLMI-PCF-CONTRACT-NUM = '0032600' AND
+0010           CLMI-PM-USER-AREA(27:3) = 'DSS'  AND
+0010***NOTE: THE FROM DATE OF SERVICE IS NUMERIC AND FORMAT IS
+0010***      0YYMMDD (THUS 2000 (000MMDD) IS LESS THAN 1999
+0010***      (099MMDD)).  IN THE LOGIC BELOW WE ARE EXCLUDING
+0010***      YEARS 2004, 2005, 2006 ETC. WE ARE INCLUDING
+0010***      1990 THROUGH 2002
+0010           CLMI-CLAIM-FROM-DOS > 0040000 AND
+0010           CLMI-CLAIM-FROM-DOS < 0900000
+0010         ADD 1 TO REC-SKIP-DSS
+0010         PERFORM 1500-READ-SRCPCF-IN   THRU 1500-READ-EXIT
+0010         GO TO 2000-MAINLINE-EXIT
+0010       END-IF
+
+0007       IF  CLMI-PROV-OF-SVC-NUM      = '09999996' AND
+0009           CLMI-PAY-TO-PROV-NUM      = '09999996'
+0007         ADD 1 TO REC-SKIP-PROV
+0007         PERFORM 1500-READ-SRCPCF-IN   THRU 1500-READ-EXIT
+0007         GO TO 2000-MAINLINE-EXIT
+0007       END-IF
+
+           IF CASE-RECIPIENT-ID-NUM = PFX-APP-MEDICAID-NO
+           AND  CASET-RECIPIENT-ID-NUM (1) < PFX-APP-MEDICAID-NO
+0002>              IF  WS-TOT-PCF-REC-MATCH  >  0    OR
+                       SIZE-ERROR
+                        PERFORM  2100-WRITE-CASE-PCF-MATCH  THRU
+                                 2100-WRITE-CASE-PCF-EXIT
+<0002              END-IF
+
+                   PERFORM 3000-INITIALIZE-TABLE THRU 3000-EXIT
+                       VARYING SUB-I FROM 1 BY 1 UNTIL SUB-I > 30
+
+                   MOVE 'N'              TO  WS-RECIPIENT-SW
+                   PERFORM 3010-LOAD-CASE-TABLE THRU 3010-EXIT
+                       VARYING SUB-I FROM 1 BY 1
+                          UNTIL RECIPIENT-END
+      *                   UNTIL WS-RECIPIENT-SW = 'Y'
+
+                   PERFORM 3020-READ-CASE-TABLE THRU 3020-EXIT
+                       VARYING SUB-I FROM 1 BY 1
+                       UNTIL SUB-I > TABLE-ENTRIES
+           ELSE
+
+           IF CASE-RECIPIENT-ID-NUM >= PFX-APP-MEDICAID-NO
+           AND  CASET-RECIPIENT-ID-NUM (1) = PFX-APP-MEDICAID-NO
+                   PERFORM 3020-READ-CASE-TABLE THRU 3020-EXIT
+                       VARYING SUB-I FROM 1 BY 1
+                       UNTIL SUB-I > TABLE-ENTRIES.
+
+           PERFORM 1500-READ-SRCPCF-IN   THRU 1500-READ-EXIT
+           .
+       2000-MAINLINE-EXIT.
+           EXIT.
+      *
+       3000-INITIALIZE-TABLE.
+
+           INITIALIZE WS-CASE-TABLE (SUB-I).
+
+       3000-EXIT.
+           EXIT.
+
+       3010-LOAD-CASE-TABLE.
+
+           MOVE WS-CASE-RECORD   TO  WS-CASE-TABLE (SUB-I)
+0004       MOVE  'N'             TO  CASE-PCF-MATCH-FLAG (SUB-I)
+           PERFORM 1600-READ-CASEFL-IN THRU 1600-READ-EXIT
+           IF CASE-RECIPIENT-ID-NUM > CASET-RECIPIENT-ID-NUM (SUB-I)
+           OR CASE-EOF
+               MOVE SUB-I        TO TABLE-ENTRIES
+LLL   **   DISPLAY ' TABLE-ENTRIES = ' TABLE-ENTRIES
+               MOVE 'Y'          TO  WS-RECIPIENT-SW.
+
+       3010-EXIT.
+           EXIT.
+
+       3020-READ-CASE-TABLE.
+
+           PERFORM 4000-FORMAT-DATE THRU 4000-EXIT
+      *    DISPLAY ' PCF PREFIX = ' PFX-SORT-KEY
+      *    DISPLAY ' CASE MA-NUM= ' CASET-RECIPIENT-ID-NUM (SUB-I)
+           IF CASET-CASE-STATUS-CODE (SUB-I) = 'O'
+           OR CASET-CASE-STATUS-CODE (SUB-I) = X'96'
+0001  *      IF PFX-APP-DATE-OF-SERVICE >= WS-INCIDENT-DATE-N
+0001         IF PFX-APP-DATE-OF-SERVICE >= WS-INCIDENT-DATE-NEW-RE
+                IF PFX-APP-DATE-OF-SERVICE <= WS-CLM-THRU-DATE-N
+                   INITIALIZE PRO-CLMPRFX
+                   MOVE CLMI-PCF-MA-NUM   TO   PRO-RECIPIENT-ID-NUM
+                   MOVE CASET-HMS-CASE-KEY (SUB-I)
+                          TO   PRO-HMS-CASE-KEY
+0012               MOVE CASET-HMS-CLIENT-ID (SUB-I)
+0012                      TO   PRO-CLIENT-ID
+0004>              IF  CASE-PCF-MATCH-FLAG (SUB-I)  =  'N'
+                      ADD  1  TO  OPEN-CASES-MATCH-OK-CTR
+                      MOVE  'Y'  TO  CASE-PCF-MATCH-FLAG (SUB-I)
+<0004              END-IF
+0005               MOVE WS-SAVE-CREATE-SOURCE
+0005                                      TO   PRO-CREATE-SOURCE
+                   MOVE CLMI-ICN          TO   PRO-ICN
+                   MOVE CLMI-FORMER-ICN   TO   PRO-FORMER-ICN
+                   MOVE CLMI-XACTION-STATUS
+                                          TO   PRO-XACTION-STATUS
+                   MOVE PFX-APP-DATE-OF-SERVICE
+                                          TO   PRO-CLM-FROM-DATE
+                   MOVE PFX-NET-CLAIM-TRANS-TYPE
+                                          TO   PRO-CLAIM-TRANS-TYPE
+                   MOVE WS-INCIDENT-DATE  TO   PRO-INCIDENT-DATE
+                   MOVE WS-CLM-THRU-DATE  TO   PRO-CLM-THRU-DATE
+0009               IF  CLMI-PROV-OF-SVC-NUM      = '09999996' AND
+0009                   CLMI-PCF-CONTRACT-NUM = '0032600'
+0009                   MOVE CLMI-PAY-TO-PROV-NUM TO
+0009                        CLMI-PROV-OF-SVC-NUM
+0009               END-IF
+      *  IN PLACE OF THIS MOVE WE MOVE THE RECORD BY COLUMN
+      *            MOVE CLMI-HMS-600      TO   CLM-HMS-601
+
+                   MOVE CLMI-PCF-MA-NUM      TO CLM-PCF-MA-NUM
+                   MOVE CLMI-PROV-OF-SVC-NUM TO CLM-PROV-OF-SVC-NUM
+                   MOVE CLMI-PROCEDURE-CODE-5    TO
+                        CLM-PROCEDURE-CODE-7
+                   MOVE CLMI-PROCEDURE-CODE-MOD1 TO
+                        CLM-PROCEDURE-CODE-MOD1
+                   MOVE CLMI-PROCEDURE-CODE-MOD2 TO
+                        CLM-PROCEDURE-CODE-MOD2
+                   MOVE CLMI-SURGERY-DATE TO CLM-SURGERY-DATE
+                   MOVE CLMI-PROC-CODE-DENTAL TO CLM-PROC-CODE-DENTAL
+                   MOVE CLMI-CLM-TYPE          TO CLM-CLM-TYPE
+                   MOVE CLMI-ORIG-CLM-TYPE     TO CLM-ORIG-CLM-TYPE
+                   MOVE CLMI-CATG-OF-SVC       TO CLM-CATG-OF-SVC
+                   MOVE CLMI-TYPE-OF-SVC       TO CLM-TYPE-OF-SVC
+                   MOVE CLMI-PLACE-OF-SVC      TO CLM-PLACE-OF-SVC
+                   MOVE CLMI-DRG               TO CLM-DRG
+                   MOVE CLMI-LEVEL-OF-CARE-IND TO CLM-LEVEL-OF-CARE-IND
+                   MOVE CLMI-CLAIM-FORM-IND    TO CLM-CLAIM-FORM-IND
+                   MOVE CLMI-PAT-LAST-NAME     TO CLM-PAT-LAST-NAME
+                   MOVE CLMI-PAT-FIRST-NAME    TO CLM-PAT-FIRST-NAME
+                   MOVE CLMI-PAT-MID-INIT      TO CLM-PAT-MID-INIT
+                   MOVE CLMI-PAT-SEX           TO CLM-PAT-SEX
+                   MOVE CLMI-PAT-DOB           TO CLM-PAT-DOB
+                   MOVE CLMI-XACTION-TYPE      TO CLM-XACTION-TYPE
+                   MOVE CLMI-XACTION-STATUS    TO CLM-XACTION-STATUS
+                   MOVE CLMI-DOR               TO CLM-DOR
+                   MOVE CLMI-REMIT-ID-NUM      TO CLM-REMIT-ID-NUM
+                   MOVE CLMI-ADJ-IND           TO CLM-ADJ-IND
+                   MOVE CLMI-ADJ-REASON        TO CLM-ADJ-REASON
+                   MOVE CLMI-ICN               TO CLM-ICN
+                   MOVE CLMI-PRI-DX            TO CLM-PRI-DX
+                   MOVE CLMI-SEC-DX            TO CLM-SEC-DX
+                   MOVE CLMI-UNIT-VISITS-DAYS  TO CLM-UNIT-VISITS-DAYS
+                   MOVE CLMI-CLAIM-FROM-DOS    TO CLM-CLAIM-FROM-DOS
+                   MOVE CLMI-CLAIM-THRU-DOS    TO CLM-CLAIM-THRU-DOS
+                   MOVE CLMI-RECORD-THRU-DOS   TO CLM-RECORD-THRU-DOS
+                   MOVE CLMI-ADMIT-DATE        TO CLM-ADMIT-DATE
+                   MOVE CLMI-DISCH-DATE        TO CLM-DISCH-DATE
+                   MOVE CLMI-ELIG-INPAT-DAYS   TO CLM-ELIG-INPAT-DAYS
+                   MOVE CLMI-INELIG-INPAT-DAYS TO CLM-INELIG-INPAT-DAYS
+                   MOVE CLMI-NATURE-HSP-ADMISSION TO
+                        CLM-NATURE-HSP-ADMISSION
+                   MOVE CLMI-PAT-STATUS-CODE  TO CLM-PAT-STATUS-CODE
+                   MOVE CLMI-TRAUMA-IND       TO CLM-TRAUMA-IND
+                   MOVE CLMI-TPL-ACCIDENT-IND TO CLM-TPL-ACCIDENT-IND
+                   MOVE CLMI-PROV-CLAIM-NUM   TO CLM-PROV-CLAIM-NUM
+                   MOVE CLMI-MA-BILLED-HDR    TO CLM-MA-BILLED-HDR
+                   MOVE CLMI-OTHER-INS-PAID-HDR
+                                              TO CLM-OTHER-INS-PAID-HDR
+                   MOVE CLMI-MC-COINS-DTL     TO CLM-MC-COINS-DTL
+                   MOVE CLMI-MC-DEDUCT-DTL    TO CLM-MC-DEDUCT-DTL
+                   MOVE CLMI-DRG-ALLOWED      TO CLM-DRG-ALLOWED
+                   MOVE CLMI-MA-BILLED-NET-HDR TO CLM-MA-BILLED-NET-HDR
+                   MOVE CLMI-TOT-MA-PAID-HDR  TO CLM-TOT-MA-PAID-HDR
+                   MOVE CLMI-MC-ALLOWED-DTL    TO CLM-MC-ALLOWED-DTL
+                   MOVE CLMI-OTHER-INS-PAID-DTL TO
+                        CLM-OTHER-INS-PAID-DTL
+                   MOVE CLMI-MA-BILLED-NET-DTL TO CLM-MA-BILLED-NET-DTL
+                   MOVE CLMI-MA-PAID-DTL       TO CLM-MA-PAID-DTL
+                   MOVE CLMI-PROV-TYPE         TO CLM-PROV-TYPE
+                   MOVE CLMI-PAY-TO-PROV-NUM   TO CLM-PAY-TO-PROV-NUM
+                   MOVE CLMI-REFER-PROV-NUM    TO CLM-REFER-PROV-NUM
+                   MOVE CLMI-PROV-SPECIALTY    TO CLM-PROV-SPECIALTY
+                   MOVE CLMI-RX-SUPPLY-DAYS    TO CLM-RX-SUPPLY-DAYS
+                   MOVE CLMI-RX-REFILL-IND     TO CLM-RX-REFILL-IND
+                   MOVE CLMI-VERSION-NUMBER    TO CLM-VERSION-NUMBER
+                   MOVE CLMI-PCF-MC-NUM        TO CLM-PCF-MC-NUM
+                   MOVE CLMI-MC-ATTACHMENT-IND TO CLM-MC-ATTACHMENT-IND
+                   MOVE CLMI-MC-FORCE-IND      TO CLM-MC-FORCE-IND
+                   MOVE CLMI-MC-BENEFITS-EXHAUSTED TO
+                        CLM-MC-BENEFITS-EXHAUSTED
+                   MOVE CLMI-FAMILY-PLANNING-IND TO
+                        CLM-FAMILY-PLANNING-IND
+                   MOVE CLMI-MULTI-MATCH-IND TO CLM-MULTI-MATCH-IND
+                   MOVE CLMI-RUNTIME-SEQ-NUM TO CLM-RUNTIME-SEQ-NUM
+                   MOVE CLMI-NUM-REV-CHARGES  TO CLM-NUM-REV-CHARGES
+                   MOVE CLMI-NUM-OTH-SEGS     TO CLM-NUM-OTH-SEGS
+                   MOVE CLMI-FILE-DATA-SOURCE TO CLM-FILE-DATA-SOURCE
+                   MOVE CLMI-PCF-CONTRACT-NUM TO CLM-PCF-CONTRACT-NUM
+                   MOVE CLMI-CLAIM-EMERGENCY-IND TO
+                        CLM-CLAIM-EMERGENCY-IND
+                   MOVE CLMI-STAT-DOLLARS-HDR-OR-DTL TO
+                        CLM-STAT-DOLLARS-HDR-OR-DTL
+                   MOVE CLMI-SUMMED-BILL-ANC-DOLLARS TO
+                        CLM-SUMMED-BILL-ANC-DOLLARS
+                   MOVE CLMI-BILL-TYPE               TO CLM-BILL-TYPE
+                   MOVE CLMI-RECORD-FROM-DOS-DTL     TO
+                        CLM-RECORD-FROM-DOS-DTL
+                   MOVE CLMI-FORMER-ICN              TO CLM-FORMER-ICN
+                   MOVE CLMI-SRC-LINE-ITEM-DTL-CNT   TO
+                        CLM-SRC-LINE-ITEM-DTL-CNT
+                   MOVE CLMI-NET-DUPE-DATE           TO
+                        CLM-NET-DUPE-DATE
+                   MOVE CLMI-OTP-COB-IND       TO
+                        CLM-OTP-COB-IND
+                   MOVE CLMI-PM-USER-AREA      TO CLM-PM-USER-AREA
+                   MOVE CLMI-PM-USER-AREA-2    TO CLM-PM-USER-AREA-2
+                   MOVE CLMI-XWALKED-PROC-CODE1 TO
+                        CLM-XWALKED-PROC-CODE1
+                   MOVE CLMI-APPLIED-INCOME    TO CLM-APPLIED-INCOME
+                   MOVE CLMI-NUM-LEAVE-DAYS    TO CLM-NUM-LEAVE-DAYS
+                   MOVE CLMI-RATE-PAID         TO CLM-RATE-PAID
+                   MOVE CLMI-FACILITY-PROV-NUM TO CLM-FACILITY-PROV-NUM
+                   MOVE CLMI-DX-3              TO CLM-DX-3
+                   MOVE CLMI-DX-4              TO CLM-DX-4
+                   MOVE CLMI-DX-5              TO CLM-DX-5
+                   MOVE CLMI-INST-ADDITIONAL-FIELDS TO
+                        CLM-INST-ADDITIONAL-FIELDS
+                   MOVE CLMI-NEW-DRG           TO CLM-NEW-DRG
+                   MOVE CLMI-PROV-NUM-FROM-PREFIX    TO
+                        CLM-PROV-NUM-FROM-PREFIX
+                   MOVE CLMI-DATE-REFORMATTED  TO CLM-DATE-REFORMATTED
+                   MOVE CLMI-SYS-DELETE-STATUS TO CLM-SYS-DELETE-STATUS
+                   MOVE CLMI-STAMP-DATE-TIME   TO CLM-STAMP-DATE-TIME
+                   MOVE CLMI-STAMP-SEQ-NUM     TO CLM-STAMP-SEQ-NUM
+                   MOVE CLMI-ORIG-TOT-MA-PAID-HDR    TO
+                        CLM-ORIG-TOT-MA-PAID-HDR
+                   MOVE CLMI-ORIG-MA-PAID-DTL        TO
+                        CLM-ORIG-MA-PAID-DTL
+                   MOVE CLMI-PCF-CLASSIFICATION-STAT TO
+                        CLM-PCF-CLASSIFICATION-STAT
+                   MOVE CLMI-PCF-CLASSIFICATION-DATE TO
+                        CLM-PCF-CLASSIFICATION-DATE
+                   MOVE CLMI-PCF-IN-PROGRESS-IND     TO
+                        CLM-PCF-IN-PROGRESS-IND
+                   MOVE CLMI-PCF-LOGICAL-DELETE-IND  TO
+                        CLM-PCF-LOGICAL-DELETE-IND
+                   MOVE CLMI-PCF-HMS-ICN-SUFFIX      TO
+                        CLM-PCF-HMS-ICN-SUFFIX
+                   MOVE CLMI-PCF-FILE-NAME           TO
+                        CLM-PCF-FILE-NAME
+                   MOVE CLMI-PCF-VERSION-NUMBER      TO
+                        CLM-PCF-VERSION-NUMBER
+
+0008               IF (CLMI-PM-USER-AREA (1:2) = 'PB' OR
+0008                   CLMI-PM-USER-AREA (1:2) = 'DT') AND
+0008                   CLMI-PCF-CONTRACT-NUM = '0032600' AND
+0008                   CLMI-PM-USER-AREA(27:3) NOT = 'DSS'
+0008                   IF CLMI-PCF-HMS-ICN-SUFFIX IS NUMERIC
+0008                        IF CLMI-PCF-HMS-ICN-SUFFIX-N = 0
+0008                             CONTINUE
+0008                        ELSE
+0008                             MOVE CLMI-ICN TO WS-ICN-17
+0008                             MOVE CLMI-PCF-HMS-ICN-SUFFIX TO
+0008                                              WS-ICN-02
+0008                             MOVE WS-ICN-GROUP-19 TO
+0008                                           PRO-ICN
+0008                             MOVE WS-ICN-GROUP-19 TO
+0008                                           CLM-ICN
+0008                        END-IF
+0008                  END-IF
+0008               END-IF
+                   ADD   1            TO    REC-WRITE-CTR
+                   PERFORM 3030-REVIEW-MAMA-VERS THRU 3030-EXIT
+                   EVALUATE TRUE
+                      WHEN CLM-CDE-ICD-VERSION = '0 '
+                         MOVE '10' TO CLM-CDE-ICD-VERSION
+                      WHEN CLM-CDE-ICD-VERSION = ' 0'
+                         MOVE '10' TO CLM-CDE-ICD-VERSION
+                      WHEN OTHER
+                         MOVE '9' TO CLM-CDE-ICD-VERSION
+                   END-EVALUATE
+
+                   WRITE  CLMO-RECORD FROM WS-SRCPCF-OUT
+
+                   MOVE   '9' TO CLM-CDE-ICD-VERSION
+
+0002>              IF  SIZE-OK
+                      MOVE  CASET-RECIPIENT-ID-NUM (1) TO  WS-CASE-ID
+                      ADD  1  TO  WS-TOT-PCF-REC-MATCH
+                        ON SIZE ERROR   SET  SIZE-ERROR  TO TRUE
+                      END-ADD
+                      ADD  CLMI-TOT-MA-PAID-HDR  TO  WS-TOT-PCF-MA-PAID
+                        ON SIZE ERROR   SET  SIZE-ERROR  TO TRUE
+                      END-ADD
+                   ELSE
+                      CONTINUE
+<0002              END-IF
+             .
+
+       3020-EXIT.
+           EXIT.
+
+       3030-REVIEW-MAMA-VERS.
+      *    NOTE: RX RECORDS DO NOT HAVE DIAGNOSIS CODES.
+      *    1) MAMA WITH THE VERSION IS THE FILE TYPE OF THE CLIENT
+      *       RECORD.
+      *    2) BASED ON THE FILE VERSION RUN FROM THE PROPER COPY
+      *       BOOK FORMAT.
+
+           INITIALIZE INST-REC5 PROF-REC5 RX-REC5
+                      INST-REC4 PROF-REC4 RX-REC4
+                      INST-REC3 PROF-REC3 RX-REC3
+
+           IF PFX-SYS-HMS-ASSIGN-FILE(1:4) = 'MAMA'
+              EVALUATE TRUE
+                WHEN PFX-SYS-VERSION EQUAL '05'
+                  MOVE CLMI-CLIENT-DATA TO INST-REC5
+                  MOVE CLMI-CLIENT-DATA TO PROF-REC5
+                  MOVE CLMI-CLIENT-DATA TO RX-REC5
+                  PERFORM 5100-PROCESS-RECS
+                     THRU 5100-EXIT
+                WHEN PFX-SYS-VERSION EQUAL '04'
+                  MOVE CLMI-CLIENT-DATA TO INST-REC4
+                  MOVE CLMI-CLIENT-DATA TO PROF-REC4
+                  MOVE CLMI-CLIENT-DATA TO RX-REC4
+                  PERFORM 5200-PROCESS-RECS
+                     THRU 5200-EXIT
+                WHEN PFX-SYS-VERSION EQUAL '03'
+                  MOVE CLMI-CLIENT-DATA TO INST-REC3
+                  MOVE CLMI-CLIENT-DATA TO PROF-REC3
+                  MOVE CLMI-CLIENT-DATA TO RX-REC3
+                  PERFORM 5300-PROCESS-RECS
+                     THRU 5300-EXIT
+                WHEN PFX-SYS-VERSION EQUAL '02'
+      *           MOVE CLMI-CLIENT-DATA TO INST-REC2
+      *           MOVE CLMI-CLIENT-DATA TO PROF-REC2
+      *           MOVE CLMI-CLIENT-DATA TO RX-REC2
+                  PERFORM 5400-PROCESS-RECS
+                     THRU 5400-EXIT
+                WHEN PFX-SYS-VERSION EQUAL '01'
+      *           MOVE CLMI-CLIENT-DATA TO INST-REC1
+      *           MOVE CLMI-CLIENT-DATA TO PROF-REC1
+      *           MOVE CLMI-CLIENT-DATA TO RX-REC1
+                  PERFORM 5500-PROCESS-RECS
+                     THRU 5500-EXIT
+                WHEN OTHER
+                  PERFORM 5600-PROCESS-RECS THRU 5600-EXIT
+              END-EVALUATE.
+
+       3030-EXIT.
+           EXIT.
+
+       4000-FORMAT-DATE.
+
+           INITIALIZE WS-COMPARE-DATES.
+
+           IF CASET-INCIDENT-DATE (SUB-I) NOT = SPACES
+               UNSTRING  CASET-INCIDENT-DATE (SUB-I)
+                   DELIMITED BY '-' OR '  '
+                   INTO                    WS-IN-YYYY
+                                           WS-IN-MM
+0001       MOVE WS-INCIDENT-DATE-N TO WS-INCIDENT-DATE-NEW.
+0001       MOVE 01                 TO WS-IN-NEW-DD.
+
+           IF CASET-CLAIMS-THRU-DATE (SUB-I) NOT = SPACES
+               UNSTRING CASET-CLAIMS-THRU-DATE (SUB-I)
+                  DELIMITED BY '-' OR '  '
+                   INTO                    WS-THRU-YYYY
+                                           WS-THRU-MM
+                                           WS-THRU-DD
+           ELSE MOVE '99999999'      TO    WS-CLM-THRU-DATE.
+
+       4000-EXIT.
+           EXIT.
+
+       5100-PROCESS-RECS.
+      *
+            EVALUATE TRUE
+             WHEN AL5-INST-CLAIM-TYPE-ALPHA =
+                  'I' OR 'L' OR 'O' OR 'A' OR 'C'
+              MOVE +1 TO WS-LPR
+              PERFORM UNTIL WS-LPR > 5
+               IF AL5-INST-DIAG(WS-LPR) NOT EQUAL SPACES
+                  OR AL5-INST-CDE-ICD-VERSION(WS-LPR) NOT EQUAL SPACES
+                   MOVE AL5-INST-DIAG(WS-LPR) TO WK-DIAG-CODE
+                   MOVE AL5-INST-CDE-ICD-VERSION(WS-LPR) TO
+                        WK-ICD-VERSION
+                   EVALUATE WS-LPR
+                     WHEN 1
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-PRI-DX
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 2
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-SEC-DX
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 3
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-3
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 4
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-4
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 5
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-5
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                   END-EVALUATE
+                ADD +1 TO VER-5-INST-ILOAC
+               END-IF
+                ADD +1 TO WS-LPR
+              END-PERFORM
+              MOVE +1 TO WS-LPR
+              PERFORM UNTIL WS-LPR > 1
+               IF AL5-INST-HDR-SURG-CD(WS-LPR) NOT EQUAL SPACES
+                   MOVE AL5-INST-HDR-SURG-CD(WS-LPR) TO WK-PROC-CODE
+                   EVALUATE WS-LPR
+                     WHEN 1
+                       MOVE WK-PROC-CODE TO CLM-PROCEDURE-CODE-7
+                   END-EVALUATE
+                ADD +1 TO VER-5-PROC-CD
+               END-IF
+                ADD +1 TO WS-LPR
+              END-PERFORM
+             WHEN AL5-INST-CLAIM-TYPE-ALPHA =
+                  'M' OR 'B'
+              MOVE +1 TO WS-LPR
+              PERFORM UNTIL WS-LPR > 5
+               IF AL5-PHYS-DIAG(WS-LPR) NOT EQUAL SPACES
+                  OR AL5-PHYS-CDE-ICD-VERSION(WS-LPR) NOT EQUAL SPACES
+                   MOVE AL5-PHYS-DIAG(WS-LPR) TO WK-DIAG-CODE
+                   MOVE AL5-PHYS-CDE-ICD-VERSION(WS-LPR) TO
+                        WK-ICD-VERSION
+                   EVALUATE WS-LPR
+                     WHEN 1
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-PRI-DX
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 2
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-SEC-DX
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 3
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-3
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 4
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-4
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 5
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-5
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                   END-EVALUATE
+                ADD +1 TO VER-5-PROF-MB
+               END-IF
+                ADD +1 TO WS-LPR
+              END-PERFORM
+             WHEN AL5-INST-CLAIM-TYPE-ALPHA =
+                  'P' OR 'Q'
+               ADD +1 TO VER-5-RX-PQ
+             WHEN OTHER
+               CONTINUE
+            END-EVALUATE.
+
+       5100-EXIT.
+           EXIT.
+
+       5200-PROCESS-RECS.
+
+            EVALUATE TRUE
+             WHEN AL4-INST-CLAIM-TYPE-ALPHA =
+                  'I' OR 'L' OR 'O' OR 'A' OR 'C'
+              MOVE +1 TO WS-LPR
+              PERFORM UNTIL WS-LPR > 5
+               IF AL4-INST-DIAG(WS-LPR) NOT EQUAL SPACES
+                  OR AL4-INST-CDE-ICD-VERSION(WS-LPR) NOT EQUAL SPACES
+                   MOVE AL4-INST-DIAG(WS-LPR) TO WK-DIAG-CODE
+                   MOVE AL4-INST-CDE-ICD-VERSION(WS-LPR) TO
+                        WK-ICD-VERSION
+                   EVALUATE WS-LPR
+                     WHEN 1
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-PRI-DX
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 2
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-SEC-DX
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 3
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-3
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 4
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-4
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 5
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-5
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                   END-EVALUATE
+                ADD +1 TO VER-4-INST-ILOAC
+               END-IF
+                ADD +1 TO WS-LPR
+              END-PERFORM
+              MOVE +1 TO WS-LPR
+              PERFORM UNTIL WS-LPR > 1
+               IF AL4-INST-HDR-SURG-CD(WS-LPR) NOT EQUAL SPACES
+                   MOVE AL4-INST-HDR-SURG-CD(WS-LPR) TO WK-PROC-CODE
+                   EVALUATE WS-LPR
+                     WHEN 1
+                       MOVE WK-PROC-CODE TO CLM-PROCEDURE-CODE-7
+                   END-EVALUATE
+                ADD +1 TO VER-4-PROC-CD
+               END-IF
+                ADD +1 TO WS-LPR
+              END-PERFORM
+             WHEN AL4-INST-CLAIM-TYPE-ALPHA =
+                  'M' OR 'B'
+              MOVE +1 TO WS-LPR
+              PERFORM UNTIL WS-LPR > 5
+               IF AL4-PHYS-DIAG(WS-LPR) NOT EQUAL SPACES
+                  OR AL4-PHYS-CDE-ICD-VERSION(WS-LPR) NOT EQUAL SPACES
+                   MOVE AL4-PHYS-DIAG(WS-LPR) TO WK-DIAG-CODE
+                   MOVE AL4-PHYS-CDE-ICD-VERSION(WS-LPR) TO
+                        WK-ICD-VERSION
+                   EVALUATE WS-LPR
+                     WHEN 1
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-PRI-DX
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 2
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-SEC-DX
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 3
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-3
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 4
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-4
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 5
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-5
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                   END-EVALUATE
+                ADD +1 TO VER-4-PROF-MB
+               END-IF
+                ADD +1 TO WS-LPR
+              END-PERFORM
+             WHEN AL4-INST-CLAIM-TYPE-ALPHA =
+                  'P' OR 'Q'
+               ADD +1 TO VER-4-RX-PQ
+             WHEN OTHER
+               CONTINUE
+            END-EVALUATE.
+
+       5200-EXIT.
+           EXIT.
+
+       5300-PROCESS-RECS.
+
+            EVALUATE TRUE
+             WHEN AL3-INST-CLAIM-TYPE-ALPHA =
+                  'I' OR 'L' OR 'O' OR 'A' OR 'C'
+              MOVE +1 TO WS-LPR
+              PERFORM UNTIL WS-LPR > 5
+               IF AL3-INST-DIAG(WS-LPR) NOT EQUAL SPACES
+                  OR AL3-INST-CDE-ICD-VERSION(WS-LPR) NOT EQUAL SPACES
+                   MOVE AL3-INST-DIAG(WS-LPR) TO WK-DIAG-CODE
+                   MOVE AL3-INST-CDE-ICD-VERSION(WS-LPR) TO
+                        WK-ICD-VERSION
+                   EVALUATE WS-LPR
+                     WHEN 1
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-PRI-DX
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 2
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-SEC-DX
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 3
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-3
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 4
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-4
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 5
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-5
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                   END-EVALUATE
+                ADD +1 TO VER-3-INST-ILOAC
+               END-IF
+                ADD +1 TO WS-LPR
+              END-PERFORM
+              MOVE +1 TO WS-LPR
+              PERFORM UNTIL WS-LPR > 1
+               IF AL3-INST-HDR-SURG-CD(WS-LPR) NOT EQUAL SPACES
+                   MOVE AL3-INST-HDR-SURG-CD(WS-LPR) TO WK-PROC-CODE
+                   EVALUATE WS-LPR
+                     WHEN 1
+                       MOVE WK-PROC-CODE TO CLM-PROCEDURE-CODE-7
+                   END-EVALUATE
+                ADD +1 TO VER-3-PROC-CD
+               END-IF
+                ADD +1 TO WS-LPR
+              END-PERFORM
+             WHEN AL3-INST-CLAIM-TYPE-ALPHA =
+                  'M' OR 'B'
+              MOVE +1 TO WS-LPR
+              PERFORM UNTIL WS-LPR > 5
+               IF AL3-PHYS-DIAG(WS-LPR) NOT EQUAL SPACES
+                  OR AL3-PHYS-CDE-ICD-VERSION(WS-LPR) NOT EQUAL SPACES
+                   MOVE AL3-PHYS-DIAG(WS-LPR) TO WK-DIAG-CODE
+                   MOVE AL3-PHYS-CDE-ICD-VERSION(WS-LPR) TO
+                        WK-ICD-VERSION
+                   EVALUATE WS-LPR
+                     WHEN 1
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-PRI-DX
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 2
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-SEC-DX
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 3
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-3
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 4
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-4
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                     WHEN 5
+                       IF WK-DIAG-CODE NOT EQUAL SPACES
+                          MOVE WK-DIAG-CODE   TO CLM-DX-5
+                       END-IF
+                       IF WK-ICD-VERSION NOT EQUAL SPACES
+                          MOVE WK-ICD-VERSION TO CLM-CDE-ICD-VERSION
+                       END-IF
+                   END-EVALUATE
+                ADD +1 TO VER-3-PROF-MB
+               END-IF
+                ADD +1 TO WS-LPR
+              END-PERFORM
+             WHEN AL3-INST-CLAIM-TYPE-ALPHA =
+                  'P' OR 'Q'
+               ADD +1 TO VER-3-RX-PQ
+             WHEN OTHER
+               CONTINUE
+            END-EVALUATE.
+
+       5300-EXIT.
+           EXIT.
+
+       5400-PROCESS-RECS.
+      *    ICD-10 SEGMENTS ARE NOT BEING CREATED.
+      *
+           ADD +1 TO VER-2.
+
+      *    LEFT THIS CODE JUST IN CASE.
+      *
+      *     EVALUATE TRUE
+      *      WHEN AL2-INST-CLAIM-TYPE-ALPHA =
+      *           'I' OR 'L' OR 'O' OR 'A' OR 'C'
+      *       MOVE +1 TO WS-LPR
+      *       PERFORM UNTIL WS-LPR > 5
+      *        IF AL2-INST-DIAG(WS-LPR) NOT EQUAL SPACES
+      *            MOVE AL2-INST-DIAG(WS-LPR) TO WK-DIAG-CODE
+      *            EVALUATE WS-LPR
+      *              WHEN 1
+      *                MOVE WK-DIAG-CODE      TO CLM-PRI-DX
+      *              WHEN 2
+      *                MOVE WK-DIAG-CODE      TO CLM-SEC-DX
+      *              WHEN 3
+      *                MOVE WK-DIAG-CODE      TO CLM-DX-3
+      *              WHEN 4
+      *                MOVE WK-DIAG-CODE      TO CLM-DX-4
+      *              WHEN 5
+      *                MOVE WK-DIAG-CODE      TO CLM-DX-5
+      *            END-EVALUATE
+      *         ADD +1 TO VER-2-INST-ILOAC
+      *        END-IF
+      *         ADD +1 TO WS-LPR
+      *       END-PERFORM
+      *       MOVE +1 TO WS-LPR
+      *       PERFORM UNTIL WS-LPR > 1
+      *        IF AL2-INST-HDR-SURG-CD(WS-LPR) NOT EQUAL SPACES
+      *            MOVE AL2-INST-HDR-SURG-CD(WS-LPR) TO WK-PROC-CODE
+      *            EVALUATE WS-LPR
+      *              WHEN 1
+      *                MOVE WK-PROC-CODE TO CLM-PROCEDURE-CODE-7
+      *            END-EVALUATE
+      *         ADD +1 TO VER-2-PROC-CD
+      *        END-IF
+      *         ADD +1 TO WS-LPR
+      *       END-PERFORM
+      *      WHEN AL2-INST-CLAIM-TYPE-ALPHA =
+      *           'M' OR 'B'
+      *       MOVE +1 TO WS-LPR
+      *       PERFORM UNTIL WS-LPR > 5
+      *        IF AL2-PHYS-DIAG(WS-LPR) NOT EQUAL SPACES
+      *            MOVE AL2-PHYS-DIAG(WS-LPR) TO WK-DIAG-CODE
+      *            EVALUATE WS-LPR
+      *              WHEN 1
+      *                MOVE WK-DIAG-CODE      TO CLM-PRI-DX
+      *              WHEN 2
+      *                MOVE WK-DIAG-CODE      TO CLM-SEC-DX
+      *              WHEN 3
+      *                MOVE WK-DIAG-CODE      TO CLM-DX-3
+      *              WHEN 4
+      *                MOVE WK-DIAG-CODE      TO CLM-DX-4
+      *              WHEN 5
+      *                MOVE WK-DIAG-CODE      TO CLM-DX-5
+      *            END-EVALUATE
+      *         ADD +1 TO VER-2-PROF-MB
+      *        END-IF
+      *         ADD +1 TO WS-LPR
+      *       END-PERFORM
+      *      WHEN AL2-INST-CLAIM-TYPE-ALPHA =
+      *           'P' OR 'Q'
+      *        ADD +1 TO VER-2-RX-PQ
+      *      WHEN OTHER
+      *        CONTINUE
+      *     END-EVALUATE.
+
+       5400-EXIT.
+           EXIT.
+
+       5500-PROCESS-RECS.
+      *    ICD-10 SEGMENTS ARE  NOT BEING CREATED.
+      *
+           ADD +1 TO VER-1.
+
+       5500-EXIT.
+           EXIT.
+      *
+       5600-PROCESS-RECS.
+      *     ICD-10 SEGMENTS ARE  NOT BEING CREATED.
+      *
+            ADD +1 TO OTHER-VERS.
+
+       5600-EXIT.
+             EXIT.
+
+0002>  2100-WRITE-CASE-PCF-MATCH.
+
+           MOVE   WS-CASE-ID   TO   MATCH-CASE-ID-OUT
+           IF  SIZE-OK
+               MOVE  WS-TOT-PCF-REC-MATCH  TO  WS-CONVERT-MATCH
+               INSPECT  WS-CONVERT-MATCH
+                         TALLYING   COUNT-M   FOR  ALL SPACES
+                         ADD  1  TO  COUNT-M
+               MOVE    WS-CONVERT-MATCH(COUNT-M: )   TO
+                         MATCH-TOT-PCF-REC-OUT
+
+               MOVE  WS-TOT-PCF-MA-PAID    TO  WS-CONVERT-PCF-PAID
+               INSPECT  WS-CONVERT-PCF-PAID
+                         TALLYING   COUNT-P   FOR  ALL SPACES
+                         ADD  1  TO  COUNT-P
+               MOVE    WS-CONVERT-PCF-PAID(COUNT-P: )   TO
+                         MATCH-TOT-PCF-MA-PAID-OUT
+           ELSE
+               MOVE  'TOO MANY MATCHES, $$ PAID NOT AVAILABLE !'  TO
+                    WS-MATCH-OUT(27:)
+               SET    SIZE-OK    TO TRUE
+           END-IF.
+           WRITE   MATCH-RECORD   FROM   WS-MATCH-OUT.
+           INITIALIZE   WS-CASE-PCF-MATCH
+                        WS-MATCH-PROCESS-FIELDS
+           MOVE  SPACES   TO   WS-MATCH-OUT.
+
+<0002  2100-WRITE-CASE-PCF-EXIT.           EXIT.
+
+       9000-TERMINATION.
+      *****************
+
+0002>      IF  WS-TOT-PCF-REC-MATCH  >  0    OR    SIZE-ERROR
+                PERFORM  2100-WRITE-CASE-PCF-MATCH  THRU
+                         2100-WRITE-CASE-PCF-EXIT
+           END-IF
+      ** <== FOR THE VERY LAST MATCHED CASE-ID YOU WILL NEVER COME TO
+      **     2100-WRITE-...  FROM 2000-MAINLINE, IF PCF-EOF HAS BEEN
+      **     REACHED, BUT NEXT MATCHED CASE-ID HAS NOT BEEN FOUND.
+
+           PERFORM  9100-WRITE-MATCH-TRAILER   THRU
+<0002               9100-WRITE-TRAILER-EXIT.
+0004       COMPUTE  OPEN-CASES-NO-MATCH-CTR  =
+0004                OPEN-CASES-READ-CTR  -  OPEN-CASES-MATCH-OK-CTR
+0004       END-COMPUTE.
+      *
+           DISPLAY SPACES
+           DISPLAY '==================================================='
+           DISPLAY '        CASPCFAL - PROGRAM COUNTERS'
+           DISPLAY '---------------------------------------------------'
+0004>      DISPLAY 'PLEASE NOTE: THE PROCESSING STOPS AT '
+                   'END OF PCF INPUT FILE.'
+<0004      DISPLAY 'THE CASE FILE MAY NOT HAVE BEEN READ TO COMPLETION.'
+           DISPLAY '---------------------------------------------------'
+           MOVE     PCF-REC-READ-CTR        TO  NUM-REC-OUT
+           DISPLAY 'NUMBER OF PCF RECORDS READ................... :'
+                          NUM-REC-OUT
+0007       MOVE     REC-SKIP-PROV           TO  NUM-REC-OUT
+0007       DISPLAY 'NUMBER OF SKIPPED PCF RECORDS PR0V=09999996.. :'
+0007                      NUM-REC-OUT
+0010       MOVE     REC-SKIP-DSS            TO  NUM-REC-OUT
+0010       DISPLAY 'NUMBER OF SKIPPED DSS RECORDS > 2003 ........ :'
+0010                      NUM-REC-OUT
+           MOVE     CASE-REC-READ-CTR       TO  NUM-REC-OUT
+           DISPLAY 'NUMBER OF CASE RECORDS READ.................. :'
+                          NUM-REC-OUT
+0004>      MOVE   OPEN-CASES-READ-CTR       TO  NUM-REC-OUT
+           DISPLAY 'NUMBER OF OPEN CASE RECORDS READ............. :'
+                          NUM-REC-OUT
+           MOVE   OPEN-CASES-MATCH-OK-CTR   TO  NUM-REC-OUT
+           DISPLAY 'NUMBER OF OPEN CASE RECORDS MATCHED TO PCF... :'
+                          NUM-REC-OUT
+           MOVE   OPEN-CASES-NO-MATCH-CTR   TO  NUM-REC-OUT
+           DISPLAY 'NUMBER OF OPEN CASE RECORDS NOT MATCHED TO PCF:'
+<0004                     NUM-REC-OUT
+           MOVE   REC-WRITE-CTR             TO  NUM-REC-OUT
+0004  **   DISPLAY 'NUMBER OF RECORDS  WRITTEN........ :'
+0004       DISPLAY 'PCF RECORDS MATCHED TO OPEN CASES AND WRITTEN :'
+                          NUM-REC-OUT
+           MOVE   VER-5-INST-ILOAC          TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS INST ILOA OR C UPDATED V5         :'
+                          NUM-REC-OUT
+           MOVE   VER-5-PROC-CD             TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS PROC CD        UPDATED V5         :'
+                          NUM-REC-OUT
+           MOVE   VER-5-PROF-MB             TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS PROF M OR B UPDATED V5            :'
+                          NUM-REC-OUT
+           MOVE   VER-5-RX-PQ               TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS RX   P OR Q UPDATED V5            :'
+                          NUM-REC-OUT
+           MOVE   VER-4-INST-ILOAC          TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS INST ILOA OR C UPDATED V4         :'
+                          NUM-REC-OUT
+           MOVE   VER-4-PROC-CD             TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS PROC CD        UPDATED V4         :'
+                          NUM-REC-OUT
+           MOVE   VER-4-PROF-MB             TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS PROF M OR B UPDATED V4            :'
+                          NUM-REC-OUT
+           MOVE   VER-4-RX-PQ               TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS RX   P OR Q UPDATED V4            :'
+                          NUM-REC-OUT
+           MOVE   VER-3-INST-ILOAC          TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS INST ILOA OR C UPDATED V3         :'
+                          NUM-REC-OUT
+           MOVE   VER-3-PROC-CD             TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS PROC CD        UPDATED V3         :'
+                          NUM-REC-OUT
+           MOVE   VER-3-PROF-MB             TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS PROF M OR B UPDATED V3            :'
+                          NUM-REC-OUT
+           MOVE   VER-3-RX-PQ               TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS RX   P OR Q UPDATED V3            :'
+                          NUM-REC-OUT
+           MOVE   VER-2                     TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS V2                                :'
+                          NUM-REC-OUT
+           MOVE   VER-1                     TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS V1                                :'
+                          NUM-REC-OUT
+           MOVE   OPEN-CASES-NO-MATCH-CTR   TO  NUM-REC-OUT
+           DISPLAY 'NUMBER OF OPEN CASE RECORDS NOT MATCHED TO PCF:'
+                          NUM-REC-OUT
+           MOVE   REC-WRITE-CTR             TO  NUM-REC-OUT
+0004       DISPLAY 'PCF RECORDS MATCHED TO OPEN CASES AND WRITTEN :'
+                          NUM-REC-OUT
+           MOVE   OTHER-VERS                TO  NUM-REC-OUT
+           DISPLAY 'PCF RECORDS OTHER                             :'
+                          NUM-REC-OUT
+           DISPLAY '==================================================='
+           DISPLAY SPACES
+           CLOSE        SRCPCF-IN
+                        CASEFL-IN
+                        SRCPCF-OUT
+0002                    CASE-PCF-MATCH
+           .
+       9000-TERMINATION-EXIT.
+           EXIT.
+
+0002>  9100-WRITE-MATCH-TRAILER.
+
+           IF   REC-WRITE-CTR  =  0
+              MOVE  'NO MATCHED PCF RECORDS FOUND'  TO  WS-MATCH-OUT(6:)
+              WRITE  MATCH-RECORD   FROM   WS-MATCH-OUT
+           END-IF.
+           MOVE  SPACES  TO  WS-MATCH-OUT
+           WRITE  MATCH-RECORD   FROM   WS-MATCH-OUT
+           MOVE  ALL '*'  TO  WS-MATCH-OUT
+           WRITE  MATCH-RECORD   FROM   WS-MATCH-OUT.
+
+<0002  9100-WRITE-TRAILER-EXIT.       EXIT.
+
+      ******************  BOTTOM CONVERT SOURCE ********************
+

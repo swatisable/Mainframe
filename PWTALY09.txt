@@ -1,0 +1,78 @@
+//PWTALY09 JOB (600040,ALT),'ALT YO9 EXTRT',MSGLEVEL=(1,1),
+//**     RESTART=STEPNAME.PROCSTEPNAME,
+//         MSGCLASS=J,CLASS=P,USER=DP3BTCH,GROUP=TS2GRP,COND=(8,LE)
+//*
+//*********************************************************************
+//* JOB PWTALY09 - MATCH NCTCASE FILE TO YOS2009 PCF FILE             *
+//* AND CREATE FILE OF MATCHING PCF RECORDS + PREFIX :                *
+//* P.HMS.TPL.ALT.IR.PCFCASE.YOS2009                                  *
+//*********************************************************************
+//* MODIFICATION HISTORY:                                             *
+//*                                                                   *
+//* DATE         PERSON  DESCRIPTION                                  *
+//*-------------------------------------------------------------------*
+//* 06/22/10     YZG     INITIAL IMPLEMENTATION                       *
+//* 02/24/11     SQK     WRITING THE FILES ON DISK INSTAED OF TAPE    *
+//*                      ALSO INCLUDED NEW JCL STANDARDS.             *
+//* 09/30/15     BJW     CHANGES TO ACCOMODATE ICD-10                 *
+//* 10/05/2018   JHW     ADD INCLUDE TO SORT WZZCA401 W/ NEW MEMBER   *
+//* AUG 2026     RMM     SPACE INCREASE INC0791972                    *
+//*********************************************************************
+//*
+//         SET DIPOND=P
+//         SET DOPOND=P
+//         SET LPOND=P
+//         SET ACNTR=ALT
+//*
+//JOBLIB   DD  DSN=P.HMSY.LINKLIB,DISP=SHR
+//*
+//STEP0010 EXEC PGM=IDCAMS
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD DSN=P.HMSY.CARD.CNTL(WALY0900),DISP=SHR
+//*
+//EXEC0010 EXEC PGM=SORT,PARM='ABEND'
+//******************************
+//* STEP0010 SORT NCTCASE FILE *
+//******************************
+//SORTIN   DD  DSN=&DIPOND..HMS.TPL.&ACNTR..IR.NCTCASE.RFMT(+0),
+//             DISP=SHR
+//SORTOUT  DD  DSN=&DOPOND..HMS.TPL.&ACNTR..IW.NCTCASE.TMP09,
+//             DISP=(NEW,CATLG,DELETE),UNIT=(SYSDA,9),
+//             DCB=(RECFM=FB,LRECL=384,BLKSIZE=27648),
+//             SPACE=(CYL,(500,1500),RLSE)
+//SYSIN    DD  DSN=&LPOND..HMSY.CARD.CNTL(WALS0900),DISP=SHR
+//SORTWK01 DD  SPACE=(CYL,(1500)),UNIT=SORTWK
+//SORTWK02 DD  SPACE=(CYL,(1500)),UNIT=SORTWK
+//SORTWK03 DD  SPACE=(CYL,(1500)),UNIT=SORTWK
+//SORTWK04 DD  SPACE=(CYL,(1500)),UNIT=SORTWK
+//SORTWK05 DD  SPACE=(CYL,(1500)),UNIT=SORTWK
+//SORTWK06 DD  SPACE=(CYL,(1500)),UNIT=SORTWK
+//SORTWK07 DD  SPACE=(CYL,(1500)),UNIT=SORTWK
+//SORTWK08 DD  SPACE=(CYL,(1500)),UNIT=SORTWK
+//SORTWK09 DD  SPACE=(CYL,(1500)),UNIT=SORTWK
+//SYSPRINT DD SYSOUT=*
+//SYSOUT   DD SYSOUT=*
+//*
+//EXEC0020 EXEC PGM=CASPCFAL
+//*****************************************************
+//* STEP0020 MATCH NCTCASE FILE TO YOS2009 PCF ON MA# *
+//*****************************************************
+//*
+//SRCPCFI  DD  DSN=&DIPOND..HMS.TPL.&ACNTR..IM.MA.YOS2009.SRCPCFC(0),
+//             DISP=SHR
+//CASEFLI  DD  DSN=&DOPOND..HMS.TPL.&ACNTR..IW.NCTCASE.TMP09,
+//             DISP=SHR
+//SRCPCFO  DD  DSN=P.HMS.TPL.&ACNTR..IR.PCFCASE.YOS2009(+1),
+//             DISP=(NEW,CATLG,DELETE),
+//             SPACE=(CYL,(500,1500),RLSE),UNIT=(3390,15),
+//             DCB=(MODLDSCB,RECFM=FB,LRECL=754,BLKSIZE=0)
+//MATCHO   DD  DSN=P.HMS.TPL.&ACNTR..IR.YOS2009.MATCH,
+//             DISP=(NEW,CATLG,DELETE),UNIT=3390,
+//             SPACE=(CYL,(100,500),RLSE),
+//             DCB=(RECFM=FB,LRECL=80,BLKSIZE=0)
+//SYS004   DD  DSN=P.HMSY.CARD.CNTL(WZCA010),
+//             DISP=SHR
+//SYSPRINT DD SYSOUT=*
+//SYSOUT   DD SYSOUT=*
+//*
+

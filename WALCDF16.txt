@@ -1,0 +1,5 @@
+ SORT FIELDS=COPY
+ OUTREC FIELDS=(1:1,305,                 <== PCFCASE DATA
+                306:1C'@')               <== CURRENT FILE MARK
+ END
+

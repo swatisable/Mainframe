@@ -1,0 +1,169 @@
+      *****************************************************************
+      ** ALABAMA CLAIMS FILE - INSTITUTIONAL (UB92) HEADER            *
+      *****************************************************************
+      **   CLAIM TYPE: 'L' = LTC                                      *
+      **   CLAIM TYPE: 'I' = INPATIENT                                *
+      **   CLAIM TYPE: 'O' = OUTPATIENT                               *
+      *****************************************************************
+      *                                                               *
+      * MODIFICATION HISTORY:                                         *
+      *                                                               *
+      * REF# DATE       PGM PM  DESCRIPTION                           *
+      * ---- ---------- --- --- --------------------------------------*
+      * 0001 05/08/14   DDW     REPLACED COPYBOOK FDALINH3 WITH       *
+      *                         FDALINH4. UPDATES ON ALT PCF LAYOUT   *
+      *                         (TRACK+ 148980)                       *
+      *****************************************************************
+        03 (ALT)-INST-HEADER.
+      * IDENTIFIER FIELDS
+         05  (ALT)-INST-ICN                       PIC X(13).
+         05  (ALT)-INST-REC-TYPE                  PIC X(02).
+         05  (ALT)-INST-CLAIM-TYPE-ALPHA          PIC X(01).
+         05  (ALT)-INST-DTL-CNT                   PIC X(03).
+         05  (ALT)-INST-CLAIM-STAT-IND            PIC X(01).
+         05  (ALT)-INST-CDE-CLM-VERSION           PIC X(04).
+      * GENERAL FIELDS
+         05  (ALT)-INST-PLAN-CODE                 PIC X(03).
+         05  (ALT)-INST-HDR-FDOS                  PIC X(08).
+         05  (ALT)-INST-HDR-TDOS                  PIC X(08).
+         05  (ALT)-INST-ENTRY-CLERK               PIC X(08).
+         05  (ALT)-INST-HDR-PA-NUM                PIC X(10).
+         05  (ALT)-INST-PAT-CTL-NUM               PIC X(38).
+         05  (ALT)-INST-MED-REC-NUM               PIC X(50).
+         05  (ALT)-INST-PROV-PMP                  PIC X(15).
+         05  (ALT)-INST-PUB-PRIV-IND              PIC X(01).
+      * RECIPIENT FIELDS
+         05  (ALT)-INST-BENE-MID                  PIC X(12).
+         05  (ALT)-INST-BENE-MID-CHK-DIG          PIC X(01).
+         05  (ALT)-INST-BENE-LNAME                PIC X(60).
+         05  (ALT)-INST-BENE-FNAME                PIC X(35).
+         05  (ALT)-INST-BENE-MI                   PIC X(01).
+         05  (ALT)-INST-BENE-CNTY                 PIC X(10).
+         05  (ALT)-INST-BENE-DOB-EXPANDED         PIC X(08).
+         05  (ALT)-INST-BENE-AGE                  PIC X(03).
+         05  (ALT)-INST-BENE-SEX                  PIC X(01).
+         05  (ALT)-INST-BENE-HIC                  PIC X(12).
+         05  (ALT)-INST-BENE-STATE-RACE           PIC X(02).
+         05  (ALT)-INST-BENE-INP-RTR-ELIG-IND     PIC X(01).
+         05  (ALT)-INST-HDR-BENE-ST-AID-CAT       PIC X(02).
+         05  (ALT)-INST-BENE-DIST-SURV-CDE        PIC X(02).
+      * PROVIDER FIELDS
+         05  (ALT)-INST-HDR-REF-PROV-NUM          PIC X(15).
+         05  (ALT)-INST-ATND-PROV-NUM             PIC X(15).
+         05  (ALT)-INST-SURG-PROV-NUM             PIC X(15).
+         05  (ALT)-INST-BILL-PROV-NPI             PIC X(15).
+         05  (ALT)-INST-BILL-PROV-MCD             PIC X(15).
+         05  (ALT)-INST-BILL-PROV-CNTY            PIC X(10).
+         05  (ALT)-INST-BILL-PROV-LOC             PIC X(01).
+         05  (ALT)-INST-BILL-PROV-TYPE            PIC X(02).
+         05  (ALT)-INST-BILL-PROV-SPEC-CNT        PIC X(02).
+         05  (ALT)-INST-BILL-PROV-SPEC
+               OCCURS 5 TIMES.
+             10  (ALT)-INST-PROV-SPEC             PIC X(03).
+      * FINANCIAL FIELDS
+         05  (ALT)-INST-FINAL-STATUS-DATE         PIC X(08).
+         05  (ALT)-INST-HDR-TOT-BILL              PIC X(10).
+         05  (ALT)-INST-HDR-ALLOW-AMT             PIC X(11).
+         05  (ALT)-INST-HDR-PAID-AMT              PIC X(11).
+         05  (ALT)-INST-HDR-TPL-AMT               PIC X(10).
+         05  (ALT)-INST-HDR-PAT-LIAB-AMT          PIC X(10).
+         05  (ALT)-INST-HDR-PA-AMT-USED           PIC X(10).
+         05  (ALT)-INST-HDR-PA-UNITS-USED         PIC X(16).
+         05  (ALT)-INST-HDR-COPAY-AMT             PIC X(08).
+         05  (ALT)-INST-RA-NBR                    PIC X(09).
+      * INDICATOR FIELDS
+         05  (ALT)-INST-HDR-EMERG-IND             PIC X(01).
+         05  (ALT)-INST-SERV-AUTH-EXCEPT-CODE     PIC X(02).
+         05  (ALT)-INST-DELAY-RSN-CODE            PIC X(03).
+         05  (ALT)-INST-PAT-STAT-IND              PIC X(02).
+         05  (ALT)-INST-ACDT-IND1                 PIC X(03).
+         05  (ALT)-INST-ACDT-IND2                 PIC X(03).
+         05  (ALT)-INST-ACDT-IND3                 PIC X(03).
+         05  (ALT)-INST-HDR-PA-IND                PIC X(01).
+         05  (ALT)-INST-LIFETIME-IND              PIC X(01).
+         05  (ALT)-INST-HDR-FP-IND                PIC X(01).
+         05  (ALT)-INST-COPAY-IND                 PIC X(01).
+         05  (ALT)-INST-ENC-IND                   PIC X(01).
+         05  (ALT)-INST-BUYIN-IND                 PIC X(01).
+         05  (ALT)-INST-MW-EXEMPT-IND             PIC X(01).
+         05  (ALT)-INST-HDR-MGD-REFERRAL          PIC X(01).
+      * ADJUSTMENT FIELDS
+         05  (ALT)-INST-OHDR-ICN                  PIC X(13).
+         05  (ALT)-INST-OHDR-PAY-DATE             PIC X(08).
+         05  (ALT)-INST-OHDR-PAID-AMT             PIC X(11).
+         05  (ALT)-INST-OHDR-ENC-PAID-AMT         PIC X(11).
+      * EOB FIELDS
+         05  (ALT)-INST-HDR-EOB-CNT               PIC X(02).
+         05  (ALT)-INST-HDR-EOB-SEG
+               OCCURS 5 TIMES.
+             10  (ALT)-INST-HDR-EOB               PIC X(04).
+             10  (ALT)-INST-HDR-EOB-CUT-AMT       PIC X(10).
+      * ERROR FIELDS
+         05  (ALT)-INST-HDR-ERR-CNT               PIC X(02).
+         05  (ALT)-INST-HDR-ERR-SEG
+               OCCURS 5 TIMES.
+             10  (ALT)-INST-ERR-DISP              PIC X(01).
+             10  (ALT)-INST-HDR-ERR-NUM           PIC X(04).
+      * TPL FIELDS
+         05  (ALT)-INST-TPL-IN-IND                PIC X(01).
+         05  (ALT)-INST-TPL-OUT-IND               PIC X(01).
+         05  (ALT)-INST-HDR-TPL-PAID-DATE         PIC X(08).
+         05  (ALT)-INST-HDR-TPL-ALLOWED-AMT       PIC X(09).
+         05  (ALT)-INST-HDR-TPL-COPAY             PIC X(09).
+         05  (ALT)-INST-HDR-TPL-COINSURANCE       PIC X(09).
+         05  (ALT)-INST-HDR-TPL-DEDUCTIBLE        PIC X(09).
+      * INSTITUTIONAL SPECIFIC FIELDS
+         05  (ALT)-INST-MCARE-ICN                 PIC X(30).
+         05  (ALT)-INST-MCARE-PAID-DATE           PIC X(08).
+         05  (ALT)-INST-MCARE-TOT-BILL            PIC X(10).
+         05  (ALT)-INST-MCARE-COPAY-AMT           PIC X(09).
+         05  (ALT)-INST-MCARE-PSYCH-AMT           PIC X(09).
+         05  (ALT)-INST-MCARE-LATE-FILING-AMT     PIC X(09).
+         05  (ALT)-INST-MCARE-COINS               PIC X(10).
+         05  (ALT)-INST-MCARE-ALLOW-AMT           PIC X(11).
+         05  (ALT)-INST-MCARE-REG-DED             PIC X(10).
+         05  (ALT)-INST-MCARE-PAID                PIC X(11).
+         05  (ALT)-INST-MCARE-COINS-DAYS          PIC X(04).
+         05  (ALT)-INST-MCARE-LIFE-RSV-DAYS       PIC X(04).
+         05  (ALT)-INST-MCARE-BLOOD-DEDCTBLE      PIC X(09).
+         05  (ALT)-INST-MCARE-SEQUEST             PIC X(08).
+         05  (ALT)-INST-MCARE-PAID-ORIG           PIC X(10).
+         05  (ALT)-INST-FILLER                    PIC X(20).
+         05  (ALT)-INST-HDR-FUND-CODE             PIC X(03).
+         05  (ALT)-INST-HDR-NONCOV-DAYS           PIC X(04).
+         05  (ALT)-INST-HDR-COV-DAYS              PIC X(04).
+         05  (ALT)-INST-HDR-TOTAL-DAYS            PIC X(05).
+         05  (ALT)-INST-HDR-LOA-DAYS              PIC X(04).
+         05  (ALT)-INST-HDR-COV-DAYS-ORIG         PIC X(04).
+         05  (ALT)-INST-HDR-CUTBACK-DAYS          PIC X(04).
+         05  (ALT)-INST-ADMIT-TYPE-IND            PIC X(01).
+         05  (ALT)-INST-ADMIT-DATE                PIC X(08).
+         05  (ALT)-INST-ADMIT-HR                  PIC X(04).
+         05  (ALT)-INST-DISCH-DATE                PIC X(08).
+         05  (ALT)-INST-DISCH-HR                  PIC X(04).
+         05  (ALT)-INST-HDR-OCCUR-CNT             PIC X(02).
+         05  (ALT)-INST-HDR-OCCUR-CODES
+               OCCURS 5 TIMES.
+             10  (ALT)-INST-HDR-OCCUR-CD          PIC X(02).
+             10  (ALT)-INST-HDR-OCCUR-DATE        PIC X(08).
+         05  (ALT)-INST-HDR-COND-CNT              PIC X(02).
+         05  (ALT)-INST-HDR-COND-CODES
+               OCCURS 5 TIMES.
+             10  (ALT)-INST-HDR-COND-CD           PIC X(02).
+         05  (ALT)-INST-HDR-SURG-CNT              PIC X(02).
+         05  (ALT)-INST-HDR-SURG-CODES
+               OCCURS 5 TIMES.
+             10  (ALT)-INST-HDR-SURG-CD           PIC X(07).
+             10  (ALT)-INST-HDR-SURG-DATE         PIC X(08).
+         05  (ALT)-INST-HDR-TYPE-BILL             PIC X(03).
+         05  (ALT)-INST-PROV-DISPRO-SHR-IND       PIC X(01).
+         05  (ALT)-INST-HDR-DIAG-CNT              PIC X(02).
+         05  (ALT)-INST-HDR-DIAG
+               OCCURS 14 TIMES.
+             10  (ALT)-INST-HDR-DIAG-SEQ          PIC X(02).
+             10  (ALT)-INST-HDR-DIAG-QLF          PIC X(03).
+             10  (ALT)-INST-DIAG                  PIC X(07).
+             10  (ALT)-INST-CDE-ICD-VERSION       PIC X(01).
+             10  (ALT)-INST-HDR-DIAG-POA          PIC X(01).
+         05  FILLER                               PIC X(01).
+

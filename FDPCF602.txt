@@ -1,0 +1,392 @@
+      *   TPL HMS PCF (PAID CLAIM FILE) AFTER REFMT. COPYBOOK=FDPCF602.
+      * ++
+      *   MODIFICATION HISTORY FROM COPYBOOK FDPCF600.
+      *
+      *  CHG #    DATE     AUTHOR PM  DESCRIPTION
+      *  -----  --------   ------ --- ----------------------------
+001   *   001   09/30/1999  DXB   DXB PERFORMANCE IMPROVEMENTS
+002   *   002   11/18/1999  DXB   DXB ADD MORE 88 LEVELS
+002   *                           CJB CHANGE FIELD NAME
+002   *                               FROM (PREFIX)-LINE-ITEM-DTL
+002   *                               TO (PREFIX)-NUM-LINE-ITEM-DTLS
+002   *                               TO (PREFIX)-SRC-LINE-ITEM-DTL-CNT
+003   *   003   12/07/1999  JHD   JHD ADDED VALUE CLAUSES TO ALL FIELDS
+      *
+004   *   004   02/07/2000  JHD   ADDED FACILITY PROVIDER NUMBER TO THE
+004   *       PSG ER#3            150-BYTE AREA.
+      *
+005   *   005   02/07/2000  JHD   CHANGE MC-COINS-HDR & MC-DEDUCT-HDR
+005   *       PSG ER#5            TO -DTL FIELDS.
+      *
+006   *   006   02/07/2000  JHD   INITIALIZE REFILL-IND TO ZERO.
+006   *       PSG ER#6
+      *
+007   *   007   03/31/2000  IXT   ADD CLM-TYPE 'GROSS'.
+007   *       PSG ER#6
+      *
+008   *   008   06/12/2000  JHD   ADDED NEW FIELDS TO 150-BYTE AREA
+008   *                           FOR PURPOSES OF THE SPECIAL FAMILY
+008   *                           PLANNING PROJECT (HOPS).
+      *
+009   *   009   07/19/2000  JHD   MODIFIED FILLER AREAS PER JOHN
+009   *                           BARRET REQUEST ON 7/17.  ALSO, ADDED
+009   *                           NEW TRANSACTION TYPE (REPLACEMENT).
+      *
+010   *   010   10/03/2007  LCB   ADDED REDEFINE FOR DENTAL PROCS
+      *
+011   *   011   10/15/2007  JQK   ADDED TWO LEVEL 88
+011   *   012   03/26/2008  GXG   ADDED LEVEL 88 FOR MC-ATTACHMENT-IND
+013   *   013   08/17/2010  GXG   ADDED ADMIT-DIAG-1
+014   *   014   04/18/2013  NMF   ADDED VALUES TO OTP-COB-IND (T113727)
+014   *                           ADDED NEW DRG TYPE AND CODE FIELDS
+      *   015   7/1/2015    BJW   ADDED ICD-10 REVISIONS
+      * ++
+003          20  (PREFIX)-PCF-MA-NUM            PIC X(20) VALUE SPACES.
+003          20  (PREFIX)-PROV-OF-SVC-NUM       PIC X(15) VALUE SPACES.
+001          20  (PREFIX)-PROC-CODE-AND-SURG.
+001              25  (PREFIX)-PROC-CODE.
+003                  30  (PREFIX)-PROCEDURE-CODE-5      PIC X(05)
+003                                                       VALUE SPACES.
+003                  30  (PREFIX)-PROCEDURE-CODE-MOD1   PIC X(02)
+003                                                       VALUE SPACES.
+003                  30  (PREFIX)-PROCEDURE-CODE-MOD2   PIC X(02)
+003                                                       VALUE SPACES.
+003              25  (PREFIX)-SURGERY-DATE      PIC X(06) VALUE SPACES.
+001              25  (PREFIX)-SURGERY-DATE-N
+001                  REDEFINES (PREFIX)-SURGERY-DATE PIC 9(06).
+001              25  (PREFIX)-PACKAGE-SIZE
+001                  REDEFINES (PREFIX)-SURGERY-DATE PIC X(06).
+             20  (PREFIX)-NDC REDEFINES (PREFIX)-PROC-CODE-AND-SURG.
+                 25  (PREFIX)-NATIONAL-DRUG-CODE    PIC X(11).
+                 25  FILLER                         PIC X(04).
+010          20  (PREFIX)-PROC-CODE-DENTAL
+010               REDEFINES (PREFIX)-PROC-CODE-AND-SURG.
+010              25  (PREFIX)-PROCEDURE-CODE-DENTAL PIC X(05).
+010              25  (PREFIX)-TOOTH-NUMBER          PIC X(02).
+010              25  (PREFIX)-TOOTH-SURFACE         PIC X(05).
+010              25  FILLER                         PIC X(03).
+003          20  (PREFIX)-CLM-TYPE              PIC X(02) VALUE SPACES.
+                 88  (PREFIX)-CLM-TYPE-INPATIENT         VALUE '01'.
+                 88  (PREFIX)-CLM-TYPE-LONG-TERM-CARE    VALUE '02'.
+                 88  (PREFIX)-CLM-TYPE-OUTPAT-CLINIC     VALUE '03'.
+                 88  (PREFIX)-CLM-TYPE-PHYSICIAN         VALUE '04'.
+                 88  (PREFIX)-CLM-TYPE-REHABILITATION    VALUE '05'.
+                 88  (PREFIX)-CLM-TYPE-HOME-HEALTH       VALUE '06'.
+                 88  (PREFIX)-CLM-TYPE-TRANSP-AMB        VALUE '07'.
+                 88  (PREFIX)-CLM-TYPE-TRANSP-NON-AMB    VALUE '08'.
+                 88  (PREFIX)-CLM-TYPE-DURABL-MED-EQP    VALUE '09'.
+                 88  (PREFIX)-CLM-TYPE-DENTAL-EPSDT      VALUE '10'.
+                 88  (PREFIX)-CLM-TYPE-DENTAL-ADULT      VALUE '11'.
+                 88  (PREFIX)-CLM-TYPE-PHARMACY          VALUE '12'.
+                 88  (PREFIX)-CLM-TYPE-EPSDT             VALUE '13'.
+                 88  (PREFIX)-CLM-TYPE-MC-XOVER-INST     VALUE '14'.
+                 88  (PREFIX)-CLM-TYPE-MC-XOVER-PROF     VALUE '15'.
+                 88  (PREFIX)-CLM-TYPE-DAY-CARE          VALUE '16'.
+                 88  (PREFIX)-CLM-TYPE-HABILITATION      VALUE '17'.
+                 88  (PREFIX)-CLM-TYPE-VISION-CARE       VALUE '18'.
+                 88  (PREFIX)-CLM-TYPE-HMO               VALUE '19'.
+                 88  (PREFIX)-CLM-TYPE-SPECIAL-SRVCE     VALUE '20'.
+                 88  (PREFIX)-CLM-TYPE-INDEPNDT-LAB      VALUE '21'.
+                 88  (PREFIX)-CLM-TYPE-FAM-PLANNING      VALUE '22'.
+                 88  (PREFIX)-CLM-TYPE-IND-CLINIC        VALUE '23'.
+007              88  (PREFIX)-CLM-TYPE-GROSS             VALUE '99'.
+003          20  (PREFIX)-ORIG-CLM-TYPE        PIC X(02) VALUE SPACES.
+003          20  (PREFIX)-CATG-OF-SVC          PIC X(02) VALUE SPACES.
+003          20  (PREFIX)-TYPE-OF-SVC          PIC X(02) VALUE SPACES.
+003          20  (PREFIX)-PLACE-OF-SVC         PIC X(02) VALUE SPACES.
+003          20  (PREFIX)-DRG                  PIC X(03) VALUE SPACES.
+003          20  (PREFIX)-LEVEL-OF-CARE-IND    PIC X(01) VALUE SPACES.
+                 88  (PREFIX)-LEVEL-OF-CARE-SNF          VALUE '0'.
+002              88  (PREFIX)-LEVEL-OF-CARE-SNF-HV-SP    VALUE '1'.
+002              88  (PREFIX)-LEVEL-OF-CARE-SNF-HEAVY    VALUE '2'.
+002              88  (PREFIX)-LEVEL-OF-CARE-SNF-MOD      VALUE '3'.
+002              88  (PREFIX)-LEVEL-OF-CARE-SNF-LIGHT    VALUE '4'.
+                 88  (PREFIX)-LEVEL-OF-CARE-ICF          VALUE '5'.
+002              88  (PREFIX)-LEVEL-OF-CARE-ICF-HV-SP    VALUE '6'.
+002              88  (PREFIX)-LEVEL-OF-CARE-ICF-HEAVY    VALUE '7'.
+002              88  (PREFIX)-LEVEL-OF-CARE-ICF-MOD      VALUE '8'.
+                 88  (PREFIX)-LEVEL-OF-CARE-ICF-LIGHT    VALUE '9'.
+002              88  (PREFIX)-LEVEL-OF-CARE-HOSPICE      VALUE 'H'.
+                 88  (PREFIX)-LEVEL-OF-CARE-MENT-RTRD    VALUE 'M'.
+002              88  (PREFIX)-LEVEL-OF-CARE-PSYCHIATR    VALUE 'P'.
+002              88  (PREFIX)-LEVEL-OF-CARE-CHRON-DIS    VALUE 'C'.
+                 88  (PREFIX)-LEVEL-OF-CARE-UNKWN        VALUE 'O'.
+003          20  (PREFIX)-CLAIM-FORM-IND       PIC X(01) VALUE SPACES.
+003          20  (PREFIX)-PAT-LAST-NAME        PIC X(12) VALUE SPACES.
+003          20  (PREFIX)-PAT-FIRST-NAME       PIC X(07) VALUE SPACES.
+003          20  (PREFIX)-PAT-MID-INIT         PIC X(01) VALUE SPACES.
+003          20  (PREFIX)-PAT-SEX              PIC X(01) VALUE SPACES.
+                 88  (PREFIX)-PAT-SEX-MALE               VALUE 'M'.
+                 88  (PREFIX)-PAT-SEX-FEMALE             VALUE 'F'.
+                 88  (PREFIX)-PAT-SEX-UNKWN              VALUE 'U'.
+003          20  (PREFIX)-PAT-DOB              PIC S9(06) COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-XACTION-TYPE         PIC X(01) VALUE SPACES.
+                 88  (PREFIX)-XACTION-TYPE-CREDIT-ADJ    VALUE 'C'.
+                 88  (PREFIX)-XACTION-TYPE-DEBIT-ADJ     VALUE 'D'.
+                 88  (PREFIX)-XACTION-TYPE-ORIG-CLM      VALUE 'O'.
+                 88  (PREFIX)-XACTION-TYPE-VOID          VALUE 'V'.
+                 88  (PREFIX)-XACTION-TYPE-GROSS-ADJ     VALUE 'G'.
+009              88  (PREFIX)-XACTION-TYPE-REPLACE       VALUE 'R'.
+003          20  (PREFIX)-XACTION-STATUS       PIC X(01) VALUE SPACES.
+                 88  (PREFIX)-XACTION-STATUS-OPEN        VALUE 'A'.
+                 88  (PREFIX)-XACTION-STATUS-PAID        VALUE 'B'.
+                 88  (PREFIX)-XACTION-STATUS-PEND        VALUE 'C'.
+                 88  (PREFIX)-XACTION-STATUS-DENIED      VALUE 'D'.
+                 88  (PREFIX)-XACTION-STATUS-ADJUSTED    VALUE 'E'.
+                 88  (PREFIX)-XACTION-STATUS-OTHER       VALUE 'F'.
+003          20  (PREFIX)-DOR                  PIC S9(06) COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-REMIT-ID-NUM         PIC S9(13) COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-ADJ-IND              PIC X(01) VALUE SPACES.
+003          20  (PREFIX)-ADJ-REASON           PIC X(03) VALUE SPACES.
+003          20  (PREFIX)-ICN                  PIC X(20) VALUE SPACES.
+001          20  FILLER      REDEFINES (PREFIX)-ICN.
+001              25  (PREFIX)-ICN-1-13-N            PIC 9(13).
+001              25  FILLER                         PIC X(7).
+003          20  (PREFIX)-PRI-DX               PIC X(05) VALUE SPACES.
+003          20  (PREFIX)-SEC-DX               PIC X(05) VALUE SPACES.
+003          20  (PREFIX)-UNIT-VISITS-DAYS     PIC S9(05) COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-CLAIM-FROM-DOS       PIC 9(06) COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-CLAIM-THRU-DOS       PIC 9(06) COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-RECORD-THRU-DOS      PIC 9(06) COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-ADMIT-DATE           PIC 9(06) COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-DISCH-DATE           PIC 9(06) COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-ELIG-INPAT-DAYS      PIC 9(03) VALUE ZERO.
+003          20  (PREFIX)-INELIG-INPAT-DAYS    PIC 9(05) COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-NATURE-HSP-ADMISSION PIC X(01) VALUE SPACES.
+                 88  (PREFIX)-NATURE-HSP-ADM-EMERGENC    VALUE 'A'.
+                 88  (PREFIX)-NATURE-HSP-ADM-URGENT      VALUE 'B'.
+                 88  (PREFIX)-NATURE-HSP-ADM-ELECTIVE    VALUE 'C'.
+                 88  (PREFIX)-NATURE-HSP-ADM-NEWBORN     VALUE 'D'.
+                 88  (PREFIX)-NATURE-HSP-ADM-TRANSFER    VALUE 'E'.
+                 88  (PREFIX)-NATURE-HSP-ADM-RE-ADM      VALUE 'F'.
+                 88  (PREFIX)-NATURE-HSP-ADM-UNKWN       VALUE SPACE.
+003          20  (PREFIX)-PAT-STATUS-CODE      PIC X(01) VALUE SPACES.
+                 88  (PREFIX)-PAT-STAT-CURRENTLY-IP      VALUE '0'.
+                 88  (PREFIX)-PAT-STAT-XFER-OTH-HOS      VALUE '1'.
+                 88  (PREFIX)-PAT-STAT-DISCH-SNF         VALUE '2'.
+                 88  (PREFIX)-PAT-STAT-DISCH-ICF         VALUE '3'.
+                 88  (PREFIX)-PAT-STAT-DISCH-OTHER       VALUE '4'.
+                 88  (PREFIX)-PAT-STAT-DISCH-HOME        VALUE '5'.
+                 88  (PREFIX)-PAT-STAT-DISCH-HOMEHEAL    VALUE '6'.
+                 88  (PREFIX)-PAT-STAT-LEFT-AGNST-ADV    VALUE '7'.
+002              88  (PREFIX)-PAT-STAT-DISCH-STATE-LV    VALUE '8'.
+                 88  (PREFIX)-PAT-STAT-EXPIRED           VALUE '9'.
+002              88  (PREFIX)-PAT-STAT-EXPIR-STATE-LV    VALUE 'A'.
+002              88  (PREFIX)-PAT-STAT-EXPIRD-AT-HOME    VALUE 'B'.
+002              88  (PREFIX)-PAT-STAT-EXP-IN-INSTITU    VALUE 'C'.
+002              88  (PREFIX)-PAT-STAT-EXP-PLACE-UNKN    VALUE 'D'.
+002              88  (PREFIX)-PAT-STAT-NOT-DISCH         VALUE 'E'.
+                 88  (PREFIX)-PAT-STAT-UNKWN             VALUE SPACE.
+003          20  (PREFIX)-TRAUMA-IND           PIC X(01) VALUE SPACES.
+002              88  (PREFIX)-TRAUMA-IND-YES             VALUE 'Y'.
+002              88  (PREFIX)-TRAUMA-IND-NO              VALUE 'N'.
+002              88  (PREFIX)-TRAUMA-IND-UNKWN           VALUE SPACE.
+003          20  (PREFIX)-TPL-ACCIDENT-IND     PIC X(02) VALUE SPACES.
+002              88  (PREFIX)-TPL-ACCIDENT-IND-YES       VALUE 'Y'.
+002              88  (PREFIX)-TPL-ACCIDENT-IND-NO        VALUE 'N'.
+002              88  (PREFIX)-TPL-ACCIDENT-IND-UNKWN     VALUE SPACE.
+011              88  (PREFIX)-TPL-AUTO-ACCIDENT          VALUE 'A'.
+011              88  (PREFIX)-TPL-OCCUPAT-ACCIDENT       VALUE 'O'.
+003          20  (PREFIX)-PROV-CLAIM-NUM       PIC X(15) VALUE SPACES.
+003          20  (PREFIX)-MA-BILLED-HDR        PIC S9(7)V99 COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-OTHER-INS-PAID-HDR   PIC S9(5)V99 COMP-3
+003                                                      VALUE ZERO.
+005   *JHD   20  (PREFIX)-MC-COINS-HDR         PIC S9(5)V99 COMP-3
+005          20  (PREFIX)-MC-COINS-DTL         PIC S9(5)V99 COMP-3
+003                                                      VALUE ZERO.
+005   *JHD   20  (PREFIX)-MC-DEDUCT-HDR        PIC S9(5)V99 COMP-3
+005          20  (PREFIX)-MC-DEDUCT-DTL        PIC S9(5)V99 COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-DRG-ALLOWED          PIC 9(05)V99 COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-MA-BILLED-NET-HDR    PIC S9(5)V99 COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-NONCOV-CHARGE-HDR    PIC 9(05)V99 COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-TOT-MA-PAID-HDR      PIC S9(7)V99 COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-MA-BILLED-DTL        PIC S9(7)V99 COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-MC-ALLOWED-DTL       PIC 9(05)V99 COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-OTHER-INS-PAID-DTL   PIC 9(05)V99 COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-MA-BILLED-NET-DTL    PIC 9(05)V99 COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-MA-PAID-DTL          PIC S9(7)V99 COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-PROV-TYPE            PIC X(02) VALUE SPACES.
+003          20  (PREFIX)-PAY-TO-PROV-NUM      PIC X(15) VALUE SPACES.
+003          20  (PREFIX)-REFER-PROV-NUM       PIC X(15) VALUE SPACES.
+003          20  (PREFIX)-PROV-SPECIALTY       PIC X(03) VALUE SPACES.
+003          20  (PREFIX)-RX-SUPPLY-DAYS       PIC S9(03) COMP-3
+003                                                      VALUE ZERO.
+006   *JHD   20  (PREFIX)-RX-REFILL-IND        PIC X(01) VALUE SPACES.
+006          20  (PREFIX)-RX-REFILL-IND        PIC X(01) VALUE '0'.
+003          20  (PREFIX)-VERSION-NUMBER       PIC X(02) VALUE 'V2'.
+003          20  (PREFIX)-PCF-MC-NUM           PIC X(12) VALUE SPACES.
+003          20  (PREFIX)-MC-ATTACHMENT-IND    PIC X(01) VALUE SPACES.
+002              88  (PREFIX)-MC-ATTACHMENT-IND-YES      VALUE 'Y'.
+002              88  (PREFIX)-MC-ATTACHMENT-IND-NO       VALUE 'N'.
+012              88  (PREFIX)-MC-ATTACHMENT-IND-OTHER    VALUE 'O'.
+002              88  (PREFIX)-MC-ATTACHMENT-IND-UNKWN    VALUE SPACE.
+003          20  (PREFIX)-MC-FORCE-IND         PIC X(01) VALUE SPACES.
+002              88  (PREFIX)-MC-FORCE-IND-YES           VALUE 'Y'.
+002              88  (PREFIX)-MC-FORCE-IND-NO            VALUE 'N'.
+002              88  (PREFIX)-MC-FORCE-IND-UNKWN         VALUE SPACE.
+003          20  (PREFIX)-MC-BENEFITS-EXHAUSTED          PIC X(01)
+003                                                      VALUE SPACES.
+002              88  (PREFIX)-MC-BENEFITS-EXH-YES        VALUE 'Y'.
+002              88  (PREFIX)-MC-BENEFITS-EXH-NO         VALUE 'N'.
+002              88  (PREFIX)-MC-BENEFITS-EXH-UNKWN      VALUE SPACE.
+003          20  (PREFIX)-FAMILY-PLANNING-IND  PIC X(01) VALUE SPACES.
+002              88  (PREFIX)-FAMILY-PLAN-IND-YES        VALUE 'Y'.
+002              88  (PREFIX)-FAMILY-PLAN-IND-NO         VALUE 'N'.
+002              88  (PREFIX)-FAMILY-PLAN-IND-UNKWN      VALUE SPACE.
+003          20  (PREFIX)-MULTI-MATCH-IND      PIC X(01) VALUE SPACES.
+003          20  (PREFIX)-RUNTIME-SEQ-NUM      PIC 9(11) COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-NUM-REV-CHARGES      PIC 9(02) VALUE ZERO.
+003          20  (PREFIX)-NUM-OTH-SEGS         PIC 9(02) VALUE ZERO.
+003          20  (PREFIX)-FILE-DATA-SOURCE     PIC X(04) VALUE SPACES.
+003          20  (PREFIX)-PCF-CONTRACT-NUM     PIC X(07) VALUE SPACES.
+003          20  (PREFIX)-CLAIM-EMERGENCY-IND  PIC X(01) VALUE SPACES.
+003          20  (PREFIX)-STAT-DOLLARS-HDR-OR-DTL        PIC X(01)
+003                                                      VALUE SPACES.
+002              88  (PREFIX)-STAT-DOLLARS-HDR           VALUE 'H'.
+002              88  (PREFIX)-STAT-DOLLARS-DTL           VALUE 'D'.
+003          20  (PREFIX)-SUMMED-BILL-ANC-DOLLARS  PIC S9(5)V99 COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-BILL-TYPE            PIC X(03) VALUE SPACES.
+003          20  (PREFIX)-RECORD-FROM-DOS-DTL  PIC 9(06) COMP-3
+003                                                      VALUE ZERO.
+003          20  (PREFIX)-FORMER-ICN           PIC X(20) VALUE SPACES.
+001          20  FILLER      REDEFINES (PREFIX)-FORMER-ICN.
+001              25  (PREFIX)-FORMER-ICN-1-13-N     PIC 9(13).
+001              25  FILLER                         PIC X(7).
+003          20  (PREFIX)-SRC-LINE-ITEM-DTL-CNT PIC X(02) VALUE '00'.
+002          20  (PREFIX)-SRC-LINE-ITEM-DTL-CNT-N REDEFINES
+002                     (PREFIX)-SRC-LINE-ITEM-DTL-CNT PIC 9(02).
+003          20  (PREFIX)-NET-DUPE-DATE         PIC 9(06) COMP-3
+003                                                       VALUE ZERO.
+003          20  (PREFIX)-OTP-COB-IND           PIC X(01) VALUE SPACES.
+                 88  (PREFIX)-OTP-COB-NO-MC-OR-OTH       VALUE '0'.
+014              88  (PREFIX)-OTP-COB-MC-PART-UNKN       VALUE '1'.
+                 88  (PREFIX)-OTP-COB-OTH-COV            VALUE '2'.
+                 88  (PREFIX)-OTP-COB-MC-AND-OTH         VALUE '3'.
+002              88  (PREFIX)-OTP-COB-OTHER              VALUE '4'.
+014              88  (PREFIX)-OTP-MCA-NO-MCB             VALUE '5'.
+014              88  (PREFIX)-OTP-MCB-NO-MCA             VALUE '6'.
+014              88  (PREFIX)-OTP-MCA-AND-MCB            VALUE '7'.
+002              88  (PREFIX)-OTP-COB-UNKWN              VALUE '9'.
+003          20  (PREFIX)-PM-USER-AREA          PIC X(40) VALUE SPACES.
+003          20  (PREFIX)-PM-USER-AREA-REDEF
+YGYG              REDEFINES (PREFIX)-PM-USER-AREA.
+003              25  (PREFIX)-XWALKED-PROC-CODE.
+YGYG               30 (PREFIX)-FILLER-TCN        PIC X(38).
+YGYG               30 (PREFIX)-RX-TCN-IND        PIC X(01).
+YGYG                 88    TCN-FOUND                     VALUE 'Y'.
+YGYG                 88    TSN-NOT-FOUND                 VALUE 'N'.
+YGYG               30 (PREFIX)-RX-NPI-ORIGIN     PIC X(01).
+YGYG                 88 NPI-FROM-SOURCE                  VALUE 'S'.
+YGYG                 88 NPI-FROM-XWALK                   VALUE 'X'.
+YGYG                 88 LPI-USED-NO-NPI                  VALUE 'L'.
+009   *      20  (PREFIX)-NEW-150BYTE-AREA.
+009          20  (PREFIX)-NEW-125BYTE-AREA.
+003              25  (PREFIX)-PM-USER-AREA-2    PIC X(40) VALUE SPACES.
+015              25  (PREFIX)-XWALKED-PROC-CODE1 PIC X(05) VALUE SPACES.
+003              25  (PREFIX)-APPLIED-INCOME    PIC S9(07)V99 COMP-3
+003                                                       VALUE ZERO.
+003              25  (PREFIX)-NUM-LEAVE-DAYS    PIC 9(03) COMP-3
+003                                                       VALUE ZERO.
+003              25  (PREFIX)-RATE-PAID         PIC S9(04)V999 COMP-3
+003                                                       VALUE ZERO.
+004              25  (PREFIX)-FACILITY-PROV-NUM PIC X(15) VALUE SPACES.
+004   *JHD       25  FILLER                     PIC X(94) VALUE SPACES.
+008   *JHD       25  FILLER                     PIC X(79) VALUE SPACES.
+008              25  (PREFIX)-DX-3              PIC X(05) VALUE SPACES.
+008              25  (PREFIX)-DX-4              PIC X(05) VALUE SPACES.
+008              25  (PREFIX)-DX-5              PIC X(05) VALUE SPACES.
+008              25  (PREFIX)-INST-ADDITIONAL-FIELDS.
+008                  30  (PREFIX)-DIAG-STERL-IND
+008                                             PIC X(01) VALUE SPACE.
+008                  30  (PREFIX)-DIAG-ABORT-IND
+008                                             PIC X(01) VALUE SPACE.
+008                  30  (PREFIX)-DIAG-FMPLN-IND
+008                                             PIC X(01) VALUE SPACE.
+008                  30  (PREFIX)-PROC-STERL-IND
+008                                             PIC X(01) VALUE SPACE.
+008                  30  (PREFIX)-PROC-ABORT-IND
+008                                             PIC X(01) VALUE SPACE.
+008                  30  (PREFIX)-PROC-FMPLN-IND
+008                                             PIC X(01) VALUE SPACE.
+008                  30  (PREFIX)-PROC-HYSTER-IND
+008                                             PIC X(01) VALUE SPACE.
+008                  30  (PREFIX)-PROC-CD-2     PIC X(05) VALUE SPACES.
+008                  30  (PREFIX)-SURGERY-DT-2  PIC 9(06) COMP-3
+008                                                       VALUE ZERO.
+008                  30  (PREFIX)-PROC-CD-3     PIC X(05) VALUE SPACES.
+008                  30  (PREFIX)-SURGERY-DT-3  PIC 9(06) COMP-3
+008                                                       VALUE ZERO.
+009   *              30  FILLER                 PIC X(39) VALUE SPACES.
+009   *          25  (PREFIX)-MISC-ADDITIONAL-FIELDS REDEFINES
+009   *                            (PREFIX)-INST-ADDITIONAL-FIELDS.
+009   *              30  FILLER                 PIC X(64).
+013                  30 (PREFIX)-ADMIT-DIAG-1   PIC X(10).
+013              25  FILLER                     PIC X(04).
+009   *      20  (PREFIX)-NEW-50BYTE-SYSTEMS-AREA.
+009          20  (PREFIX)-NEW-75BYTE-SYSTEMS-AREA.
+009   *          25  FILLER                     PIC X(10) VALUE SPACES.
+014              25  (PREFIX)-NEW-DRG.
+014                  30  (PREFIX)-DRG-TYPE      PIC X(03) VALUE SPACES.
+014                      88 (PREFIX)-MEDICARE-DRG        VALUE 'MS '.
+014                      88 (PREFIX)-CMS-DRG             VALUE 'CMS'.
+014                      88 (PREFIX)-REFINED-DRGS        VALUE 'R  '.
+014                      88 (PREFIX)-ALL-PATIENT-DRGS    VALUE 'AP '.
+014                      88 (PREFIX)-SEVERITY-DRGS       VALUE 'S  '.
+014                      88 (PREFIX)-ALL-PATIENT-S-DRGS  VALUE 'APS'.
+014                      88 (PREFIX)-ALL-PATIENT-R-DRGS  VALUE 'APR'.
+014                      88 (PREFIX)-INTERNATIONL-R-DRGS VALUE 'IR '.
+014                      88 (PREFIX)-UNKNOWN-DRG-TYPE    VALUE '   '.
+014                  30  (PREFIX)-DRG-CODE      PIC X(04) VALUE SPACES.
+014                  30  FILLER                 PIC X(03) VALUE SPACES.
+009              25  (PREFIX)-PROV-NUM-FROM-PREFIX PIC X(15)
+009                                                       VALUE SPACES.
+003              25  (PREFIX)-DATE-REFORMATTED  PIC 9(08) COMP-3
+003                                                       VALUE ZERO.
+003              25  (PREFIX)-SYS-DELETE-STATUS PIC X(01) VALUE SPACES.
+003              25  (PREFIX)-STAMP-DATE-TIME   PIC 9(12) COMP-3
+003                                                       VALUE ZERO.
+003              25  (PREFIX)-STAMP-SEQ-NUM     PIC 9(09) COMP-3
+003                                                       VALUE ZERO.
+003              25  (PREFIX)-ORIG-TOT-MA-PAID-HDR  PIC S9(7)V99 COMP-3
+003                                                       VALUE ZERO.
+003              25  (PREFIX)-ORIG-MA-PAID-DTL  PIC S9(7)V99 COMP-3
+003                                                       VALUE ZERO.
+003              25  (PREFIX)-PCF-CLASSIFICATION-STAT PIC X(07)
+003                                                       VALUE SPACES.
+003              25  (PREFIX)-PCF-CLASSIFICATION-DATE PIC 9(08) COMP-3
+003                                                       VALUE ZERO.
+003              25  (PREFIX)-PCF-IN-PROGRESS-IND   PIC X(01)
+003                                                       VALUE SPACES.
+003              25  (PREFIX)-PCF-LOGICAL-DELETE-IND PIC X(01)
+003                                                       VALUE SPACES.
+003              25  (PREFIX)-PCF-HMS-ICN-SUFFIX    PIC X(02)
+003                                                       VALUE '00'.
+                 25  (PREFIX)-PCF-HMS-ICN-SUFFIX-N REDEFINES
+                        (PREFIX)-PCF-HMS-ICN-SUFFIX PIC 9(02).
+003              25  (PREFIX)-PCF-FILE-NAME     PIC X(04) VALUE SPACES.
+015              25  (PREFIX)-PCF-VERSION-NUMBER    PIC X(02)
+015                                                       VALUE SPACES.
+

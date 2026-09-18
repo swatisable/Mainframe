@@ -1,0 +1,238 @@
+      *****************************************************************
+      *    ALT PHYSICIAN CLAIMS - HEADER + DETAIL RECORD              *
+      *    CLAIM TYPE = 'B' 'M'                                       *
+      *****************************************************************
+      *                                                               *
+      * MODIFICATION HISTORY:                                         *
+      *                                                               *
+      * REF# DATE       PGM PM  DESCRIPTION                           *
+      * ---- ---------- --- --- --------------------------------------*
+      * 0001 07/11/11   NMF IRJ REPLACED COPYBOOK FDALPHYS WITH       *
+      *                         FDALPHY3. UPDATES ON ALT PCF LAYOUT   *
+      *                         (TRACK+ 64742)                        *
+      *****************************************************************
+        02 (ALT)-PHYS-REC.
+        03 (ALT)-PHYS-HEADER-SEG.
+      * IDENTIFIER FIELDS
+         05  (ALT)-PHYS-ICN                       PIC X(13).
+         05  (ALT)-PHYS-REC-TYPE                  PIC X(02).
+         05  (ALT)-PHYS-CLAIM-TYPE-ALPHA          PIC X(01).
+         05  (ALT)-PHYS-DTL-CNT                   PIC X(03).
+         05  (ALT)-PHYS-CLM-STAT-IND              PIC X(01).
+         05  (ALT)-PHYS-CDE-CLM-VERSION           PIC X(04).
+      * GENERAL FIELDS
+         05  (ALT)-PHYS-PLAN-CODE                 PIC X(03).
+         05  (ALT)-PHYS-HDR-FDOS                  PIC X(08).
+         05  (ALT)-PHYS-HDR-TDOS                  PIC X(08).
+0001  *  05  (ALT)-PHYS-HDR-DIAG-CNT              PIC X(02).
+0001  *  05  (ALT)-PHYS-HDR-DIAG
+0001  *        OCCURS 10 TIMES.
+0001  *      10  (ALT)-PHYS-DIAG                  PIC X(07).
+         05  (ALT)-PHYS-ENTRY-CLERK               PIC X(08).
+         05  (ALT)-PHYS-HDR-PA-NUM                PIC X(10).
+         05  (ALT)-PHYS-PAT-CTL-NUM               PIC X(38).
+         05  (ALT)-PHYS-MED-REC-NUM               PIC X(50).
+      * RECIPIENT FIELDS
+         05  (ALT)-PHYS-BENE-MID                  PIC X(12).
+         05  (ALT)-PHYS-BENE-MID-CHK-DIG          PIC X(01).
+         05  (ALT)-PHYS-BENE-LNAME                PIC X(60).
+         05  (ALT)-PHYS-BENE-FNAME                PIC X(35).
+         05  (ALT)-PHYS-BENE-MI                   PIC X(01).
+         05  (ALT)-PHYS-BENE-CNTY                 PIC X(10).
+         05  (ALT)-PHYS-BENE-DOB-EXPANDED         PIC X(08).
+         05  (ALT)-PHYS-BENE-AGE                  PIC X(03).
+         05  (ALT)-PHYS-BENE-SEX                  PIC X(01).
+         05  (ALT)-PHYS-BENE-HIC                  PIC X(12).
+         05  (ALT)-PHYS-BENE-STATE-RACE           PIC X(02).
+         05  (ALT)-PHYS-BENE-INP-RTR-ELIG-IND     PIC X(01).
+         05  (ALT)-PHYS-HDR-BENE-ST-AID-CAT       PIC X(02).
+0001     05  (ALT)-PHYS-BENE-DIS-SURV-CDE         PIC X(02).
+      * PROVIDER FIELDS
+0001     05  (ALT)-PHYS-HDR-REF-PROV-NUM          PIC X(15).
+0001     05  FILLER                               PIC X(15).
+0001     05  FILLER                               PIC X(15).
+0001  *  05  (ALT)-PHYS-UNIQ-PROV-NUM             PIC X(15).
+0001     05  (ALT)-PHYS-BILL-PROV-NPI             PIC X(15).
+0001  *  05  (ALT)-PHYS-BILL-PROV-NUM             PIC X(15).
+         05  (ALT)-PHYS-BILL-PROV-MCD             PIC X(15).
+         05  (ALT)-PHYS-BILL-PROV-CNTY            PIC X(10).
+0001  *  05  (ALT)-PHYS-BILL-PROV-LOC             PIC X(01).
+         05  (ALT)-PHYS-BILL-PROV-RU              PIC X(01).
+         05  (ALT)-PHYS-BILL-PROV-TYPE            PIC X(02).
+         05  (ALT)-PHYS-BILL-PROV-SPEC-CNT        PIC X(02).
+         05  (ALT)-PHYS-BILL-PROV-SPEC
+               OCCURS 5 TIMES.
+             10  (ALT)-PHYS-PROV-SPEC             PIC X(03).
+      * FINANCIAL FIELDS
+         05  (ALT)-PHYS-FINAL-STATUS-DATE         PIC X(08).
+         05  (ALT)-PHYS-HDR-TOT-BILL              PIC X(10).
+         05  (ALT)-PHYS-HDR-ALLOW-AMT             PIC X(11).
+         05  (ALT)-PHYS-HDR-PAID-AMT              PIC X(11).
+         05  (ALT)-PHYS-HDR-TPL-AMT               PIC X(10).
+0001  *  05  (ALT)-PHYS-HDR-PAT-LIAB-AMT          PIC X(10).
+         05  FILLER                               PIC X(10).
+         05  (ALT)-PHYS-HDR-PA-AMT-USED           PIC X(10).
+         05  (ALT)-PHYS-HDR-PA-UNITS-USED         PIC X(16).
+0001     05  FILLER                               PIC X(08).
+0001     05  (ALT)-PHYS-RA-NBR                    PIC X(09).
+      * INDICATOR FIELDS
+         05  (ALT)-PHYS-HDR-EMERG-IND             PIC X(01).
+0001  *  05  (ALT)-PHYS-SERV-AUTH-EXCEPT-CODE     PIC X(30).
+0001     05  (ALT)-PHYS-SERV-AUTH-EXCEPT-CODE     PIC X(02).
+0001     05  (ALT)-PHYS-DELAY-RSN-CODE            PIC X(03).
+         05  FILLER                               PIC X(02).
+0001  *  05  (ALT)-PHYS-CLAIM-STAT-IND            PIC X(01).
+         05  (ALT)-PHYS-ACDT-IND1                 PIC X(03).
+         05  (ALT)-PHYS-ACDT-IND2                 PIC X(03).
+         05  (ALT)-PHYS-ACDT-IND3                 PIC X(03).
+         05  (ALT)-PHYS-HDR-PA-IND                PIC X(01).
+         05  (ALT)-PHYS-LIFETIME-IND              PIC X(01).
+         05  (ALT)-PHYS-HDR-FP-IND                PIC X(01).
+0001  *  05  (ALT)-PHYS-COPAY-IND                 PIC X(01).
+0001     05  FILLER                               PIC X(01).
+         05  (ALT)-PHYS-ENC-IND                   PIC X(01).
+         05  (ALT)-PHYS-BUYIN-IND                 PIC X(01).
+         05  (ALT)-PHYS-MW-EXEMPT-IND             PIC X(01).
+         05  (ALT)-PHYS-HDR-MAN-REFL-IND          PIC X(01).
+      * ADJUSTMENT FIELDS
+         05  (ALT)-PHYS-OHDR-ICN                  PIC X(13).
+         05  (ALT)-PHYS-OHDR-PAY-DATE             PIC X(08).
+         05  (ALT)-PHYS-OHDR-PAID-AMT             PIC X(11).
+         05  (ALT)-PHYS-OHDR-ENC-PAID-AMT         PIC X(11).
+      * EOB FIELDS
+         05  (ALT)-PHYS-HDR-EOB-CNT               PIC X(02).
+         05  (ALT)-PHYS-HDR-EOB-SEG
+               OCCURS 5 TIMES.
+             10  (ALT)-PHYS-HDR-EOB               PIC X(04).
+             10  (ALT)-PHYS-HDR-EOB-CUT-AMT       PIC X(10).
+      * ERROR FIELDS
+         05  (ALT)-PHYS-HDR-ERR-CNT               PIC X(02).
+         05  (ALT)-PHYS-HDR-ERR-SEG
+               OCCURS 5 TIMES.
+             10  (ALT)-PHYS-HDR-ERR-FLAG          PIC X(01).
+             10  (ALT)-PHYS-HDR-ERR-NUM           PIC X(04).
+      * TPL FIELDS
+         05  (ALT)-PHYS-TPL-IN-IND                PIC X(01).
+         05  (ALT)-PHYS-TPL-OUT-IND               PIC X(01).
+         05  (ALT)-PHYS-HDR-TPL-ADJUD-DATE        PIC X(08).
+0001     05  FILLER                               PIC X(11).
+      * PHYSICIAN SPECIFIC FIELDS
+         05  (ALT)-PHYS-MCARE-ICN                 PIC X(30).
+0001     05  (ALT)-PHYS-MCARE-PAY-DATE            PIC X(08).
+         05  (ALT)-PHYS-MCARE-TOT-BILL            PIC X(10).
+0001     05  (ALT)-PHYS-MCARE-COPAY-AMT           PIC X(09).
+0001     05  (ALT)-PHYS-MCARE-PSYCH-AMT           PIC X(09).
+0001     05  (ALT)-PHYS-MCARE-LT-FIL-AMT          PIC X(09).
+         05  (ALT)-PHYS-MCARE-COINS               PIC X(10).
+         05  (ALT)-PHYS-MCARE-ALLOW-AMT           PIC X(11).
+         05  (ALT)-PHYS-MCARE-REG-DED             PIC X(10).
+         05  (ALT)-PHYS-MCARE-PAID                PIC X(11).
+0001  *  05  (ALT)-PHYS-MCARE-PAY-DATE            PIC X(08).
+0001  *  05  (ALT)-PHYS-MCARE-COINS-DAYS          PIC X(07).
+0001  *  05  (ALT)-PHYS-MCARE-LIFE-RSV-DAYS       PIC X(07).
+0001  *  05  (ALT)-PHYS-MCARE-BLOOD-DEDCTBLE      PIC X(09).
+0001  *  05  (ALT)-PHYS-DELAY-RSN-CODE            PIC X(02).
+0001     05  (ALT)-PHYS-HDR-DIAG-CNT              PIC X(02).
+0001     05  (ALT)-PHYS-HDR-DIAG
+0001           OCCURS 14 TIMES.
+0001         10  (ALT)-PHYS-HDR-DIAG-SEQ          PIC X(02).
+0001         10  (ALT)-PHYS-HDR-DIAG-QLF          PIC X(03).
+0001         10  (ALT)-PHYS-DIAG                  PIC X(07).
+0001         10  (ALT)-PHYS-CDE-ICD-VERSION       PIC X(01).
+0001         10  FILLER                           PIC X(01).
+      *****************************************************************
+      *    ALT PHYSICIAN CLAIMS - DETAIL                              *
+      *    CLAIM TYPE = 'B' 'M'                                       *
+      *****************************************************************
+         03  (ALT)-PHYS-DETAIL-SEG.
+      * IDENTIFIER FIELDS
+            05  (ALT)-PHYS-DTL-ICN                PIC X(13).
+            05  (ALT)-PHYS-DTL-REC-ID             PIC X(02).
+            05  (ALT)-PHYS-DTL-CLM-TYPE-ALPHA     PIC X(01).
+            05  (ALT)-PHYS-DTL-DTL-NUM            PIC X(03).
+0001        05  (ALT)-PHYS-DTL-CLM-STAT-IND       PIC X(01).
+0001        05  (ALT)-PHYS-DTL-STAT-IND           PIC X(01).
+      * GENERAL FIELDS
+            05  (ALT)-PHYS-DTL-FDOS               PIC X(08).
+            05  (ALT)-PHYS-DTL-TDOS               PIC X(08).
+0001  *     05  (ALT)-PHYS-DTL-PREF-PROV-NUM      PIC X(15).
+0001        05  (ALT)-PHYS-DTL-PERF-PROV-MCD      PIC X(15).
+0001  *     05  (ALT)-PHYS-DTL-PREF-PROV-NPI      PIC X(15).
+0001        05  (ALT)-PHYS-DTL-PERF-PROV-NPI      PIC X(15).
+0001  *     05  (ALT)-PHYS-DTL-DIAG-PTR-CNT       PIC X(02).
+0001  *     05  (ALT)-PHYS-DTL-DIAG-PTR
+0001  *         OCCURS 8 TIMES.
+0001  *         10  (ALT)-PHYS-DTL-DIAG-PTR-CD    PIC X(08).
+            05  (ALT)-PHYS-DTL-UNITS              PIC X(16).
+            05  (ALT)-PHYS-DTL-PCODE              PIC X(06).
+            05  FILLER                            PIC X(04).
+            05  (ALT)-PHYS-DTL-MOD-CNT            PIC X(02).
+            05  (ALT)-PHYS-DTL-MOD
+                OCCURS 4 TIMES.
+                10  (ALT)-PHYS-DTL-MOD-CD         PIC X(02).
+0001        05  (ALT)-PHYS-DTL-FP-IND             PIC X(01).
+0001        05  (ALT)-PHYS-DTL-COPAY-IND          PIC X(01).
+      * RECIPIENT FIELDS
+            05  (ALT)-PHYS-DTL-B-ST-AID-CAT       PIC X(02).
+            05  (ALT)-PHYS-DTL-BENE-CNTY          PIC X(02).
+            05  (ALT)-PHYS-DTL-BENE-AGE           PIC X(03).
+0001        05  (ALT)-PHYS-DTL-BENE-MID           PIC X(12).
+      * FINANCIAL FIELDS
+0001        05  (ALT)-PHYS-PA-NBR                 PIC X(10).
+            05  (ALT)-PHYS-DTL-PA-AMT-USED        PIC X(10).
+            05  (ALT)-PHYS-DTL-PA-UNITS-USED      PIC X(16).
+            05  (ALT)-PHYS-DTL-TOT-BILL           PIC X(10).
+            05  (ALT)-PHYS-DTL-ALLOW-AMT          PIC X(10).
+            05  (ALT)-PHYS-DTL-PAID-AMT           PIC X(10).
+            05  (ALT)-PHYS-DTL-PAC                PIC X(06).
+            05  (ALT)-PHYS-DTL-COPAY-AMT          PIC X(08).
+0001  *     05  (ALT)-PHYS-DTL-INV-CAT            PIC X(03).
+0001        05  FILLER                            PIC X(10).
+0001        05  (ALT)-PHYS-DTL-FUND-CODE          PIC X(03).
+0001  *     05  (ALT)-PHYS-DTL-CLM-STAT-IND       PIC X(01).
+0001  *     05  (ALT)-PHYS-DTL-STAT-IND           PIC X(01).
+0001  *     05  (ALT)-PHYS-DTL-FP-IND             PIC X(01).
+0001  *     05  (ALT)-PHYS-DTL-COPAY-IND          PIC X(01).
+      * ADJUSTMENT FIELDS
+0001        05  (ALT)-PHYS-ODTL-ICN               PIC X(13).
+0001        05  (ALT)-PHYS-ODTL-PAYDATE           PIC X(08).
+0001        05  (ALT)-PHYS-ODTL-PAID-AMT          PIC X(11).
+0001        05  (ALT)-PHYS-ODTL-ENC-PAID-AMT      PIC X(11).
+      * EOB FIELDS
+            05  (ALT)-PHYS-DTL-EOB-CNT            PIC 9(02).
+            05  (ALT)-PHYS-DTL-EOB-SEG
+                OCCURS 5 TIMES.
+                10  (ALT)-PHYS-DTL-EOB            PIC X(04).
+                10  (ALT)-PHYS-DTL-EOB-CUT-AMT    PIC X(10).
+      * ERROR FIELDS
+            05  (ALT)-PHYS-DTL-ERR-CNT            PIC 9(02).
+            05  (ALT)-PHYS-DTL-ERR-SEG
+                OCCURS 5 TIMES.
+                10  (ALT)-PHYS-DTL-ERR-FLAG       PIC X(01).
+                10  (ALT)-PHYS-DTL-ERR-NUM        PIC X(04).
+      * TPL FIELDS
+            05  (ALT)-PHYS-DTL-TPL-ADJUD-DATE     PIC X(08).
+0001        05  FILLER                            PIC X(11).
+      * PHYSICIAN SPECIFIC FIELDS
+            05  (ALT)-PHYS-DTL-POS                PIC X(02).
+0001        05  (ALT)-PHYS-DTL-DIAG-PTR-COUNT     PIC X(02).
+0001        05  (ALT)-PHYS-DTL-DIAG-PTR-SEG
+0001              OCCURS 4 TIMES.
+0001            10  (ALT)-PHYS-DTL-DIAG-PTR       PIC X(02).
+            05  (ALT)-PHYS-DTL-EPSDT-SCRN-IND     PIC X(02).
+0001  *     05  (ALT)-PHYS-DTL-ANES-UNITS         PIC X(16).
+0001        05  (ALT)-PHYS-DTL-UNITS-BILLED       PIC X(16).
+            05  (ALT)-PHYS-DTL-MCARE-TOT-BILL     PIC X(10).
+0001        05  (ALT)-PHYS-DTL-MCARE-COPAY-AMT    PIC X(09).
+0001        05  (ALT)-PHYS-DTL-MCARE-PSYCH-AMT    PIC X(09).
+0001        05  (ALT)-PHYS-DTL-MCARE-LT-FIL-AMT   PIC X(09).
+            05  (ALT)-PHYS-DTL-MCARE-PAID         PIC X(11).
+            05  (ALT)-PHYS-DTL-MCARE-ALLOW-AMT    PIC X(11).
+            05  (ALT)-PHYS-DTL-MCARE-DED          PIC X(10).
+            05  (ALT)-PHYS-DTL-MCARE-COINS        PIC X(10).
+0001  *     05  (ALT)-PHYS-ODTL-ICN               PIC X(13).
+0001  *     05  (ALT)-PHYS-ODTL-PAYDATE           PIC X(08).
+0001  *     05  (ALT)-PHYS-ODTL-PAID-AMT          PIC X(11).
+0001  *     05  (ALT)-PHYS-ODTL-ENC-PAID-AMT      PIC X(11).
+0001  *     05  (ALT)-PHYS-DTL-BENE-MID           PIC X(12).
+

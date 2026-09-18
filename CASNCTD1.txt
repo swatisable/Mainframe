@@ -1,0 +1,1456 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CASNCTD1.
+       AUTHOR. LLL.
+       INSTALLATION. HMS.
+       DATE-WRITTEN. 10/07/2003.
+      *
+      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      * THIS PGM WILL SELECT DATA FROM DB2 TABLES AND CREATE NEW
+      * GENERATION OF CASUALTY CASE FILE (NCTCASE 384 FILE).
+      * IT WILL ALSO CREATE 2 FILES OF CLOSED CASES.
+      * THIS PROGRAM REPLACES PGM CASPCFM0. OLD PROCESS WAS BASED ON
+      * CASUALTY FILE FROM THE LAN. NEW PROCESS RETRIEVES DATA FROM DB2
+      * TABLES.
+      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      *  DB2 TABLES USED :  DB2AR01.ARTCASE - CASE TABLE
+      *                             ARTINDV - INDIVIDUAL TABLE
+      *                             ARTCCKP - CASE LKUP TABLE (AL ONLY)
+      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      *  MODIFICATION HISTORY:
+      *
+      * CHG#  DATE    PGM PM    DESCRIPTION
+      *----------------------------------------------------------------
+0000  * 000  10/07/03 LLL RXV  IN THE BEGINNING .............
+0001  * 0001 12/29/03 LLL      MODIFIED TO NEW LAYOUT OF ARTCASE TABLE
+0002  * 0002 06/02/04 YZG      ADD ESTATE CASES FOR SELECT FOR CO
+0002  *                        OTHER USES DEFAULT 'ZZZZZZZZ'
+0003  * 0003 07/16/04 LLL      ADD/POPULATE NEW FIELD IN NCTCASE LAYOUT
+0004  * 0004 09/23/08 PQN RTG  MODIFIED TO ADD NEW STATE CONTRACTS.
+0005  * 0005 12/09/08 PQN RTG  MODIFIED TO ADD NEW STATE CONTRACTS.
+0006  * 0005 06/02/08 YXG      MODIFIED TO ADD NEW STATE CONTRACTS.
+0007  * 0006 06/02/10 YZG      MODIFIED TO ADD NEW STATE ALT
+0008  * 0007 10/13/10 MJR      MODIFIED FOR ALT TO EXTRACT ALL MA NBRS
+0008  *                        FROM ARTCCKP FOR THE MA RECIPIENT IN
+0008  *                        EACH CASE
+0009  * 0008 05/04/11 SQK      ADD CONTEXT CODE TO PROCESS AL
+      * 0009 05/02/14 BJW      LIMITED TN TO EST CASES ONLY.
+      * 0010 01/21/15 BJW      ADD AL TRUST.
+0011  * 0011 05/28/15 MXM      ADD NEW STATE CONTRACTS:ART & FLT
+0011  *                        AR CAS AND FL CAS,EST,TRS
+0012  * 0012 03/01/16 BJW      ADD NEW STATE CTSCASEX-NY
+0013  * 0013 05/02/16 BJW      ADD NEW STATES WV AND TN.
+      * 0014 06/28/16 BJW      ADD OH CARESOURCE MCO LOGIC.
+      *                        341 IS NOW USING THE AL_CURSOR.
+0015  * 0015 01/30/17 JHW BJW  CHANGES TO USE DOS-FROM-DATE - 60 DAYS
+0015  *                        TO POPULATE INCIDENT-DATE FOR CASULATY
+0015  *                        CONTRACTS IF THE DOS-FROM-DATE IS A
+0015  *                        VALID DATE OTHERWISE USE THE
+0015  *                        INCIDENT-DATE - 60 DAYS TO POPULATE
+0015  *                        INCIDENT-DATE FOR CASULATY CONTRACTS
+0015  *                        OTHERWISE USE JUST INCIDENT-DATE FOR
+0015  *                        ALL OTHER TYPES OF RECORDS AND ADD A
+0015  *                        NEW OUTPUT FILE FOR TCM STATES WHICH
+0015  *                        WILL HAVE THE ORIGIONAL INCIDENT-DATE
+0015  *                        POPULATE THE INCIDENT-DATE
+0016  * 0016 05/15/17 JHW BJW  CHANGES TO USE THE NCT_CSR_AL CURSOR
+0016  *                        FOR THE FOLLOWING CLIENT CODES -
+0016  *                        313 (FL), 330 (AR), 358 (NV), 359 (NM),
+0016  *                        645 (WV)
+0017  * 0017 04/18/19 JHW BJW  CHANGES TO ADD 2 NEW CONTEXT CODE TO
+0017  * 0017                   NY PROCESSING - CTSESTNY (CTSEEN) AND
+0017  * 0017                   CTSESTEX-NY (CTSECN)
+      * 0018 05/15/19 BJW      ADD P-MONITOR ENHANCEMENT.
+0019  * 0019 06/24/19 JHW BJW  CHANGES TO ADD A NEW CONTEXT CODE TO
+0019  * 0019                   FL PROCESSING - CTSCASMT-FL (CTSMST)
+0020  * 0020 07/11/19 JHW BJW  ADD CODING TO IDENTIFY OH CARESOURCE
+0020  * 0020                   DIFFERENTLY FROM THE NORMAL OH
+0021  * 0021 07/18/19 JHW BJW  ADD CODING TO ADD NEW P-MONITOR
+0021  * 0021                   ENTRIES FOR WHEN A NEW CONTEXT CODE
+0021  * 0021                   IS ADDED TO EXISTING CLIENT CODES
+0022  * 0022 08/08/19 JHW BJW  CHANGES TO ADD A NEW CONTEXT CODE TO
+0022  * 0022                   WV PROCESSING - CTSESTWV (ESTATES)
+0023  * 0023 09/16/20 JXZ CUS0083008 - CTSCASNY - ENCOUNTER/CCLM CLAIM
+0023  * 0023                   PULL AND LINK UPDATES
+0024  * 0024 03/25/21 JXZ DMND0088038- CTSCASCO-HCPF - ADD CONTEXT CODE
+0024  * 0024                   TO  CCLM CLAIM PULL
+0025  * 0025 06/08/21 JXZ PRJTASK0325893 -  INCLUDE CTSESTNV, CTSTRSNV,
+0025  * 0025                            AND CTSTFRNV.
+0026  * 0026 12/29/21 JXZ PRJTASK0342491 -ADD CONTEXT CTSCASCH-WV
+0026  * 0026         TO MAINFRAME DAILY AND WEEKLY CLAIM PULLS
+0027  * 0027 03/22/23 JXZ PRJTASK0371059 -ADD CONTEXT CASCASTN FOR TN
+0027  * 0027         TO MAINFRAME DAILY AND WEEKLY CLAIM PULLS
+0028  * 0028 05/23/24 SXS SXS CHG0051545
+0028  * 0028            - ADD CONTEXT ADD CTSTRSNM TO EXISTING
+0029  * 0029 07/16/25 SXS SXS CUS0136047 CHG2724516
+0029  * 0029            - CTSCASNJ - MAINFRAME CLAIM PULL
+      *****************************************************************
+      *
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT NCTC-OUT          ASSIGN   TO  NCTCASO.
+0015       SELECT TCM-OUT           ASSIGN   TO  TCMCASO.
+           SELECT CLSD-OUT          ASSIGN   TO  CLSDO.
+           SELECT CLSD-EXTR-OUT     ASSIGN   TO  CLSDEXTO.
+      **
+       DATA DIVISION.
+       FILE SECTION.
+       FD  NCTC-OUT
+           LABEL RECORDS ARE STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           DATA RECORD IS NCTCASE-RECORD.
+       01  NCTCASE-RECORD              PIC X(384).
+0015  *
+0015   FD  TCM-OUT
+0015       LABEL RECORDS ARE STANDARD
+0015       BLOCK CONTAINS 0 RECORDS
+0015       RECORDING MODE IS F
+0015       DATA RECORD IS TCMCASE-RECORD.
+0015   01  TCMCASE-RECORD              PIC X(384).
+      *
+       FD  CLSD-OUT
+           LABEL RECORDS ARE STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           DATA RECORD IS CLOSED-RECORD.
+       01  CLOSED-RECORD               PIC X(384).
+      *
+       FD  CLSD-EXTR-OUT
+           LABEL RECORDS ARE STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           DATA RECORD IS CLSD-EXTRACT-RECORD.
+       01  CLSD-EXTRACT-RECORD         PIC X(09).
+      *
+       WORKING-STORAGE SECTION.
+      **
+       01  WS-NCTCASE-RECORD.
+           COPY NCTCASE REPLACING ==(PREFIX)== BY ==NCTC==.
+
+       01  WS-FIELDS.
+           05  DUMP-CODE                  PIC S9(04) COMP  VALUE +3645.
+           05  WS-SQLCODE                 PIC +(7)9(3)  VALUE ZERO.
+           05  WS-RETURN-CODE             PIC 9(02)     VALUE ZERO.
+           05  NCT-CSR-FLAG               PIC  X(01)    VALUE ' '.
+              88  START-OF-NCT-CSR                      VALUE 'S'.
+              88  END-OF-NCT-CSR                        VALUE 'E'.
+           05  WS-MOVE                    PIC  X(20)  VALUE SPACES.
+0015       05  WS-EDIT-FROM-DATE          PIC  X(10)  VALUE SPACE.
+0015           88  VALID-FROM-DATE                    VALUE
+0015                   '1800-01-01' THRU '2199-12-31'.
+0015       05  WS-NEW-FROM-DATE           PIC  X(10)  VALUE SPACE.
+0015       05  WS-CASUALTY-CODE           PIC  X(16)  VALUE SPACE.
+0015           88  TCM-CONTRACT                       VALUE
+0015  *    CTSCASCT - CT CASUALTY
+0015                   'CTSCASCT        '
+0015  *    CTSCASNV - NV CASUALTY
+0015                   'CTSCASNV        '
+0015  *    CTSCASAL - AL CASUALTY
+0015                   'CTSCASAL        '.
+0015           88  CASUALTY-CONTRACT                  VALUE
+0015  *    CTSCASCT - CT CASUALTY
+0015                   'CTSCASCT        '
+0023  *    CTSCASNY, CTSCASEX-NY, CTSCASNYOP1, CTSESTNYOP1
+0015                   'CTSCASNY        '
+0015                   'CTSCASEX-NY     '
+0023                   'CTSCASNYOP1     '
+0023                   'CTSESTNYOP1     '
+0015  *    CTSCASCO - CO CASUALTY
+0015                   'CTSCASCO        '
+0024                   'CTSCASCO-HCPF   '
+0015  *    CTSCASAR - ARKANSAS CASUALTY
+0015                   'CTSCASAR        '
+0015  *    CTSCASOH - OH CASUALTY
+0015                   'CTSCASOH        '
+0015  *    CTSCASNV - NV CASUALTY
+0015                   'CTSCASNV        '
+0025                   'CTSESTNV        '
+0025                   'CTSTRSNV        '
+0025                   'CTSTFRNV        '
+0015  *    CTSCASNM - NM CASUALTY
+0015                   'CTSCASNM        '
+0015  *    CTSCASOH - OH CASUALTY MCO CARE SOURCE
+0015                   'CTSCASOH        '
+0015  *    CTSCASAL - AL CASUALTY
+0015                   'CTSCASAL        '
+0015  *    CTSCASWV - WV CASUALTY
+0015                   'CTSCASWV        '
+0015                   'CTSESTWV        '
+0026                   'CTSCASCH-WV     '
+0027  *    CTSCASTN - TN CASUALTY '
+0027                   'CTSCASTN        '.
+           05  WS-CONTEXT-CD              PIC  X(16)  VALUE SPACES.
+0002       05  WS-CONTEXT-CD1             PIC  X(16)  VALUE SPACES.
+0010       05  WS-CONTEXT-CD2             PIC  X(16)  VALUE SPACES.
+0017       05  WS-CONTEXT-CD3             PIC  X(16)  VALUE SPACES.
+0017       05  WS-CONTEXT-CD4             PIC  X(16)  VALUE SPACES.
+0023       05  WS-CONTEXT-CD5             PIC  X(16)  VALUE SPACES.
+0023       05  WS-CONTEXT-CD6             PIC  X(16)  VALUE SPACES.
+
+0014       05  ALT-CLIENT-CD              PIC S9(7)V9(2) VALUE ZEROS.
+0014       05  ALT-CLIENT-CD-NUM          PIC 9(7) VALUE ZEROS.
+0014       05  ALT-CLIENT-CD-CHAR         PIC X(5) VALUE SPACES.
+           05  WS-WRITTEN-CONTEXT-CNT     PIC 9(1) VALUE ZERO.
+           05  WS-CLKP-PROCESS-NM.
+               10  WS-CLKP-TITLE  PIC X(19).
+               10  WS-CLKP-REST   PIC X(16).
+           05  WS-CLKP-PROCESS-NM-WHOLE REDEFINES WS-CLKP-PROCESS-NM
+                                  PIC X(35).
+
+       01  WS-COMPILE-DATE-TIME.
+           05  WS-WHEN-COMPILED      PIC X(26)   VALUE SPACES.
+           05  WS-WHEN-COMPILED-DISP.
+             10  WS-WHEN-COMPILED-MM-DD-YY.
+               15 WS-COMP-MM      PIC X(02)  VALUE SPACES.
+               15 FILLER          PIC X(01)  VALUE '/'.
+               15 WS-COMP-DD      PIC X(02)  VALUE SPACES.
+               15 FILLER          PIC X(01)  VALUE '/'.
+               15 WS-COMP-YY      PIC X(02)  VALUE SPACES.
+             10  FILLER           PIC X(01)  VALUE SPACE.
+             10  WS-WHEN-COMPILED-HH-MM.
+               15 WS-COMP-HH      PIC X(02)  VALUE SPACES.
+               15 FILLER          PIC X(01)  VALUE ':'.
+               15 WS-COMP-MI      PIC X(02)  VALUE SPACES.
+      *
+      **  "GET HMS CONTRACT" SUBROUTINE AREA :
+      *
+0004   01  WS-CASGETCC                   PIC X(08) VALUE 'CASGETCC'.
+0004   01  CASGETCC-CALLING-AREA.
+0004       05  HMS-3BYTE-CONTRACT-NUM    PIC X(03)  VALUE  SPACES.
+0004       05  FILLER                    PIC X(08)  VALUE  SPACES.
+0004       05  FILLER                    PIC X(04)  VALUE  SPACES.
+0004       05  FILLER                    PIC X(64)  VALUE  SPACES.
+0004       05  CASGETCC-RETURN-CODE      PIC X(01)  VALUE  SPACE.
+
+       01  WS-COUNTERS.
+           05  REC-WRITE-CTR             PIC S9(07) COMP-3  VALUE ZERO.
+0015       05  TCM-WRITE-CTR             PIC S9(07) COMP-3  VALUE ZERO.
+           05  OPEN-NCTC-REC-CTR         PIC S9(07) COMP-3  VALUE ZERO.
+           05  CLOSED-NCTC-REC-CTR       PIC S9(07) COMP-3  VALUE ZERO.
+           05  OTHER-NCTC-REC-CTR        PIC S9(07) COMP-3  VALUE ZERO.
+           05  TIME-OUT-CTR              PIC S9(01) COMP-3  VALUE ZERO.
+0020       05  NUM-REC-OUT               PIC ZZZ,ZZZ,ZZ9    VALUE ZERO.
+0021       05  WS-TOTAL-CONTEXT-CDS      PIC S9(07) COMP-3  VALUE ZERO.
+0021       05  WS-START-CONTEXT-CDS      PIC S9(07) COMP-3  VALUE ZERO.
+      *
+      **  DB2  AREA  START  ******
+      **  ERROR MESSAGE VARIABLES TO BE PASSED TO DSNTIAR :
+      *
+       01 ERROR-MESSAGE.
+           05 ERROR-MESSAGE-LENGTH   PIC S9(4) COMP   VALUE +560.
+           05 ERROR-MESSAGE-LINE     PIC X(80)  OCCURS 7 TIMES
+                                                 INDEXED BY EML-INDEX.
+       01 ERROR-LINE-LENGTH          PIC S9(9) COMP   VALUE +80.
+      *
+           EXEC SQL
+                INCLUDE SQLCA
+           END-EXEC.
+
+           EXEC SQL
+                INCLUDE  PMONITOR
+           END-EXEC.
+
+0002   01  WS-CURSOR-VALUES.
+0002       10 CASE-CONTEXT-CD1.
+0002          49 CASE-CONTEXT-CD1-L     PIC S9(4) USAGE COMP.
+0002          49 CASE-CONTEXT-CD1-T     PIC X(16).
+
+0010   01  WS-CURSOR-VALUES.
+0010       10 CASE-CONTEXT-CD2.
+0010          49 CASE-CONTEXT-CD2-L     PIC S9(4) USAGE COMP.
+0010          49 CASE-CONTEXT-CD2-T     PIC X(16).
+
+0017   01  WS-CURSOR-VALUES.
+0017       10 CASE-CONTEXT-CD3.
+0017          49 CASE-CONTEXT-CD3-L     PIC S9(4) USAGE COMP.
+0017          49 CASE-CONTEXT-CD3-T     PIC X(16).
+0017
+0017   01  WS-CURSOR-VALUES.
+0017       10 CASE-CONTEXT-CD4.
+0017          49 CASE-CONTEXT-CD4-L     PIC S9(4) USAGE COMP.
+0017          49 CASE-CONTEXT-CD4-T     PIC X(16).
+0017
+0023   01  WS-CURSOR-VALUES.
+0023       10 CASE-CONTEXT-CD5.
+0023          49 CASE-CONTEXT-CD5-L     PIC S9(4) USAGE COMP.
+0023          49 CASE-CONTEXT-CD5-T     PIC X(16).
+      *
+0023   01  WS-CURSOR-VALUES.
+0023       10 CASE-CONTEXT-CD6.
+0023          49 CASE-CONTEXT-CD6-L     PIC S9(4) USAGE COMP.
+0023          49 CASE-CONTEXT-CD6-T     PIC X(16).
+      *
+      **  ARTCASE  DCLGEN :
+      *
+           EXEC SQL
+                INCLUDE  ARTCASE
+           END-EXEC.
+      *
+      **  ARTINDV  DCLGEN :
+      *
+           EXEC SQL
+                INCLUDE  ARTINDVL
+           END-EXEC.
+      *
+      **  ARTCCKP  DCLGEN :
+      *
+           EXEC SQL
+                INCLUDE  ARTCCKP
+           END-EXEC.
+      *
+      **  MAIN CURSOR :
+      *
+           EXEC SQL  DECLARE  NCT_CSR  CURSOR  FOR
+              SELECT
+                A.CONTEXT_CD
+               ,A.CASE_ID
+0003           ,A.INDV_ID
+               ,VALUE(A.USER_CD,' ')
+               ,VALUE(A.COUNTY_CD,' ')
+               ,VALUE(A.WEL_NUMBER_CD,' ')
+0015           ,VALUE(CHAR(A.DOS_FROM_DT),' ')
+               ,VALUE(CHAR(A.DOS_TO_DT),' ')
+               ,VALUE(CHAR(A.INCIDENT_DT),' ')
+               ,VALUE(CHAR(A.CASE_OPEN_DT),' ')
+               ,VALUE(CHAR(A.CASE_CLOSE_DT),' ')
+               ,VALUE(A.CASE_TYPE_CD,' ')
+               ,VALUE(A.CASE_STATUS_CD,' ')
+               ,VALUE(A.CASE_PRIORITY_CD,' ')
+               ,VALUE(A.CASE_STAGE_CD,' ')
+               ,VALUE(A.CASE_SOURCE_CD,' ')
+               ,VALUE(A.COMPROMISE_AMT,0)
+               ,VALUE(A.EXPENSES_AMT,0)
+               ,VALUE(A.FEE_ADJUST_AMT,0)
+               ,VALUE(A.LIEN_ADJUST_AMT,0)
+               ,VALUE(A.LIEN_HMO_AMT,0)
+               ,VALUE(A.LIEN_MEDICAID_AMT,0)
+               ,VALUE(CHAR(A.LIEN_NOTICE_DT),' ')
+               ,VALUE(CHAR(A.LIEN_RELEASE_DT),' ')
+               ,VALUE(CHAR(A.LIKELY_SETTLE_DT),' ')
+               ,VALUE(A.SETTLEMENT_AMT,0)
+               ,VALUE(A.ATTORNEY_FEE_PCT,0)
+               ,VALUE(CHAR(A.LAST_UPDATE_DTM),' ')
+               ,I.MA_NUM
+               ,I.SSN_NUM
+               ,I.LAST_NM
+               ,I.FIRST_NM
+               ,I.MI_NM
+               ,VALUE(CHAR(I.DOB_DT),' ')
+               ,I.GENCD_RF
+               ,I.MARST_RF
+                  FROM   ARTCASE A
+                        ,ARTINDV I
+                  WHERE (A.CONTEXT_CD = :CASE-CONTEXT-CD  OR
+0002                     A.CONTEXT_CD = :CASE-CONTEXT-CD1 OR
+0010                     A.CONTEXT_CD = :CASE-CONTEXT-CD2 OR
+0017                     A.CONTEXT_CD = :CASE-CONTEXT-CD3 OR
+0017                     A.CONTEXT_CD = :CASE-CONTEXT-CD4 OR
+0023                     A.CONTEXT_CD = :CASE-CONTEXT-CD5 OR
+0023                     A.CONTEXT_CD = :CASE-CONTEXT-CD6)
+                    AND  A.CLIENT_CD = :CASE-CLIENT-CD
+                    AND  A.INDV_ID = I.INDV_ID
+                    AND  I.CLIENT_CD = :INDV-CLIENT-CD
+                    AND  A.CLIENT_CD = I.CLIENT_CD
+             FOR  READ  ONLY
+           END-EXEC.
+      *
+      **  MAIN CURSOR FOR ALABAMA:
+      *
+           EXEC SQL  DECLARE  NCT_CSR_AL  CURSOR  FOR
+              SELECT
+                A.CONTEXT_CD
+               ,A.CASE_ID
+0003           ,A.INDV_ID
+               ,VALUE(A.USER_CD,' ')
+               ,VALUE(A.COUNTY_CD,' ')
+               ,VALUE(A.WEL_NUMBER_CD,' ')
+0015           ,VALUE(CHAR(A.DOS_FROM_DT),' ')
+               ,VALUE(CHAR(A.DOS_TO_DT),' ')
+               ,VALUE(CHAR(A.INCIDENT_DT),' ')
+               ,VALUE(CHAR(A.CASE_OPEN_DT),' ')
+               ,VALUE(CHAR(A.CASE_CLOSE_DT),' ')
+               ,VALUE(A.CASE_TYPE_CD,' ')
+               ,VALUE(A.CASE_STATUS_CD,' ')
+               ,VALUE(A.CASE_PRIORITY_CD,' ')
+               ,VALUE(A.CASE_STAGE_CD,' ')
+               ,VALUE(A.CASE_SOURCE_CD,' ')
+               ,VALUE(A.COMPROMISE_AMT,0)
+               ,VALUE(A.EXPENSES_AMT,0)
+               ,VALUE(A.FEE_ADJUST_AMT,0)
+               ,VALUE(A.LIEN_ADJUST_AMT,0)
+               ,VALUE(A.LIEN_HMO_AMT,0)
+               ,VALUE(A.LIEN_MEDICAID_AMT,0)
+               ,VALUE(CHAR(A.LIEN_NOTICE_DT),' ')
+               ,VALUE(CHAR(A.LIEN_RELEASE_DT),' ')
+               ,VALUE(CHAR(A.LIKELY_SETTLE_DT),' ')
+               ,VALUE(A.SETTLEMENT_AMT,0)
+               ,VALUE(A.ATTORNEY_FEE_PCT,0)
+               ,VALUE(CHAR(A.LAST_UPDATE_DTM),' ')
+               ,I.MA_NUM
+               ,I.CLIENT_CD
+               ,I.SSN_NUM
+               ,I.LAST_NM
+               ,I.FIRST_NM
+               ,I.MI_NM
+               ,VALUE(CHAR(I.DOB_DT),' ')
+               ,I.GENCD_RF
+               ,I.MARST_RF
+                  FROM   ARTCASE A
+                        ,ARTINDV I
+                  WHERE (A.CONTEXT_CD = :CASE-CONTEXT-CD  OR
+0002                     A.CONTEXT_CD = :CASE-CONTEXT-CD1 OR
+0010                     A.CONTEXT_CD = :CASE-CONTEXT-CD2 OR
+0017                     A.CONTEXT_CD = :CASE-CONTEXT-CD3 OR
+0017                     A.CONTEXT_CD = :CASE-CONTEXT-CD4 OR
+0023                     A.CONTEXT_CD = :CASE-CONTEXT-CD5 OR
+0023                     A.CONTEXT_CD = :CASE-CONTEXT-CD6)
+                    AND  A.CLIENT_CD = :CASE-CLIENT-CD
+                    AND  A.INDV_ID = I.INDV_ID
+                    AND  I.CLIENT_CD = :INDV-CLIENT-CD
+                    AND  A.CLIENT_CD = I.CLIENT_CD
+              UNION
+              SELECT
+                A.CONTEXT_CD
+               ,A.CASE_ID
+0003           ,A.INDV_ID
+               ,VALUE(A.USER_CD,' ')
+               ,VALUE(A.COUNTY_CD,' ')
+               ,VALUE(A.WEL_NUMBER_CD,' ')
+0015           ,VALUE(CHAR(A.DOS_FROM_DT),' ')
+               ,VALUE(CHAR(A.DOS_TO_DT),' ')
+               ,VALUE(CHAR(A.INCIDENT_DT),' ')
+               ,VALUE(CHAR(A.CASE_OPEN_DT),' ')
+               ,VALUE(CHAR(A.CASE_CLOSE_DT),' ')
+               ,VALUE(A.CASE_TYPE_CD,' ')
+               ,VALUE(A.CASE_STATUS_CD,' ')
+               ,VALUE(A.CASE_PRIORITY_CD,' ')
+               ,VALUE(A.CASE_STAGE_CD,' ')
+               ,VALUE(A.CASE_SOURCE_CD,' ')
+               ,VALUE(A.COMPROMISE_AMT,0)
+               ,VALUE(A.EXPENSES_AMT,0)
+               ,VALUE(A.FEE_ADJUST_AMT,0)
+               ,VALUE(A.LIEN_ADJUST_AMT,0)
+               ,VALUE(A.LIEN_HMO_AMT,0)
+               ,VALUE(A.LIEN_MEDICAID_AMT,0)
+               ,VALUE(CHAR(A.LIEN_NOTICE_DT),' ')
+               ,VALUE(CHAR(A.LIEN_RELEASE_DT),' ')
+               ,VALUE(CHAR(A.LIKELY_SETTLE_DT),' ')
+               ,VALUE(A.SETTLEMENT_AMT,0)
+               ,VALUE(A.ATTORNEY_FEE_PCT,0)
+               ,VALUE(CHAR(A.LAST_UPDATE_DTM),' ')
+               ,L.DATA_TXT
+0029  *        ,VALUE(L.DATA_AMT,0)
+0029           ,I.CLIENT_CD
+               ,I.SSN_NUM
+               ,I.LAST_NM
+               ,I.FIRST_NM
+               ,I.MI_NM
+               ,VALUE(CHAR(I.DOB_DT),' ')
+               ,I.GENCD_RF
+               ,I.MARST_RF
+                  FROM   ARTCASE A
+                        ,ARTINDV I
+                        ,ARTCCKP L
+                  WHERE (A.CONTEXT_CD = :CASE-CONTEXT-CD  OR
+                         A.CONTEXT_CD = :CASE-CONTEXT-CD1 OR
+0010                     A.CONTEXT_CD = :CASE-CONTEXT-CD2 OR
+0017                     A.CONTEXT_CD = :CASE-CONTEXT-CD3 OR
+0017                     A.CONTEXT_CD = :CASE-CONTEXT-CD4 OR
+0023                     A.CONTEXT_CD = :CASE-CONTEXT-CD5 OR
+0023                     A.CONTEXT_CD = :CASE-CONTEXT-CD6)
+                    AND  A.CLIENT_CD = :CASE-CLIENT-CD
+                    AND  A.INDV_ID = I.INDV_ID
+                    AND  I.CLIENT_CD = :INDV-CLIENT-CD
+                    AND  A.CLIENT_CD = I.CLIENT_CD
+                    AND  L.CONTEXT_CD = A.CONTEXT_CD
+                    AND  L.CASE_ID = A.CASE_ID
+                    AND  L.CASLK_RF = 'MA_NUM'
+             FOR  READ  ONLY
+           END-EXEC.
+      *
+      ******  DB2  AREA  END  ******
+      *
+       PROCEDURE DIVISION.
+       0000-MAIN.
+           DISPLAY '+++'
+0004       DISPLAY '+++ ENTERED CASNCTD1 +++'
+           MOVE FUNCTION WHEN-COMPILED    TO  WS-WHEN-COMPILED
+           MOVE  WS-WHEN-COMPILED (5:2)    TO  WS-COMP-MM
+           MOVE  WS-WHEN-COMPILED (7:2)    TO  WS-COMP-DD
+           MOVE  WS-WHEN-COMPILED (3:2)    TO  WS-COMP-YY
+           MOVE  WS-WHEN-COMPILED (9:2)    TO  WS-COMP-HH
+           MOVE  WS-WHEN-COMPILED (11:2)   TO  WS-COMP-MI
+           DISPLAY '+++ PGM CASNCTD1 COMPILED ON ' WS-WHEN-COMPILED-DISP
+                                                           ' START  **'.
+           OPEN OUTPUT  NCTC-OUT
+0015                    TCM-OUT
+                        CLSD-OUT
+                        CLSD-EXTR-OUT .
+           PERFORM 1000-MAINLINE     THRU  1000-MAINLINE-EXIT.
+           PERFORM 8000-P-MONITOR    THRU  8000-P-MONITOR-EXIT.
+           PERFORM 9000-TERMINATION  THRU  9000-TERMINATION-EXIT.
+           CLOSE        NCTC-OUT
+0015                    TCM-OUT
+                        CLSD-OUT
+                        CLSD-EXTR-OUT.
+           MOVE  WS-RETURN-CODE      TO  RETURN-CODE
+           GOBACK.
+      **
+       1000-MAINLINE.
+0004       CALL WS-CASGETCC USING  CASGETCC-CALLING-AREA.
+0004       DISPLAY 'CALLING_AREA CONTRACT NUM =' CASGETCC-CALLING-AREA.
+
+0004       IF  CASGETCC-RETURN-CODE  NOT =  '0'
+              DISPLAY '** ERR: RETRIEVE CONTRACT NUMBER **'
+              MOVE  +0999  TO  DUMP-CODE
+              GO TO  Z9999-ERROR-EXIT
+           END-IF.
+
+0004       DISPLAY 'HMS-3BYTE-CONTRACT-NUM =' HMS-3BYTE-CONTRACT-NUM.
+0002       MOVE  'ZZZZZZZZZZZZZZZZ'   TO   WS-CONTEXT-CD1
+0010       MOVE  'ZZZZZZZZZZZZZZZZ'   TO   WS-CONTEXT-CD2
+0017       MOVE  'ZZZZZZZZZZZZZZZZ'   TO   WS-CONTEXT-CD3
+0017       MOVE  'ZZZZZZZZZZZZZZZZ'   TO   WS-CONTEXT-CD4
+0023       MOVE  'ZZZZZZZZZZZZZZZZ'   TO   WS-CONTEXT-CD5
+0023       MOVE  'ZZZZZZZZZZZZZZZZ'   TO   WS-CONTEXT-CD6
+           EVALUATE  HMS-3BYTE-CONTRACT-NUM
+TEST         WHEN  '300'
+TEST                MOVE  'CTSCASTST'  TO   WS-CONTEXT-CD
+             WHEN  '309'
+                    MOVE  'CTSESTMI'   TO   WS-CONTEXT-CD
+             WHEN  '313'
+                    MOVE  'CTSCASFL'   TO   WS-CONTEXT-CD
+0011                MOVE  'CTSESTFL'   TO   WS-CONTEXT-CD1
+0011                MOVE  'CTSTRSFL'   TO   WS-CONTEXT-CD2
+0019                MOVE  'CTSCASMT-FL' TO   WS-CONTEXT-CD3
+0004         WHEN  '316'
+0004                MOVE  'CTSCASIA'   TO   WS-CONTEXT-CD
+0004                MOVE  'CTSESTIA'   TO   WS-CONTEXT-CD1
+             WHEN  '317'
+                    MOVE  'CTSWRCCA'   TO   WS-CONTEXT-CD
+             WHEN  '319'
+                    MOVE  'CTSCASCT'   TO   WS-CONTEXT-CD
+             WHEN  '320'
+                    MOVE  'CTSCASNY'   TO   WS-CONTEXT-CD
+                    MOVE  'CTSCASNYC'  TO   WS-CONTEXT-CD1
+0012                MOVE  'CTSCASEX-NY' TO  WS-CONTEXT-CD2
+0017                MOVE  'CTSESTNY'    TO  WS-CONTEXT-CD3
+0017                MOVE  'CTSESTEX-NY' TO  WS-CONTEXT-CD4
+0023                MOVE  'CTSCASNYOP1' TO  WS-CONTEXT-CD5
+0023                MOVE  'CTSESTNYOP1' TO  WS-CONTEXT-CD6
+             WHEN  '326'
+                    MOVE  'CTSCASCO'   TO   WS-CONTEXT-CD
+                    MOVE  'CTSESTCO'   TO   WS-CONTEXT-CD1
+0024                MOVE  'CTSCASCO-HCPF' TO WS-CONTEXT-CD2
+0011         WHEN  '330'
+0011                MOVE  'CTSCASAR'   TO   WS-CONTEXT-CD
+0004         WHEN  '333'
+0004                MOVE  'CTSCASKY'   TO   WS-CONTEXT-CD
+0004                MOVE  'CTSESTKY'   TO   WS-CONTEXT-CD1
+0004         WHEN  '335'
+0004                MOVE  'CTSCASKS'   TO   WS-CONTEXT-CD
+0004                MOVE  'CTSESTKS'   TO   WS-CONTEXT-CD1
+             WHEN  '341'
+                    MOVE  'CTSCASOH'   TO   WS-CONTEXT-CD
+0020         WHEN  '535'
+0020                MOVE  'CTSCASOH'   TO   WS-CONTEXT-CD
+0004         WHEN  '358'
+0004                MOVE  'CTSCASNV'   TO   WS-CONTEXT-CD
+0025                MOVE  'CTSESTNV'   TO   WS-CONTEXT-CD1
+0025                MOVE  'CTSTRSNV'   TO   WS-CONTEXT-CD2
+0025                MOVE  'CTSTFRNV'   TO   WS-CONTEXT-CD3
+0004         WHEN  '359'
+0004                MOVE  'CTSCASNM'   TO   WS-CONTEXT-CD
+                    MOVE  'CTSESTNM'   TO   WS-CONTEXT-CD1
+0028                MOVE  'CTSTRSNM'   TO   WS-CONTEXT-CD2
+0004         WHEN  '395'
+0004                MOVE  'CTSCASNC'   TO   WS-CONTEXT-CD
+0004                MOVE  'CTSESTNC'   TO   WS-CONTEXT-CD1
+0004         WHEN  '396'
+0004                MOVE  'CTSCASGA'   TO   WS-CONTEXT-CD
+0004                MOVE  'CTSESTGA'   TO   WS-CONTEXT-CD1
+0004         WHEN  '444'
+0004                MOVE  'CTSCASMS'   TO   WS-CONTEXT-CD
+0004                MOVE  'CTSESTMS'   TO   WS-CONTEXT-CD1
+0004         WHEN  '534'
+0004                MOVE  'CTSCASUH-AZ' TO  WS-CONTEXT-CD
+0005         WHEN  '537'
+0005                MOVE  'CTSCASCS-MI' TO  WS-CONTEXT-CD
+0004         WHEN  '547'
+0004                MOVE  'CTSDOHFL'    TO  WS-CONTEXT-CD
+0004         WHEN  '561'
+0004                MOVE  'CTSCASWC-GA' TO  WS-CONTEXT-CD
+0004         WHEN  '564'
+0004  *             MOVE  'CTSCASTN'    TO  WS-CONTEXT-CD1
+0009                MOVE  'CTSCASTN'    TO  WS-CONTEXT-CD
+0004         WHEN  '585'
+0004                MOVE  'CTSCASAZ'    TO  WS-CONTEXT-CD
+0004                MOVE  'CTSESTAZ'    TO  WS-CONTEXT-CD1
+0006         WHEN  '590'
+0006                MOVE  'CTSCASAL'   TO   WS-CONTEXT-CD
+0009                MOVE  'CTSESTAL'   TO   WS-CONTEXT-CD1
+0010                MOVE  'CTSTRSAL'   TO   WS-CONTEXT-CD2
+0004         WHEN  '593'
+0004                MOVE 'CTSESTTX' TO WS-CONTEXT-CD
+0004         WHEN  '633'
+0004                MOVE 'CTSCASHP-NC' TO WS-CONTEXT-CD
+0013         WHEN  '645'
+0013                MOVE  'CTSCASWV'   TO   WS-CONTEXT-CD
+0022                MOVE  'CTSESTWV'   TO   WS-CONTEXT-CD1
+0026                MOVE 'CTSCASCH-WV' TO   WS-CONTEXT-CD2
+0027         WHEN  '564'  MOVE  'CTSCASTN'   TO   WS-CONTEXT-CD
+0029         WHEN  '303'  MOVE  'CTSCASNJ'   TO   WS-CONTEXT-CD
+             WHEN  OTHER
+                   DISPLAY '** ERR: UNKNOWN HMS-3BYTE-CONTRACT-NUM **'
+                   GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+
+           DISPLAY 'WS-CONTEXT-CD : ' WS-CONTEXT-CD
+0002       DISPLAY 'WS-CONTEXT-CD1: ' WS-CONTEXT-CD1
+0010       DISPLAY 'WS-CONTEXT-CD2: ' WS-CONTEXT-CD2
+0017       DISPLAY 'WS-CONTEXT-CD3: ' WS-CONTEXT-CD3
+0017       DISPLAY 'WS-CONTEXT-CD4: ' WS-CONTEXT-CD4
+0023       DISPLAY 'WS-CONTEXT-CD5: ' WS-CONTEXT-CD5
+0023       DISPLAY 'WS-CONTEXT-CD6: ' WS-CONTEXT-CD6
+           DISPLAY '+'.
+0021  *
+0021       EVALUATE  TRUE
+0021           WHEN  WS-CONTEXT-CD1  EQUAL  'ZZZZZZZZZZZZZZZZ'
+0021               MOVE  +1  TO  WS-TOTAL-CONTEXT-CDS
+0021           WHEN  WS-CONTEXT-CD2  EQUAL  'ZZZZZZZZZZZZZZZZ'
+0021               MOVE  +2  TO  WS-TOTAL-CONTEXT-CDS
+0021           WHEN  WS-CONTEXT-CD3  EQUAL  'ZZZZZZZZZZZZZZZZ'
+0021               MOVE  +3  TO  WS-TOTAL-CONTEXT-CDS
+0021           WHEN  WS-CONTEXT-CD4  EQUAL  'ZZZZZZZZZZZZZZZZ'
+0021               MOVE  +4  TO  WS-TOTAL-CONTEXT-CDS
+0023           WHEN  WS-CONTEXT-CD5  EQUAL  'ZZZZZZZZZZZZZZZZ'
+0023               MOVE  +5  TO  WS-TOTAL-CONTEXT-CDS
+0023           WHEN  WS-CONTEXT-CD6  EQUAL  'ZZZZZZZZZZZZZZZZ'
+0023               MOVE  +6  TO  WS-TOTAL-CONTEXT-CDS
+0021           WHEN  OTHER
+0023               MOVE  +7  TO  WS-TOTAL-CONTEXT-CDS
+0021       END-EVALUATE.
+      *
+           INITIALIZE  DCLARTCASE
+                       DCLARTINDV
+                       DCLARTCCKP.
+
+0014       IF HMS-3BYTE-CONTRACT-NUM = '590' OR '320' OR '341'
+0016                              OR   '313' OR '330' OR '358'
+0020                              OR   '359' OR '645' OR '535'
+0029                              OR   '564' OR '303'
+      *       ADDING 320 NY AS THIS USES THE SAME PROCESS.
+0014  *       ADDING 341 OH AS CARESOURCE AND OH NEED THIS
+      *       CURSOR.
+0016  *       ADDING 313 - FLORIDA - CASUALTY/ESTATE/TRUST
+0016  *       ADDING 330 - ARKANSAS - CASUALTY
+0016  *       ADDING 358 - NEVADA - CASUALTY
+0016  *       ADDING 359 - NEW MEXICO - CASUALTY/ESTATE
+0016  *       ADDING 645 - WEST VIRGINIA - CASUALTY
+0020  *       ADDING 535 - OH CARESOURCE - CASUALTY
+0027  *       ADDING 564 - TN            - CASUALTY
+
+              PERFORM 2100-OPEN-NCT-CSR THRU 2100-OPEN-EXIT
+                 UNTIL START-OF-NCT-CSR OR TIME-OUT-CTR >= 5
+              IF TIME-OUT-CTR >= 5
+                GO TO Z9999-ERROR-EXIT
+              END-IF
+      *
+              PERFORM UNTIL END-OF-NCT-CSR
+                 PERFORM 2200-FETCH-NCT-CSR THRU 2200-FETCH-EXIT
+                 IF END-OF-NCT-CSR
+                    CONTINUE
+                 ELSE
+                    PERFORM 1300-FORMAT-NCTCASE-REC
+                       THRU 1300-FORMAT-EXIT
+                    WRITE NCTCASE-RECORD FROM WS-NCTCASE-RECORD
+                    ADD 1 TO REC-WRITE-CTR
+0015
+0015                IF TCM-CONTRACT
+0015                    MOVE CASE-INCIDENT-DT  TO  NCTC-INCIDENT-DATE
+0015                    WRITE  TCMCASE-RECORD  FROM  WS-NCTCASE-RECORD
+0015                    ADD   +1   TO  TCM-WRITE-CTR
+0015                END-IF
+0015
+                    EVALUATE TRUE
+                       WHEN NCTC-CASE-STATUS-CODE = 'O'
+                          ADD 1 TO OPEN-NCTC-REC-CTR
+                       WHEN NCTC-CASE-STATUS-CODE = 'C'
+                          ADD 1 TO  CLOSED-NCTC-REC-CTR
+                          WRITE CLOSED-RECORD FROM WS-NCTCASE-RECORD
+                          MOVE NCTC-HMS-CASE-KEY
+                            TO CLSD-EXTRACT-RECORD
+                          WRITE CLSD-EXTRACT-RECORD
+                          WHEN  OTHER
+                          ADD 1 TO OTHER-NCTC-REC-CTR
+                    END-EVALUATE
+                    INITIALIZE DCLARTCASE DCLARTINDV DCLARTCCKP
+                 END-IF
+              END-PERFORM
+      *
+              EXEC SQL CLOSE NCT_CSR_AL END-EXEC
+              EVALUATE SQLCODE
+                 WHEN +0
+                    CONTINUE
+                 WHEN OTHER
+                    MOVE SQLCODE  TO  WS-SQLCODE
+                    DISPLAY 'ERR: CLOSE NCT_CSR_AL, SQLCODE = '
+                       WS-SQLCODE
+                    GO TO  Z9999-ERROR-EXIT
+              END-EVALUATE
+           ELSE
+              PERFORM 1100-OPEN-NCT-CSR THRU 1100-OPEN-EXIT
+                 UNTIL START-OF-NCT-CSR OR TIME-OUT-CTR >= 5
+              IF TIME-OUT-CTR >= 5
+                GO TO Z9999-ERROR-EXIT
+              END-IF
+      *
+              PERFORM UNTIL END-OF-NCT-CSR
+                 PERFORM 1200-FETCH-NCT-CSR THRU 1200-FETCH-EXIT
+                 IF END-OF-NCT-CSR
+                    CONTINUE
+                 ELSE
+                    PERFORM 1300-FORMAT-NCTCASE-REC
+                       THRU 1300-FORMAT-EXIT
+                    WRITE NCTCASE-RECORD FROM WS-NCTCASE-RECORD
+                    ADD 1 TO REC-WRITE-CTR
+0015
+0015                IF TCM-CONTRACT
+0015                    MOVE CASE-INCIDENT-DT  TO  NCTC-INCIDENT-DATE
+0015                    WRITE TCMCASE-RECORD  FROM  WS-NCTCASE-RECORD
+0015                    ADD   +1   TO  TCM-WRITE-CTR
+0015                END-IF
+0015
+                    EVALUATE TRUE
+                       WHEN NCTC-CASE-STATUS-CODE = 'O'
+                          ADD 1 TO OPEN-NCTC-REC-CTR
+                       WHEN NCTC-CASE-STATUS-CODE = 'C'
+                          ADD 1 TO  CLOSED-NCTC-REC-CTR
+                          WRITE CLOSED-RECORD FROM WS-NCTCASE-RECORD
+                          MOVE NCTC-HMS-CASE-KEY
+                            TO CLSD-EXTRACT-RECORD
+                          WRITE CLSD-EXTRACT-RECORD
+                          WHEN  OTHER
+                          ADD 1 TO OTHER-NCTC-REC-CTR
+                    END-EVALUATE
+                    INITIALIZE DCLARTCASE DCLARTINDV DCLARTCCKP
+                 END-IF
+              END-PERFORM
+      *
+              EXEC SQL CLOSE NCT_CSR END-EXEC
+              EVALUATE SQLCODE
+                 WHEN +0
+                    CONTINUE
+                 WHEN OTHER
+                    MOVE SQLCODE  TO  WS-SQLCODE
+                    DISPLAY 'ERR: CLOSE NCT_CSR, SQLCODE = ' WS-SQLCODE
+                    GO TO  Z9999-ERROR-EXIT
+              END-EVALUATE
+           END-IF.
+
+       1000-MAINLINE-EXIT.      EXIT.
+      *
+       1100-OPEN-NCT-CSR.
+           UNSTRING  WS-CONTEXT-CD           DELIMITED  BY  ALL SPACES
+               INTO   CASE-CONTEXT-CD-T
+               COUNT IN  CASE-CONTEXT-CD-L
+           END-UNSTRING.
+0002       UNSTRING  WS-CONTEXT-CD1          DELIMITED  BY  ALL SPACES
+0002           INTO   CASE-CONTEXT-CD1-T
+0002           COUNT IN  CASE-CONTEXT-CD1-L
+0002       END-UNSTRING.
+0010       UNSTRING  WS-CONTEXT-CD2          DELIMITED  BY  ALL SPACES
+0010           INTO   CASE-CONTEXT-CD2-T
+0010           COUNT IN  CASE-CONTEXT-CD2-L
+0010       END-UNSTRING.
+0017       UNSTRING  WS-CONTEXT-CD3  DELIMITED  BY  ALL SPACES
+0017           INTO  CASE-CONTEXT-CD3-T
+0017          COUNT  IN  CASE-CONTEXT-CD3-L
+0017       END-UNSTRING.
+0017       UNSTRING  WS-CONTEXT-CD4  DELIMITED  BY  ALL SPACES
+0017           INTO  CASE-CONTEXT-CD4-T
+0017          COUNT  IN  CASE-CONTEXT-CD4-L
+0017       END-UNSTRING.
+0023       UNSTRING  WS-CONTEXT-CD5  DELIMITED  BY  ALL SPACES
+0023           INTO  CASE-CONTEXT-CD5-T
+0023          COUNT  IN  CASE-CONTEXT-CD5-L
+0023       END-UNSTRING.
+0023       UNSTRING  WS-CONTEXT-CD6  DELIMITED  BY  ALL SPACES
+0023           INTO  CASE-CONTEXT-CD6-T
+0023          COUNT  IN  CASE-CONTEXT-CD6-L
+0023       END-UNSTRING.
+           MOVE  HMS-3BYTE-CONTRACT-NUM  TO  CASE-CLIENT-CD
+                                             INDV-CLIENT-CD .
+
+             DISPLAY 'HMS-3BYTE-CONTRACT-NUM:' HMS-3BYTE-CONTRACT-NUM
+           EXEC SQL  OPEN NCT_CSR  END-EXEC
+           EVALUATE  SQLCODE
+             WHEN +0
+               SET  START-OF-NCT-CSR  TO  TRUE
+             WHEN -904
+             WHEN -911
+             WHEN -913
+LLL   * ==> UNFORTUNATELY WE WILL NEVER RECEIVE -913 IN OUR INSTALLATION
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: OPEN NCT_CSR, SQLCODE = ' WS-SQLCODE
+               ADD 1  TO  TIME-OUT-CTR
+               DISPLAY 'DB2 ACCESS ATTEMPTED ' TIME-OUT-CTR ' TIME(S)'
+               DISPLAY '+'
+               GO TO  1100-OPEN-EXIT
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: OPEN NCT_CSR, SQLCODE = ' WS-SQLCODE
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+       1100-OPEN-EXIT.     EXIT.
+      *
+       1200-FETCH-NCT-CSR.
+           INITIALIZE  DCLARTCASE
+                       DCLARTINDV .
+           EXEC SQL  FETCH NCT_CSR  INTO
+                :CASE-CONTEXT-CD
+               ,:CASE-CASE-ID
+0003           ,:CASE-INDV-ID
+               ,:CASE-USER-CD
+               ,:CASE-COUNTY-CD
+               ,:CASE-WEL-NUMBER-CD
+0015           ,:CASE-DOS-FROM-DT
+               ,:CASE-DOS-TO-DT
+               ,:CASE-INCIDENT-DT
+               ,:CASE-CASE-OPEN-DT
+               ,:CASE-CASE-CLOSE-DT
+               ,:CASE-CASE-TYPE-CD
+               ,:CASE-CASE-STATUS-CD
+               ,:CASE-CASE-PRIORITY-CD
+               ,:CASE-CASE-STAGE-CD
+               ,:CASE-CASE-SOURCE-CD
+               ,:CASE-COMPROMISE-AMT
+               ,:CASE-EXPENSES-AMT
+               ,:CASE-FEE-ADJUST-AMT
+               ,:CASE-LIEN-ADJUST-AMT
+               ,:CASE-LIEN-HMO-AMT
+               ,:CASE-LIEN-MEDICAID-AMT
+               ,:CASE-LIEN-NOTICE-DT
+               ,:CASE-LIEN-RELEASE-DT
+               ,:CASE-LIKELY-SETTLE-DT
+               ,:CASE-SETTLEMENT-AMT
+               ,:CASE-ATTORNEY-FEE-PCT
+               ,:CASE-LAST-UPDATE-DTM
+               ,:INDV-MA-NUM
+               ,:INDV-SSN-NUM
+               ,:INDV-LAST-NM
+               ,:INDV-FIRST-NM
+               ,:INDV-MI-NM
+               ,:INDV-DOB-DT
+               ,:INDV-GENCD-RF
+               ,:INDV-MARST-RF
+           END-EXEC.
+           EVALUATE  SQLCODE
+             WHEN  +0
+               CONTINUE
+             WHEN  +100
+               SET  END-OF-NCT-CSR  TO TRUE
+               IF  REC-WRITE-CTR  =  ZERO
+                DISPLAY 'WRN: NO MATCHING RECS FOUND IN  DB2AR01 TABLES'
+                DISPLAY '     ARTCASE  AND  ARTINDV . '
+                DISPLAY '+'
+                MOVE  04  TO  WS-RETURN-CODE
+               END-IF
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: FETCH NCT_CSR, SQLCODE = ' WS-SQLCODE
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+       1200-FETCH-EXIT.     EXIT.
+      *
+       1300-FORMAT-NCTCASE-REC.
+           MOVE  CASE-CONTEXT-CD-T (1:CASE-CONTEXT-CD-L)
+                                                          TO  WS-MOVE
+      **   DISPLAY 'WS-MOVE = ' WS-MOVE
+0017  *
+0017  ** 320 IS NY WHICH CURRENTLY HAS 7 CONTEXT CODES 3 OF WHICH
+0017  ** ARE GREATER THAN THE 6 POSITIONS IN THE OUTPUT FILE AND ALL
+0017  ** OF THE CONTEXTS CODES ARE FOR 'CASUALTY' AND 'ESTATES'
+0017  *
+0017       IF HMS-3BYTE-CONTRACT-NUM = 320
+0017           EVALUATE  WS-MOVE
+0017  *
+0017  ** CEN STANDS FOR C IS CASUALTY, E IS EXCHANGE, & N IS NEW YORK
+0017               WHEN  'CTSCASEX-NY'
+0017                   MOVE  'CTSCEN'  TO  WS-MOVE
+0017  *
+0017  ** CCN STANDS FOR C IS CASUALTY, C IS CITY, & N IS NEW YORK CITY
+0017               WHEN  'CTSCASNYC'
+0017                   MOVE  'CTSCCN'  TO  WS-MOVE
+0017  *
+0017  ** EEN STANDS FOR E IS ESTATE, C IS CITY, & N IS NEW YORK
+0017               WHEN  'CTSESTNY'
+0017                   MOVE  'CTSECN'  TO  WS-MOVE
+0017  *
+0017  ** ECN STANDS FOR E IS ESTATE, E IS EXCHANGE, & N IS NEW YORK
+0017               WHEN  'CTSESTEX-NY'
+0017                   MOVE  'CTSEEN'  TO  WS-MOVE
+0017  *
+0023  ** CTS STANDS FOR E IS ESTATE, E IS EXCHANGE, & N IS NEW YORK
+0023               WHEN  'CTSCASNYOP1'
+0023                   MOVE  'CTSCON'  TO  WS-MOVE
+0023  *
+0023  ** CTS STANDS FOR E IS ESTATE, E IS EXCHANGE, & N IS NEW YORK
+0023               WHEN  'CTSESTNYOP1'
+0023                   MOVE  'CTSEON'  TO  WS-MOVE
+0023  *
+0017  ** CAS DEFAULT IS FOR 'CTSCASNY' - CASUALTY NEW YORK
+0017               WHEN  OTHER
+0017                   MOVE  'CTSCAS'  TO  WS-MOVE
+0017  *
+0017           END-EVALUATE
+0017       END-IF.
+0017
+0012  *    IF HMS-3BYTE-CONTRACT-NUM = 320
+0012  *       IF WS-MOVE = 'CTSCASEX-NY'
+0012  ** CEN STANDS FOR C IS CAS, E IS EXCHANGE, & N IS NEW YORK
+0012  *          MOVE 'CTSCEN'              TO  WS-MOVE
+0012  *       ELSE
+0012  ** CEN STANDS FOR C IS CAS, C IS CITY, & N IS NEW YORK
+0012  *          IF WS-MOVE = 'CTSCASNYC'
+0012  *             MOVE 'CTSCCN'           TO  WS-MOVE
+0012  *          END-IF
+0012  *       END-IF
+0012  *    END-IF
+
+0019  ** 313 IS FL WHICH CURRENTLY HAS 4 CONTEXT CODES 3 OF WHICH
+0019  ** ARE NOT GREATER THAN 6 POSITIONS BUT 1 IS GREATER THAN 6
+0019  ** POSITIONS
+0019  *
+0019       IF HMS-3BYTE-CONTRACT-NUM = 313
+0019           EVALUATE  WS-MOVE
+0019  *
+0019  ** CAS STANDS FOR CASUALTY
+0019               WHEN  'CTSCASFL'
+0019                   MOVE  'CTSCAS'  TO  WS-MOVE
+0019  *
+0019  ** EST STANDS FOR ESTATE
+0019               WHEN  'CTSESTFL'
+0019                   MOVE  'CTSEST'  TO  WS-MOVE
+0019  *
+0019  ** TRS STANDS FOR TRUST
+0019               WHEN  'CTSTRSFL'
+0019                   MOVE  'CTSTRS'  TO  WS-MOVE
+0019  *
+0019  ** MST STANDS FOR MASS TORT
+0019               WHEN  'CTSCASMT-FL'
+0019                   MOVE  'CTSMST'  TO  WS-MOVE
+0019  *
+0019  ** CAS STANDS FOR CASUALTYT
+0019               WHEN  OTHER
+0019                   MOVE  'CTSCAS'  TO  WS-MOVE
+0019           END-EVALUATE
+0019       END-IF.
+
+0024  ** 326 IS CO WHICH CURRENTLY HAS 4 CONTEXT CODES 3 OF WHICH
+0024  ** ARE NOT GREATER THAN 6 POSITIONS BUT 1 IS GREATER THAN 6
+0024  ** POSITIONS
+0024  *
+0024       IF HMS-3BYTE-CONTRACT-NUM = 326
+0024           EVALUATE  WS-MOVE
+0024  *
+0024  ** CAS STANDS FOR CASUALTY
+0024               WHEN 'CTSCASCO'
+0024                   MOVE 'CTSCAS' TO WS-MOVE
+0024  *
+0024  ** EST STANDS FOR ESTATE
+0024               WHEN 'CTSESTCO'
+0024                   MOVE 'CTSEST' TO WS-MOVE
+0024  *
+0024  **
+0024               WHEN 'CTSCASCO-HCPF'
+0024                   MOVE 'CTSHCP' TO WS-MOVE
+0024  *
+0024  ** CAS STANDS FOR CASUALTYT
+0024               WHEN  OTHER
+0024                   MOVE  'CTSCAS'  TO  WS-MOVE
+0024           END-EVALUATE
+0024       END-IF.
+
+
+0025  ** 358 IS CO WHICH CURRENTLY HAS 4 CONTEXT CODES 3 OF WHICH
+0025  ** ARE NOT GREATER THAN 6 POSITIONS BUT 1 IS GREATER THAN 6
+0025  ** POSITIONS
+0025  *
+0025       IF HMS-3BYTE-CONTRACT-NUM = 358
+0025           EVALUATE  WS-MOVE
+0025  *
+0025  ** CAS STANDS FOR CASUALTY
+0025               WHEN 'CTSCASNV'
+0025                   MOVE 'CTSCAS' TO WS-MOVE
+0025  *
+0025  ** EST STANDS FOR ESTATE
+0025               WHEN 'CTSESTNV'
+0025                   MOVE 'CTSEST' TO WS-MOVE
+0025  *
+0025  ** TRS STANDS FOR TRUST
+0025               WHEN 'CTSTRSNV'
+0025                   MOVE 'CTSTRS' TO WS-MOVE
+0025  *
+0025  ** TFR STANDS FOR TEFRA
+0025               WHEN 'CTSTFRNV'
+0025                   MOVE 'CTSTFR' TO WS-MOVE
+0025  *
+0025  ** CAS STANDS FOR CASUALTYT
+0025               WHEN  OTHER
+0025                   MOVE  'CTSCAS'  TO  WS-MOVE
+0025           END-EVALUATE
+0025       END-IF.
+
+
+0026  ** 645 IS WV WHICH CURRENTLY HAS 4 CONTEXT CODES
+0026  **
+0026  *
+0026       IF HMS-3BYTE-CONTRACT-NUM = 645
+0026                 EVALUATE  WS-MOVE
+0026  *  *  *
+0026  **  CAS = CASUALTY
+0026              WHEN  'CTSCASWV'
+0026                 MOVE 'CTSCAS'  TO WS-MOVE
+0026  *  *  *
+0026  ** EST = ESTATES
+0026              WHEN  'CTSESTWV'
+0026                 MOVE 'CTSEST'    TO WS-MOVE
+0026  *  *
+0026  ** CHP = CHIP
+0026              WHEN  'CTSCASCH-WV'
+0026                 MOVE 'CTSCHP' TO  WS-MOVE
+0026  *
+0026  *
+0026  ** CAS STANDS FOR CASUALTY (DEFAULT)
+0026               WHEN  OTHER
+0026                   MOVE  'CTSCAS'  TO  WS-MOVE
+0026           END-EVALUATE
+0026       END-IF.
+
+0027  ** 564 IS TN WHICH CURRENTLY HAS 1 CONTEXT CODE
+0027  **
+0027  *
+0027       IF HMS-3BYTE-CONTRACT-NUM = 564
+0027                 EVALUATE  WS-MOVE
+0027  *  *  *
+0027  **  CAS = CASUALTY
+0027              WHEN  'CTSCASTN'
+0027                 MOVE 'CTSCAS'  TO WS-MOVE
+0027  *
+0027  *
+0027  ** CAS STANDS FOR CASUALTY (DEFAULT)
+0027               WHEN  OTHER
+0027                   MOVE  'CTSCAS'  TO  WS-MOVE
+0027           END-EVALUATE
+0027       END-IF.
+           MOVE  WS-MOVE(1:6)               TO  NCTC-HMS-CLIENT-ID
+      **   DISPLAY "CLIENT CD: " NCTC-HMS-CLIENT-ID
+           MOVE  CASE-CASE-ID               TO  NCTC-HMS-CASE-KEY
+      **   DISPLAY "CASE KEY: " NCTC-HMS-CASE-KEY
+0003       MOVE  CASE-INDV-ID               TO  NCTC-INDV-ID
+      **   DISPLAY "INDV ID: " NCTC-INDV-ID
+           MOVE  CASE-USER-CD-T (1:CASE-USER-CD-L)  TO  WS-MOVE
+           MOVE  WS-MOVE(1:6)               TO  NCTC-CASE-WORKER-IPKEY
+0001  **   MOVE  CASE-COUNTY-CD-T (1:CASE-COUNTY-CD-L)
+0001  **                                    TO  NCTC-COUNTY-CODE
+0001       MOVE  CASE-COUNTY-CD-T (1:CASE-COUNTY-CD-L)        TO WS-MOVE
+0001       MOVE  WS-MOVE(1:10)              TO  NCTC-COUNTY-CODE
+           MOVE  CASE-WEL-NUMBER-CD-T(1:CASE-WEL-NUMBER-CD-L) TO WS-MOVE
+           MOVE  WS-MOVE(1:6)               TO  NCTC-WEL-NUM
+           MOVE  CASE-DOS-TO-DT             TO  NCTC-CLAIMS-THRU-DATE
+0015  *    MOVE  CASE-INCIDENT-DT           TO  NCTC-INCIDENT-DATE
+0015       MOVE  CASE-CONTEXT-CD-T (1:CASE-CONTEXT-CD-L)
+0015                                        TO  WS-CASUALTY-CODE
+0015       MOVE CASE-DOS-FROM-DT            TO  WS-EDIT-FROM-DATE
+0015                                            WS-NEW-FROM-DATE
+0015
+0015       IF VALID-FROM-DATE
+0015
+0015           IF CASUALTY-CONTRACT
+0015
+0015               EXEC SQL
+0015                   SET  :WS-NEW-FROM-DATE  =
+0015                       DATE(:WS-EDIT-FROM-DATE)  -  60 DAYS
+0015               END-EXEC
+0015           ELSE
+0015               MOVE CASE-DOS-FROM-DT  TO  WS-NEW-FROM-DATE
+0015           END-IF
+0015       ELSE
+0015           MOVE CASE-INCIDENT-DT  TO  WS-EDIT-FROM-DATE
+0015
+0015           IF VALID-FROM-DATE
+0015
+0015               IF CASUALTY-CONTRACT
+0015
+0015                   EXEC SQL
+0015                       SET  :WS-NEW-FROM-DATE  =
+0015                           DATE(:WS-EDIT-FROM-DATE)  -  60 DAYS
+0015                   END-EXEC
+0015               ELSE
+0015                   MOVE CASE-INCIDENT-DT  TO  WS-NEW-FROM-DATE
+0015               END-IF
+0015           ELSE
+0015               MOVE CASE-INCIDENT-DT  TO  WS-NEW-FROM-DATE
+0015           END-IF
+0015       END-IF
+0015
+0015       MOVE  WS-NEW-FROM-DATE           TO  NCTC-INCIDENT-DATE
+           MOVE  CASE-CASE-OPEN-DT          TO  NCTC-CASE-OPEN-DATE
+           MOVE  CASE-CASE-CLOSE-DT         TO  NCTC-CASE-CLOSE-DATE
+           MOVE  CASE-CASE-TYPE-CD-T (1:CASE-CASE-TYPE-CD-L) TO WS-MOVE
+           MOVE  WS-MOVE(1:4)               TO  NCTC-CASE-TYPE-CODE
+           MOVE  CASE-CASE-STATUS-CD-T (1:CASE-CASE-STATUS-CD-L)  TO
+                                                                WS-MOVE
+           MOVE  WS-MOVE(1:1)               TO  NCTC-CASE-STATUS-CODE
+           MOVE  CASE-CASE-PRIORITY-CD-T (1:CASE-CASE-PRIORITY-CD-L)  TO
+                                                                 WS-MOVE
+           MOVE  WS-MOVE(1:4)               TO  NCTC-CASE-PRIORITY-CODE
+           MOVE  CASE-CASE-STAGE-CD-T(1:CASE-CASE-STAGE-CD-L) TO WS-MOVE
+           MOVE  WS-MOVE(1:4)               TO  NCTC-CASE-STAGE-CODE
+           MOVE  CASE-CASE-SOURCE-CD-T (1: CASE-CASE-SOURCE-CD-L)  TO
+                                                                WS-MOVE
+           MOVE  WS-MOVE(1:9)               TO  NCTC-CASE-SOURCE-CODE
+           MOVE  CASE-COMPROMISE-AMT        TO  NCTC-COMPROMISE-AMT
+           MOVE  CASE-EXPENSES-AMT          TO  NCTC-EXPENSES-AMT
+           MOVE  CASE-FEE-ADJUST-AMT        TO  NCTC-FEE-ADJUST-AMT
+           MOVE  CASE-LIEN-ADJUST-AMT       TO  NCTC-LIEN-ADJUST-AMT
+           MOVE  CASE-LIEN-HMO-AMT          TO  NCTC-LIEN-HMO-AMT
+           MOVE  CASE-LIEN-MEDICAID-AMT     TO  NCTC-LIEN-MEDICAID-AMT
+           MOVE  CASE-LIEN-NOTICE-DT        TO  NCTC-LIEN-NOTICE-DATE
+           MOVE  CASE-LIEN-RELEASE-DT       TO  NCTC-LIEN-RELEASE-DATE
+           MOVE  CASE-LIKELY-SETTLE-DT      TO  NCTC-LIKELY-SETTLE-DATE
+           MOVE  CASE-SETTLEMENT-AMT        TO  NCTC-SETTLEMENT-AMT
+           MOVE  CASE-ATTORNEY-FEE-PCT      TO  NCTC-ATTOR-FEE-PCT
+           MOVE  CASE-LAST-UPDATE-DTM       TO  NCTC-LAST-UPDATE-TMS
+0004       MOVE  INDV-MA-NUM-TEXT (1:INDV-MA-NUM-LEN)
+                                            TO  NCTC-RECIPIENT-ID-NUM
+0014       MOVE CCKP-DATA-AMT               TO  ALT-CLIENT-CD
+0014       MOVE  ALT-CLIENT-CD              TO  ALT-CLIENT-CD-NUM
+0014       MOVE  ALT-CLIENT-CD-NUM(5:3)     TO  ALT-CLIENT-CD-CHAR
+0014       MOVE  ALT-CLIENT-CD-CHAR         TO  NCTC-CLIENT-CD
+           MOVE  INDV-SSN-NUM               TO  NCTC-SSN
+           MOVE  INDV-LAST-NM               TO  NCTC-LAST-NAME
+           MOVE  INDV-FIRST-NM              TO  NCTC-FIRST-NAME
+           MOVE  INDV-MI-NM                 TO  NCTC-MIDDLE-INIT
+           MOVE  INDV-DOB-DT                TO  NCTC-DATE-OF-BIRTH
+0004       MOVE  INDV-GENCD-RF-TEXT (1:INDV-GENCD-RF-LEN)  TO  WS-MOVE
+           MOVE  WS-MOVE(1:1)               TO  NCTC-SEX
+0004       MOVE  INDV-MARST-RF-TEXT (1:INDV-MARST-RF-LEN)  TO  WS-MOVE
+           MOVE  WS-MOVE(1:1)               TO  NCTC-MARITAL-STATUS
+           MOVE  SPACES                     TO  NCTC-REGISTERED-IND
+                                                NCTC-ALL-CLAIMS-IND
+                                                NCTC-THERAPY-IND
+0003  *                                         NCTC-MF-HIT-IND
+0003  *                                         NCTC-MF-HITS-LAST-RUN
+0003  *                                         NCTC-MF-HITS-CUMMULATIVE
+0003  *                                         NCTC-MF-HIT-LAST-DTS.
+0003                                            NCTC-FILLER-2
+           .
+       1300-FORMAT-EXIT.        EXIT.
+
+       2100-OPEN-NCT-CSR.
+           UNSTRING  WS-CONTEXT-CD           DELIMITED  BY  ALL SPACES
+               INTO   CASE-CONTEXT-CD-T
+               COUNT IN  CASE-CONTEXT-CD-L
+           END-UNSTRING.
+0002       UNSTRING  WS-CONTEXT-CD1          DELIMITED  BY  ALL SPACES
+0002           INTO   CASE-CONTEXT-CD1-T
+0002           COUNT IN  CASE-CONTEXT-CD1-L
+0002       END-UNSTRING.
+0010       UNSTRING  WS-CONTEXT-CD2          DELIMITED  BY  ALL SPACES
+0010           INTO   CASE-CONTEXT-CD2-T
+0010           COUNT IN  CASE-CONTEXT-CD2-L
+0010       END-UNSTRING.
+0017       UNSTRING  WS-CONTEXT-CD3  DELIMITED  BY  ALL SPACES
+0017           INTO  CASE-CONTEXT-CD3-T
+0017          COUNT  IN  CASE-CONTEXT-CD3-L
+0017       END-UNSTRING.
+0017       UNSTRING  WS-CONTEXT-CD4  DELIMITED  BY  ALL SPACES
+0017           INTO  CASE-CONTEXT-CD4-T
+0017          COUNT  IN  CASE-CONTEXT-CD4-L
+0017       END-UNSTRING.
+0017
+0023       UNSTRING  WS-CONTEXT-CD5  DELIMITED  BY  ALL SPACES
+0023           INTO  CASE-CONTEXT-CD5-T
+0023          COUNT  IN  CASE-CONTEXT-CD5-L
+0023       END-UNSTRING.
+0023
+0023       UNSTRING  WS-CONTEXT-CD6  DELIMITED  BY  ALL SPACES
+0023           INTO  CASE-CONTEXT-CD6-T
+0023          COUNT  IN  CASE-CONTEXT-CD6-L
+0023       END-UNSTRING.
+0023
+0020       IF HMS-3BYTE-CONTRACT-NUM  EQUAL  '535'
+0020           MOVE  '341'  TO  CASE-CLIENT-CD
+0020                            INDV-CLIENT-CD
+0020       ELSE
+               MOVE  HMS-3BYTE-CONTRACT-NUM  TO  CASE-CLIENT-CD
+                                                 INDV-CLIENT-CD
+0020       END-IF.
+
+           EXEC SQL  OPEN NCT_CSR_AL  END-EXEC
+           EVALUATE  SQLCODE
+             WHEN +0
+               SET  START-OF-NCT-CSR  TO  TRUE
+             WHEN -904
+             WHEN -911
+             WHEN -913
+LLL   * ==> UNFORTUNATELY WE WILL NEVER RECEIVE -913 IN OUR INSTALLATION
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: OPEN NCT_CSR_AL, SQLCODE = ' WS-SQLCODE
+               ADD 1  TO  TIME-OUT-CTR
+               DISPLAY 'DB2 ACCESS ATTEMPTED ' TIME-OUT-CTR ' TIME(S)'
+               DISPLAY '+'
+               GO TO  2100-OPEN-EXIT
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: OPEN NCT_CSR_AL, SQLCODE = ' WS-SQLCODE
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+       2100-OPEN-EXIT.     EXIT.
+      *
+       2200-FETCH-NCT-CSR.
+           INITIALIZE  DCLARTCASE
+                       DCLARTINDV
+                       DCLARTCCKP .
+           EXEC SQL  FETCH NCT_CSR_AL  INTO
+                :CASE-CONTEXT-CD
+               ,:CASE-CASE-ID
+0003           ,:CASE-INDV-ID
+               ,:CASE-USER-CD
+               ,:CASE-COUNTY-CD
+               ,:CASE-WEL-NUMBER-CD
+0015           ,:CASE-DOS-FROM-DT
+               ,:CASE-DOS-TO-DT
+               ,:CASE-INCIDENT-DT
+               ,:CASE-CASE-OPEN-DT
+               ,:CASE-CASE-CLOSE-DT
+               ,:CASE-CASE-TYPE-CD
+               ,:CASE-CASE-STATUS-CD
+               ,:CASE-CASE-PRIORITY-CD
+               ,:CASE-CASE-STAGE-CD
+               ,:CASE-CASE-SOURCE-CD
+               ,:CASE-COMPROMISE-AMT
+               ,:CASE-EXPENSES-AMT
+               ,:CASE-FEE-ADJUST-AMT
+               ,:CASE-LIEN-ADJUST-AMT
+               ,:CASE-LIEN-HMO-AMT
+               ,:CASE-LIEN-MEDICAID-AMT
+               ,:CASE-LIEN-NOTICE-DT
+               ,:CASE-LIEN-RELEASE-DT
+               ,:CASE-LIKELY-SETTLE-DT
+               ,:CASE-SETTLEMENT-AMT
+               ,:CASE-ATTORNEY-FEE-PCT
+               ,:CASE-LAST-UPDATE-DTM
+               ,:INDV-MA-NUM
+               ,:CCKP-DATA-AMT
+               ,:INDV-SSN-NUM
+               ,:INDV-LAST-NM
+               ,:INDV-FIRST-NM
+               ,:INDV-MI-NM
+               ,:INDV-DOB-DT
+               ,:INDV-GENCD-RF
+               ,:INDV-MARST-RF
+           END-EXEC.
+           EVALUATE  SQLCODE
+             WHEN  +0
+               CONTINUE
+             WHEN  +100
+               SET  END-OF-NCT-CSR  TO TRUE
+               IF  REC-WRITE-CTR  =  ZERO
+                DISPLAY 'WRN: NO MATCHING RECS FOUND IN  DB2AR01 TABLES'
+                DISPLAY '     ARTCASE, ARTINDV, AND ARTCCKP. '
+                DISPLAY '+'
+                MOVE  04  TO  WS-RETURN-CODE
+               END-IF
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: FETCH NCT_CSR_AL, SQLCODE = ' WS-SQLCODE
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+       2200-FETCH-EXIT.     EXIT.
+
+       8000-P-MONITOR.
+           EXEC SQL  UPDATE  MISC.P_MONITOR
+             SET  START_DTM       = CURRENT TIMESTAMP
+                 ,END_DTM         = NULL
+                 ,TASK_STEP_TXT   = 'LOAD'
+                 ,STATUS_TXT      = 'RUNNING'
+                 ,DATA_CNT        = 0
+             WHERE  CLIENT_CD     = :HMS-3BYTE-CONTRACT-NUM
+               AND  PROCESS_NM  LIKE 'CLKP_LOAD_DURATION_%'
+           END-EXEC
+           EVALUATE  SQLCODE
+             WHEN +0
+                DISPLAY 'UPDATED P-MONITOR'
+0021  *
+0021  * THS FOLLOWING CODE IS TO IDENTIFY WHEN A NEW CONTEXT-CODE
+0021  * IS NOW INCLUDED FOR A CLIENT-CODE AND IS NOT CURRENTLY
+0021  * IN THE P-MONITOR TABLE SO IT CAN BE INSERTED INTO THE
+0021  * P-MONITOR TABLE
+0021  *
+0021            MOVE SQLERRD (3)  TO  WS-START-CONTEXT-CDS
+0021            DISPLAY ' SQLERRD (3) - ' WS-START-CONTEXT-CDS
+0021            DISPLAY ' NUMBER OF P-MONITOR ROWS UPDATED'
+0021            DISPLAY ' WS-TOTAL-CONTEXT-CDS - '
+0021                      WS-TOTAL-CONTEXT-CDS
+0021            DISPLAY ' NUMBER OF CONTEXT-CODES TO UPDATE'
+0021            IF SQLERRD (3)  NOT EQUAL  WS-TOTAL-CONTEXT-CDS
+0021                MOVE WS-START-CONTEXT-CDS
+0021                                  TO  WS-WRITTEN-CONTEXT-CNT
+0021                PERFORM 8100-P-MONITOR-INS THRU 8100-PM-INS-EXIT
+0023                        UNTIL WS-WRITTEN-CONTEXT-CNT  EQUAL  +7
+0021            END-IF
+0021  *
+                EXEC SQL
+                    COMMIT
+                END-EXEC
+             WHEN +100
+                DISPLAY 'P-MONITOR ROW NON-EXISTANT'
+                MOVE 0 TO WS-WRITTEN-CONTEXT-CNT
+0023            PERFORM 8100-P-MONITOR-INS THRU 8100-PM-INS-EXIT 7 TIMES
+             WHEN OTHER
+                MOVE SQLCODE  TO  WS-SQLCODE
+                DISPLAY 'ERR: 8000-P-MONITOR, SQLCODE = ' WS-SQLCODE
+                GO TO Z9999-ERROR-EXIT
+           END-EVALUATE.
+
+       8000-P-MONITOR-EXIT.  EXIT.
+
+       8100-P-MONITOR-INS.
+           EVALUATE WS-WRITTEN-CONTEXT-CNT
+              WHEN 0
+                MOVE WS-CONTEXT-CD TO PMONITOR-CONTEXT-CD-TEXT
+                ADD 1 TO WS-WRITTEN-CONTEXT-CNT
+              WHEN 1
+                MOVE CASE-CONTEXT-CD1-T TO PMONITOR-CONTEXT-CD-TEXT
+                ADD 1 TO WS-WRITTEN-CONTEXT-CNT
+                IF WS-CONTEXT-CD1 = 'ZZZZZZZZZZZZZZZZ'
+                   GO TO 8100-PM-INS-EXIT
+                END-IF
+              WHEN 2
+                MOVE CASE-CONTEXT-CD2-T TO PMONITOR-CONTEXT-CD-TEXT
+                ADD 1 TO WS-WRITTEN-CONTEXT-CNT
+                IF WS-CONTEXT-CD2 = 'ZZZZZZZZZZZZZZZZ'
+                   GO TO 8100-PM-INS-EXIT
+                END-IF
+              WHEN 3
+                MOVE CASE-CONTEXT-CD3-T TO PMONITOR-CONTEXT-CD-TEXT
+                ADD 1 TO WS-WRITTEN-CONTEXT-CNT
+                IF WS-CONTEXT-CD3 = 'ZZZZZZZZZZZZZZZZ'
+                   GO TO 8100-PM-INS-EXIT
+                END-IF
+              WHEN 4
+                MOVE CASE-CONTEXT-CD4-T TO PMONITOR-CONTEXT-CD-TEXT
+                ADD 1 TO WS-WRITTEN-CONTEXT-CNT
+                IF WS-CONTEXT-CD4 = 'ZZZZZZZZZZZZZZZZ'
+                   GO TO 8100-PM-INS-EXIT
+                END-IF
+0023          WHEN 5
+0023            MOVE CASE-CONTEXT-CD5-T TO PMONITOR-CONTEXT-CD-TEXT
+0023            ADD 1 TO WS-WRITTEN-CONTEXT-CNT
+0023            IF WS-CONTEXT-CD5 = 'ZZZZZZZZZZZZZZZZ'
+0023               GO TO 8100-PM-INS-EXIT
+0023            END-IF
+0023          WHEN 6
+0023            MOVE CASE-CONTEXT-CD6-T TO PMONITOR-CONTEXT-CD-TEXT
+0023            ADD 1 TO WS-WRITTEN-CONTEXT-CNT
+0023            IF WS-CONTEXT-CD6 = 'ZZZZZZZZZZZZZZZZ'
+0023               GO TO 8100-PM-INS-EXIT
+0023            END-IF
+           END-EVALUATE
+
+           MOVE 35 TO PMONITOR-PROCESS-NM-LEN
+           MOVE 4 TO PMONITOR-TASK-TXT-LEN
+           MOVE 8 TO PMONITOR-STATUS-TXT-LEN
+           MOVE 3 TO PMONITOR-CLIENT-CD-LEN
+           MOVE 16 TO PMONITOR-CONTEXT-CD-LEN
+           MOVE 1 TO PMONITOR-TASK-DESC-LEN
+           MOVE 1 TO PMONITOR-PARAM-LIST-LEN
+
+           MOVE 'CLKP_LOAD_DURATION_'  TO WS-CLKP-TITLE
+           MOVE PMONITOR-CONTEXT-CD-TEXT TO WS-CLKP-REST
+           MOVE WS-CLKP-PROCESS-NM-WHOLE TO PMONITOR-PROCESS-NM-TEXT
+           MOVE HMS-3BYTE-CONTRACT-NUM TO PMONITOR-CLIENT-CD-TEXT
+           MOVE 0                      TO PMONITOR-PROCESS-ID
+           MOVE 'LOAD'                 TO PMONITOR-TASK-TXT-TEXT
+           MOVE 'RUNNING'              TO PMONITOR-STATUS-TXT-TEXT
+           MOVE 0                      TO PMONITOR-DATA-CNT
+           MOVE SPACES                 TO PMONITOR-TASK-DESC-TEXT
+           MOVE SPACES                 TO PMONITOR-PARAM-LIST-TEXT
+           EXEC  SQL
+                INSERT  INTO  MISC.P_MONITOR
+                VALUES (:PMONITOR-PROCESS-NM
+                ,CURRENT TIMESTAMP
+                ,NULL
+                ,DEFAULT
+                ,NULL
+                ,:PMONITOR-TASK-STEP-TXT
+                ,:PMONITOR-STATUS-TXT
+                ,:PMONITOR-DATA-CNT
+                ,:PMONITOR-CLIENT-CD
+                ,:PMONITOR-CONTEXT-CD
+                ,:PMONITOR-TASK-DESC-TXT
+                ,:PMONITOR-PARAM-LIST-TXT
+                 )
+           END-EXEC.
+
+           EVALUATE  SQLCODE
+              WHEN  ZERO
+                EXEC SQL
+                    COMMIT
+                END-EXEC
+              WHEN  OTHER
+                  MOVE SQLCODE  TO  WS-SQLCODE
+                DISPLAY 'ERR: 8100-P-MONITOR-INS, SQLCODE = ' WS-SQLCODE
+                  GO TO Z9999-ERROR-EXIT
+           END-EVALUATE.
+
+       8100-PM-INS-EXIT.     EXIT.
+
+       9000-TERMINATION.
+           DISPLAY ' =================================================='
+           DISPLAY '       CASNCTD1 - PROGRAM COUNTERS'
+           DISPLAY '      -----------------------------'
+           MOVE     REC-WRITE-CTR         TO NUM-REC-OUT
+           DISPLAY 'NUMBER OF RECORDS  WRITTEN.......... :'
+                          NUM-REC-OUT
+0015       MOVE     TCM-WRITE-CTR         TO NUM-REC-OUT
+0015       DISPLAY 'NUMBER OF TCM RECORDS WRITTEN....... :'
+0015                      NUM-REC-OUT
+           MOVE     OPEN-NCTC-REC-CTR   TO NUM-REC-OUT
+           DISPLAY 'NUMBER OF OPEN RECORDS  WRITTEN..... :'
+                          NUM-REC-OUT
+           MOVE     CLOSED-NCTC-REC-CTR TO NUM-REC-OUT
+           DISPLAY 'NUMBER OF CLOSED RECORDS WRITTEN.... :'
+                          NUM-REC-OUT
+           MOVE     OTHER-NCTC-REC-CTR  TO NUM-REC-OUT
+           DISPLAY 'NUMBER OF OTHER RECORDS WRITTEN..... :'
+                          NUM-REC-OUT
+           DISPLAY ' =================================================='
+           DISPLAY '*****  PGM  CASNCTD1  NORMAL  END  *****'
+           DISPLAY '+++'.
+       9000-TERMINATION-EXIT.        EXIT.
+
+       Z9999-ERROR-EXIT.
+           IF  SQLCODE   NOT =  +0
+              CALL 'DSNTIAR'  USING  SQLCA
+                                     ERROR-MESSAGE
+                                     ERROR-LINE-LENGTH
+              DISPLAY '++'
+              DISPLAY ERROR-MESSAGE-LINE (1)
+              DISPLAY ERROR-MESSAGE-LINE (2)
+              DISPLAY ERROR-MESSAGE-LINE (3)
+              DISPLAY ERROR-MESSAGE-LINE (4)
+              DISPLAY ERROR-MESSAGE-LINE (5)
+              DISPLAY ERROR-MESSAGE-LINE (6)
+              DISPLAY ERROR-MESSAGE-LINE (7)
+              DISPLAY '++'
+           END-IF.
+           DISPLAY '*****  PGM  CASNCTD1  ABENDED  *****'
+           DISPLAY ' '
+           CALL   'ILBOABN0'  USING  DUMP-CODE
+           GOBACK.
+

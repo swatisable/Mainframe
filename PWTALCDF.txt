@@ -1,0 +1,178 @@
+//PWTALCDF JOB (600040,ALT),'ALT CAS DB2',MSGLEVEL=(1,1),
+//   COND=(8,LE),
+//*  RESTART=STEPNAME.PROCSTEP,
+//   MSGCLASS=J,CLASS=P,USER=DP3BTCH,GROUP=TS2GRP
+/*JOBPARM S=MVS2
+//*******************************************************************
+//* JOB PWTALCDF - TO REPLACE PWTALCAF IN CASUALTY "TO DB2" PROJECT
+//*                                            ( PG3LLL 09/30/03 ) :
+//*    - UPDATE CORRESPONDING DB2 CLAIM TABLES;
+//*    - FTP ALT PCF/CASE FILE AND MATCH REPORTS TO ALT NOVELL SERVER
+//*******************************************************************
+//****
+//********************************************************************
+//***** +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//*****  MODIFICATION HISTORY:
+//*****
+//*****    DATE         PERSON  DESCRIPTION
+//*****----------------------------------------------------------------
+//****** 06/22/10    -  YZG     INITIAL IMPLEMENTATION
+//****** 09/15/11    -  MJR     ADD AL ESTATES PROCESSING LOGIC
+//****** 05/07/13    -  BJW     CHANGED DB FROM ECPROD TO CTSPROD
+//****** 09/30/15    -  BJW     CHNGS FOR ICD-10
+//****** 11/06/15    -  BJW     ADD CUM PROCESSING
+//****** 10/14/16    -  BJW     TEMPORARILY COMMENT PCFCASE.CURR(-1)
+//******                        SO WE REPROCESS OLD ROWS AS UPDATES.
+//****** 11/10/16    -  BJW     PUT BACK LAST WEEKS DUP CHECK.
+//****** 09/15/17    -  JHW     CHANGE SORTIN FILE NAMES IN STEPS
+//******                        EXEC0010 AND EXEC0015 BY REMOVING
+//******                        THE 'CLNID' SUFFIX
+//****** 03/25/20    -  BJW     ADD AGENCY CODE
+//********************************************************************
+//****
+//********************************************************************
+//* ===> NOTE FOR TOS : IN CASE OF ABEND OF THIS JOB ON STEP EXEC0040 ,
+//* ===>                PLEASE SEE NOTES FOR THIS STEP BELOW.
+//*********************************************************************
+//JOBLIB   DD  DSN=P.HMSY.LINKLIB,DISP=SHR
+//*
+//         SET DIPOND=P
+//         SET DOPOND=P
+//         SET LPOND=P
+//         SET ACNTR=ALT
+//*
+//*******************************************************************
+//* DELT0000 - CLEAN UP FILES
+//*******************************************************************
+//*          NOTE: P.HMS.TPL.ALT.IW.PCFCASE.CURR.PREP               *
+//*                P.HMS.TPL.ALT.IW.PCFCASE.NEW                     *
+//*                ARE NOT REQUIRED                                 *
+//*                MAXCC LE 8 WILL RESET TO 0. *
+//*******************************************************************
+//DELT0000 EXEC PGM=IDCAMS
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD DSN=P.HMSY.CARD.CNTL(WALCDF00),DISP=SHR
+//*
+//*******************************************************************
+//* ALLCT000 - ALLOCATE NEW  DB2 UPDATE CONTROL FILE
+//*******************************************************************
+//ALLCT000 EXEC PGM=IEFBR14
+//AL001    DD DSN=P.HMS.TPL.&ACNTR..IR.WALCDF40.DB2CNTL,
+//            DISP=(NEW,CATLG,DELETE),
+//            DCB=(RECFM=FB,LRECL=38,BLKSIZE=27968),
+//            UNIT=3390,SPACE=(CYL,(10,1),RLSE)
+//***
+//*****************************************************************
+//* EXEC0010 - PREPARE  CURRENT (+0) GENERATION OF PCF/CASE FILE  *
+//*            FOR MATCH-OFF PROCESSING - MARK '@' IN LAST BYTE.  *
+//*****************************************************************
+//*
+//EXEC0010 EXEC PGM=SORT,PARM='ABEND'
+//SORTIN   DD DSN=&DIPOND..HMS.TPL.&ACNTR..IR.PCFCASE.CURR(+0),
+//            DISP=SHR
+//SORTOUT  DD DSN=&DOPOND..HMS.TPL.&ACNTR..IW.PCFCASE.CURR.PREP,
+//            DISP=(NEW,CATLG,DELETE),
+//            UNIT=(SYSDA,10),SPACE=(CYL,(1500,500),RLSE),
+//            DCB=(RECFM=FB,LRECL=306,BLKSIZE=27846)
+//SYSIN    DD DSN=&LPOND..HMSY.CARD.CNTL(WALCDF16),DISP=SHR
+//SYSPRINT DD SYSOUT=*
+//SYSOUT   DD SYSOUT=*
+//***
+//********************************************************************
+//* STEP0015 - MERGE  CURRENT (+0)  AND  PREVIOUS (-1)  GENERATIONS  *
+//*            OF PCF/CASE FILE;  KEEP NEW RECORDS ONLY .            *
+//********************************************************************
+//*
+//EXEC0015 EXEC PGM=SORT,PARM='ABEND,EQUALS'
+//SORTIN01 DD DSN=&DIPOND..HMS.TPL.&ACNTR..IR.PCFCASE.CURR(-1),
+//            DISP=SHR
+//SORTIN02 DD DSN=&DIPOND..HMS.TPL.&ACNTR..IW.PCFCASE.CURR.PREP,
+//            DISP=SHR
+//SORTOUT  DD DSN=&DOPOND..HMS.TPL.&ACNTR..IW.PCFCASE.NEW,
+//            DISP=(NEW,CATLG,DELETE),
+//            DCB=(RECFM=FB,LRECL=306,BLKSIZE=27846),
+//            UNIT=(SYSDA,10),SPACE=(CYL,(1500,500),RLSE)
+//SYSIN    DD DSN=&LPOND..HMSY.CARD.CNTL(WALCDF15),DISP=SHR
+//SYSPRINT DD SYSOUT=*
+//SYSOUT   DD SYSOUT=*
+//***
+//***********************************************************
+//* STEP0020 - SORT "NEW" PCF/CASE FILE BY HMS-CASE-KEY     *
+//*            TO IMPROVE DB2 PERFORMANCE .                 *
+//***********************************************************
+//*
+//EXEC0020 EXEC PGM=SORT,PARM='ABEND'
+//SORTIN   DD DSN=&DIPOND..HMS.TPL.&ACNTR..IW.PCFCASE.NEW,DISP=SHR
+//SORTOUT  DD DSN=&DOPOND..HMS.TPL.&ACNTR..IR.PCFCASE.NEW.SRT,
+//            DISP=(NEW,CATLG,DELETE),
+//            UNIT=(3390,10),SPACE=(CYL,(1500,500),RLSE),
+//            DCB=(RECFM=FB,LRECL=306,BLKSIZE=27846)
+//SYSIN    DD DSN=&LPOND..HMSY.CARD.CNTL(WALCDF13),DISP=SHR
+//SORTWK01 DD SPACE=(CYL,(2000)),UNIT=SORTWK
+//SORTWK02 DD SPACE=(CYL,(2000)),UNIT=SORTWK
+//SORTWK03 DD SPACE=(CYL,(2000)),UNIT=SORTWK
+//SORTWK04 DD SPACE=(CYL,(2000)),UNIT=SORTWK
+//SORTWK05 DD SPACE=(CYL,(2000)),UNIT=SORTWK
+//SORTWK06 DD SPACE=(CYL,(2000)),UNIT=SORTWK
+//SORTWK07 DD SPACE=(CYL,(2000)),UNIT=SORTWK
+//SORTWK08 DD SPACE=(CYL,(2000)),UNIT=SORTWK
+//SORTWK09 DD SPACE=(CYL,(2000)),UNIT=SORTWK
+//SORTWK10 DD SPACE=(CYL,(2000)),UNIT=SORTWK
+//SYSOUT   DD SYSOUT=*
+//SYSPRINT DD SYSOUT=*
+//***
+//********************************************************************
+//* STEP0030 - MODIFY  DB2 UPDATE CONTROL FILE .
+//*    NOTE: COND=(0,LE,ALLCT000). THIS STEP WILL NEVER BE EXECUTED IF
+//*          JOB RAN FROM THE BEGINNING.
+//********************************************************************
+//EXEC0030 EXEC PGM=SORT,COND=(0,LE,ALLCT000),PARM='ABEND'
+//SORTIN   DD DSN=&DIPOND..HMS.TPL.&ACNTR..IR.WALCDF40.DB2CNTL,
+//            DISP=SHR
+//SORTOUT  DD DSN=&DOPOND..HMS.TPL.&ACNTR..IR.WALCDF40.DB2CNTL,
+//            DISP=SHR
+//SYSIN    DD DSN=&LPOND..HMSY.CARD.CNTL(WALCDF14),DISP=SHR
+//SYSOUT   DD SYSOUT=*
+//SYSPRINT DD SYSOUT=*
+//***
+//*********************************************************************
+//* STEP0040 - UPDATE DB2AR01 CLAIM TABLES: ARTCCLM, ARTCLKP, ARTCTPK ;
+//*            PROCESS  DB2 UPDATE CONTROL FILE .
+//*--------------------------------------------------------------------
+//* ===> NOTE FOR TOS : IN CASE OF ABEND OF THIS STEP, ONLY IF USER
+//* ===>         COMPLETION CODE=3645 , PLEASE RESTART JOB FROM THIS
+//* ===>         STEP (RESTART=EXEC0040.DB2BATCH). NO CHANGES REQUIRED.
+//* ===>         DO NOT RESTART MORE THAN TWICE - CONTACT A PROGRAMMER.
+//*--------------------------------------------------------------------
+//* ===> NOTE FOR PGM : IN CASE OF ABEND AND RESTART, THIS STEP WILL
+//* ===>        RESUME DB2 UPDATE FROM THE LAST COMMIT POINT. TO MAKE
+//* ===>        IT PROCESS PCFCASE UPDATE FILE FROM THE BEGINNING, JUST
+//* ===>        RESTART JOB FROM STEP EXEC0030, NO CHANGES REQUIRED.
+//*********************************************************************
+//EXEC0040 EXEC PROC=DB2BATCH,SYSTEM=DB2P,TYPE=&LPOND,APPL=HMS,
+//         MEMBER=CASNCTD7,DATABASE=CTSPROD
+//DB2BATCH.SYSUDUMP DD DUMMY
+//*
+//NCTCLMI  DD DSN=&DIPOND..HMS.TPL.&ACNTR..IR.PCFCASE.NEW.SRT,
+//            DISP=SHR
+//DB2CNTLO DD DSN=P.HMS.TPL.&ACNTR..IR.WALCDF40.DB2CNTL,
+//            DISP=(MOD,KEEP,KEEP)
+//SYSPRINT DD SYSOUT=*
+//SYSOUT   DD SYSOUT=*
+//DSNTRACE DD SYSOUT=*
+//SYSTSPRT DD SYSOUT=*
+//***
+//********************************************************************
+//* STEP0050 - BACKUP  DB2 UPDATE CONTROL FILE
+//********************************************************************
+//STEP0050 EXEC PGM=IEBGENER
+//SYSUT1   DD DSN=&DIPOND..HMS.TPL.&ACNTR..IR.WALCDF40.DB2CNTL,
+//            DISP=SHR
+//SYSUT2   DD DSN=&DOPOND..HMS.TPL.&ACNTR..IR.WALCDF40.DB2CNTLB(+1),
+//            DISP=(NEW,CATLG,DELETE),
+//            DCB=(RECFM=FB,LRECL=38,BLKSIZE=27968),
+//            UNIT=3390,SPACE=(CYL,(10,1),RLSE)
+//SYSIN    DD DUMMY
+//SYSOUT   DD SYSOUT=*
+//SYSPRINT DD SYSOUT=*
+

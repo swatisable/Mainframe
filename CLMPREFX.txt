@@ -1,0 +1,16 @@
+           03  (PREFIX)-CLMPRFX.
+            05  (PREFIX)-RECIPIENT-ID-NUM      PIC X(20).
+            05  (PREFIX)-HMS-CASE-KEY          PIC 9(09).
+            05  (PREFIX)-ICN                   PIC X(20).
+            05  (PREFIX)-FORMER-ICN            PIC X(20).
+            05  (PREFIX)-XACTION-STATUS        PIC X(01).
+            05  (PREFIX)-CLM-FROM-DATE         PIC 9(08).
+            05  (PREFIX)-RX-WRITTEN-DATE       PIC 9(08).
+            05  (PREFIX)-CLAIM-TRANS-TYPE      PIC X(01).
+            05  (PREFIX)-INCIDENT-DATE         PIC 9(08).
+            05  (PREFIX)-CLM-THRU-DATE         PIC 9(08).
+            05  (PREFIX)-LAST-HIT-DATE-TM      PIC 9(16).
+            05  (PREFIX)-CREATE-SOURCE         PIC X(2).
+            05  (PREFIX)-CLIENT-ID             PIC X(06).
+            05  (PREFIX)-FILLER                PIC X(13).
+

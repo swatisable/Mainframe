@@ -1,0 +1,64 @@
+      ******************************************************************
+      *                   H M S   T P L   P R E F I X                  *
+      *                           L A Y O U T                          *
+      ******************************************************************
+      * CREATED      : 05/03/1999                          TPLPREFX    *
+      * RECORD LENGTH: 127                                             *
+      ******************************************************************
+      *   MODIFICATION HISTORY:                                        *
+      *                                                                *
+      *   CHG #    DATE      AUTHOR   DESCRIPTION                      *
+      *   -----  --------    ------   ----------------------------     *
+      *   0001   05/27/1999   RLH     AS PER PJM DOC PREFIXLA.XLS      *
+      *   0002   06/19/1999   RLH     AS PER CLB DOC                   *
+      *   0003   01/03/2000   DXB     UP STARTING LEVEL TO 20          *
+      *                               ADD HMS-PURSUABLE                *
+      *   0004   07/24/2000   CLB     ADD #EXPLODES TO SYS AREA        *
+      *                               0 MEANS REC NOT WRTTN TO HMS FILE*
+      *   0005   08/10/2000   CLB     ADD 88S TO HMS-PURSUABLE         *
+      *   0006   08/29/2000   DXB     ADD SOURCE-RECORD-MODIFIED FLAG  *
+      ******************************************************************
+           20  (PFX)-PREFIX.
+      *
+             25  (PFX)-SYSTEM-INFO-SECTION.
+               30  (PFX)-SYS-RECORD-STAMP          PIC X(04).
+               30  (PFX)-SYS-STAMP.
+                 35  (PFX)-SYS-STAMP-DATE-TIME     PIC 9(12) COMP-3.
+                 35  (PFX)-SYS-STAMP-SEQ-NUM       PIC 9(09) COMP-3.
+               30  (PFX)-SYS-HMS-ASSIGN-FILE       PIC X(05).
+               30  (PFX)-SYS-VERSION               PIC X(02).
+               30  (PFX)-SYS-FR-SRC-DTE-SRC-CREAT  PIC 9(08) COMP-3.
+               30  (PFX)-SYS-FR-SRC-VOL-SER-NO     PIC X(06).
+               30  (PFX)-SYS-FR-SRC-HMSIC-VOL-SER  PIC X(06).
+0002           30  (PFX)-SYS-ENTRY-TO-REF-STATUS   PIC X(01).
+0002           30  (PFX)-SYS-EXIT-FROM-REF-STATUS  PIC X(01).
+0002           30  (PFX)-SYS-DATE-REFORMATTED      PIC 9(08) COMP-3.
+0002           30  (PFX)-SYS-REF-EXPLODE-STATUS    PIC X(01).
+0004           30  (PFX)-SYS-NBR-HMS-RECS-WRTN     PIC S9(03) COMP-3.
+0006           30  (PFX)-SYS-SOURCE-MODIFIED-FLAG  PIC X(01).
+      *
+             25  (PFX)-NETTING-INFO-SECTION.
+0002           30  (PFX)-NET-CLAIM-TRANS-TYPE      PIC X(01).
+0003             88 (PFX)-HMS-PURSUABLE              VALUE 'P' 'R' 'H'.
+                 88 (PFX)-PAID-CLAIM                   VALUE 'P'.
+0005             88 (PFX)-HYBRID-CLAIM                 VALUE 'H'.
+0005             88 (PFX)-REPLACEMENT-CLAIM            VALUE 'R'.
+                 88 (PFX)-VOID-CLAIM                   VALUE 'V'.
+                 88 (PFX)-ADJUSTMENT-CLAIM             VALUE 'A'.
+                 88 (PFX)-DENIAL-CLAIM                 VALUE 'D'.
+                 88 (PFX)-PEND-CLAIM                   VALUE 'E'.
+               30  (PFX)-NET-ORIG-DOL-AMT          PIC S9(07)V99 COMP-3.
+               30  (PFX)-NET-NETTED-DOL-AMT        PIC S9(07)V99 COMP-3.
+               30  (PFX)-NET-TRANS-LINK            PIC S9(05) COMP-3.
+0002           30  (PFX)-NET-ENTRY-NET-STATUS      PIC X(01).
+0002           30  (PFX)-NET-EXIT-NET-STATUS       PIC X(01).
+0002           30  (PFX)-NET-FILLER                PIC X(05).
+      *
+             25  (PFX)-APPLIC-INFO-SECTION.
+               30  (PFX)-SORT-KEY.
+                 35  (PFX)-APP-MEDICAID-NO         PIC X(20).
+                 35  (PFX)-APP-PROVIDER-NO         PIC X(15).
+                 35  (PFX)-APP-DATE-OF-SERVICE     PIC 9(08) COMP-3.
+               30  (PFX)-APP-DATE-OF-REMIT         PIC 9(08) COMP-3.
+               30  (PFX)-APP-FILLER                PIC X(10).
+

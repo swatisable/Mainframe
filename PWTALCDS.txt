@@ -1,0 +1,93 @@
+//PWTALCDS JOB (600040,ALT),'ALT CAS DB2',MSGLEVEL=(1,1),               00001005
+//   COND=(8,LE),                                                       00002002
+//*  RESTART=STEPNAME.PROCSTEPNAME,
+//   MSGCLASS=J,CLASS=P,USER=DP3BTCH,GROUP=TS2GRP                       00003002
+/*JOBPARM S=MVS2
+//********************************************************************
+//* JOB PWTALCDS - CREATE EXTRACT FILE OF OPEN CASES
+//* FROM DB2 TABLES ARTCASE, ARTINDV
+//********************************************************************
+//********************************************************************
+//***** +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//*****  MODIFICATION HISTORY:
+//*****
+//*****    DATE         PERSON  DESCRIPTION
+//*****----------------------------------------------------------------
+//****** 06/22/10    -  YZG     INITIAL IMPLEMENTATION
+//*      05/07/2013     BJW     CHANGED DB FROM ECPROD TO CTSPROD
+//*      11/06/2015     BJW     ADD CUM PROCESSING
+//*      10/14/2016 BJW/MJR  USING TEMPORARY CUME PROGRAM CASNCTC1 TO
+//*                          ONLY CERTAIN CLAIMS TYPES
+//*      11/10/2016     BJW  RUN CASNCTC0 INSTEAD OF CASNCTC1 REGULAR
+//*                          PROCESSING.
+//*      03/22/2017     JHW  ADDED TCMCASO DD STATEMENT
+//*********************************************************************
+//****
+//JOBLIB    DD DSN=P.HMSY.LINKLIB,DISP=SHR
+//*
+//         SET LPOND=P
+//         SET DIPOND=P
+//         SET DOPOND=P
+//         SET ACNTR=ALT
+//********************************************************************
+//* STEP0010 - RETRIEVE CASUALTY CASE DATA FROM DB2 DATABASE.
+//********************************************************************
+//STEP0010 EXEC PGM=IEFBR14
+//DD001    DD  DSN=P.HMS.TPL.ALT.IW.NCTCASE.CLSD.RFMT.EXTR,
+//            DISP=(MOD,DELETE,DELETE),SPACE=(CYL,0)
+//*
+//EXEC0010  EXEC  PROC=DB2BATCH,SYSTEM=DB2P,TYPE=&LPOND,APPL=HMSY,
+//            MEMBER=CASNCTD1,DATABASE=CTSPROD
+//DB2BATCH.SYSUDUMP  DD  DUMMY
+//**
+//NCTCASO  DD  DSN=P.HMS.TPL.ALT.IR.NCTCASE.RFMT(+1),
+//            DISP=(NEW,CATLG,DELETE),UNIT=3390,
+//            SPACE=(CYL,(100,25),RLSE),
+//            DCB=(MODLDSCB,RECFM=FB,LRECL=384,BLKSIZE=0)
+//TCMCASO  DD  DSN=P.HMS.TPL.ALT.IR.TCMCASE.RFMT(+1),
+//            DISP=(NEW,CATLG,DELETE),UNIT=3390,
+//            SPACE=(CYL,(100,25),RLSE),
+//            DCB=(MODLDSCB,RECFM=FB,LRECL=384,BLKSIZE=0)
+//CLSDO    DD  DSN=P.HMS.TPL.ALT.IR.NCTCASE.CLSD.RFMT(+1),
+//            DISP=(NEW,CATLG,DELETE),UNIT=3390,
+//            SPACE=(CYL,(100,25),RLSE),
+//            DCB=(MODLDSCB,RECFM=FB,LRECL=384,BLKSIZE=0)
+//CLSDEXTO DD  DSN=P.HMS.TPL.ALT.IW.NCTCASE.CLSD.RFMT.EXTR,
+//            DISP=(NEW,CATLG,DELETE),UNIT=SYSDA,
+//            SPACE=(CYL,(50,10),RLSE),
+//            DCB=(RECFM=FB,LRECL=9,BLKSIZE=0)
+//SYSPRINT DD  SYSOUT=*
+//SYSOUT   DD  SYSOUT=*
+//DSNTRACE DD  SYSOUT=*
+//SYSTSPRT DD  SYSOUT=*
+//**
+//*
+//EXEC0020  EXEC  PROC=DB2BATCH,SYSTEM=DB2P,TYPE=&LPOND,APPL=HMSY,
+//*           MEMBER=CASNCTC1,DATABASE=CTSPROD
+//            MEMBER=CASNCTC0,DATABASE=CTSPROD
+//DB2BATCH.SYSUDUMP  DD  DUMMY
+//**
+//SRCPCFO  DD  DSN=&DOPOND..HMS.TPL.&ACNTR..IR.PCFCASE.CUM70(+1),
+//            DISP=(NEW,CATLG,DELETE),
+//            UNIT=(3390),
+//            SPACE=(CYL,(500,50),RLSE),
+//            DCB=(MODLDSCB,RECFM=FB,LRECL=70,BLKSIZE=0)
+//SYSPRINT DD  SYSOUT=*
+//SYSOUT   DD  SYSOUT=*
+//DSNTRACE DD  SYSOUT=*
+//SYSTSPRT DD  SYSOUT=*
+//**
+//EXEC0030 EXEC PGM=SORT,PARM='ABEND,EQUALS'
+//*            DISP=SHR
+//SORTIN   DD DSN=&DIPOND..HMS.TPL.&ACNTR..IR.PCFCASE.CUM70(+1),
+//            DISP=SHR
+//SORTOUT  DD DSN=&DOPOND..HMS.TPL.&ACNTR..IR.PCFCASE.CUM70(+2),
+//            DISP=(NEW,CATLG,DELETE),
+//            DCB=(MODLDSCB,RECFM=FB,LRECL=70,BLKSIZE=27930),
+//            UNIT=(3390),SPACE=(CYL,(500,50),RLSE)
+//SYSIN    DD DSN=&LPOND..HMSY.CARD.CNTL(WALCDS01),DISP=SHR
+//SYSPRINT DD SYSOUT=*
+//SYSOUT   DD SYSOUT=*
+//***
+//
+

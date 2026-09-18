@@ -1,0 +1,477 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CASNCTC0.
+       AUTHOR. BJW.
+       INSTALLATION. HMS.
+       DATE-WRITTEN. 10/28/2015.
+      *
+      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      * THIS PGM WILL SELECT DATA FROM DB2 TABLES AND CREATE NEW
+      * GENERATION OF THE CUM FILE.
+      * IT WILL ALSO CREATE 2 FILES OF CLOSED CASES.
+      * SINCE CASE IS NOT SUPPLIED, WE PROCESS BOTH OPENED AND CLOSED.
+      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      *  DB2 TABLES USED :  DB2AR01.ARTCCLM - CLAIMS TABLE
+      *                             ARTCLKP - LINKAGE TABLE
+      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      *  MODIFICATION HISTORY:
+      *
+      * CHG#  DATE    PGM PM    DESCRIPTION
+      *----------------------------------------------------------------
+0000  * 000  10/28/15 BJW MJR  IN THE BEGINNING .............
+0001  * 001  01/21/16 MXM      ADDED NMT CONTRACT (359)
+0002  * 002  03/01/16 BJW      ADDED NYT CONTRACT 320 CTSCASEX-NY
+0003  * 003  05/02/16 BJW      ADDED WVT CONTRACT 645 CTSCASWV
+0004  * 004  05/17/16 BJW      ADDED NVT CONTRACT 358 CTSCASWV
+0005  * 005  07/20/17 JHW BJW  ADD CASESTCO TO CONTEXT CODES FOR 'CO'
+0017  * 0017 04/18/19 JHW BJW  CHANGES TO ADD 2 NEW CONTEXT CODE TO
+0017  * 0017                   NY PROCESSING - CTSESTNY (CTSEEN) AND
+0017  * 0017                   CTSESTEX-NY (CTSECN)
+0018  * 0018 06/24/19 JHW BJW  CHANGES TO ADD A NEW CONTEXT CODE TO
+0018  * 0018                   FL PROCESSING - CTSCASMT-FL (CTSMST)
+0019  * 0019 07/11/19 JHW BJW  ADD CODING TO IDENTIFY OH CARESOURCE
+0019  * 0019                   DIFFERENTLY FROM THE NORMAL OH
+0020  * 0020 08/08/19 JHW BJW  CHANGES TO ADD A NEW CONTEXT CODE TO
+0020  * 0020                   WV PROCESSING - CTSESTWV (ESTATES)
+0021  * 0021 09/22/20 JXZ JXZ  DMND0085375 - CTSCASNY - ENCOUNTER/CCLM
+0021  * 0021                   NY PROCESSING
+0022  * 0022 02/25/21 JXZ JXZ  PRJTASK0313074 ADD CONTEXT CODE
+0022  * 0022                   CTSCASCO-HCPF FOR CO
+0023  * 0023 06/08/21 JXZ JXZ  PRJTASK0325893
+0023  * 0023          INCLUDE CTSESTNV, CTSTRSNV, AND CTSTFRNV
+0024  * 0024 12/22/21 JXZ PRJTASK0342491 -ADD CONTEXT CTSCASCH-WV
+0024  * 0024         TO MAINFRAME DAILY AND WEEKLY CLAIM PULLS
+0025  * 0025 03/22/23 JXZ PRJTASK0371059 -ADD CONTEXT CTSCASTN FOR TN
+0026  * 0026 05/23/24 SXS SXS CHG0051545
+0026  * 0026            - ADD CONTEXT ADD CTSTRSNM TO EXISTING
+0027  * 0027 07/16/25 SXS SXS CUS0136047 CHG2724516
+0027  * 0027            - CTSCASNJ - MAINFRAME CLAIM PULL
+      *****************************************************************
+      *
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT SRCPCF-OUT        ASSIGN   TO  SRCPCFO.
+      **
+       DATA DIVISION.
+       FILE SECTION.
+       FD  SRCPCF-OUT
+           BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS CLMO-RECORD.
+       01  CLMO-RECORD                     PIC X(70).
+      *
+       WORKING-STORAGE SECTION.
+      **
+       01  WS-HSTI-RECORD.
+           03 HST-CLMPRFX.
+              05 HST-RECIPIENT-ID-NUM      PIC X(20).
+              05 HST-HMS-CASE-KEY          PIC 9(09).
+              05 HST-ICN                   PIC X(20).
+              05 HST-FORMER-ICN            PIC X(20).
+              05 HST-XACTION-STATUS        PIC X(01).
+
+       01  WS-SRCPCF-OUT.
+           05 CLM-RECIPIENT-ID-NUM         PIC X(20).
+           05 CLM-HMS-CASE-KEY             PIC 9(09).
+           05 CLM-ICN                      PIC X(20).
+           05 CLM-FORMER-ICN               PIC X(20).
+           05 CLM-XACTION-STATUS           PIC X(01).
+
+       01  WS-FIELDS.
+           05  DUMP-CODE                  PIC S9(04) COMP  VALUE +3645.
+           05  WS-SQLCODE                 PIC +(7)9(3)  VALUE ZERO.
+           05  WS-RETURN-CODE             PIC 9(02)     VALUE ZERO.
+           05  ART-CSR-FLAG               PIC  X(01)    VALUE ' '.
+              88  START-OF-ART-CSR                      VALUE 'S'.
+              88  END-OF-ART-CSR                        VALUE 'E'.
+           05  WS-MOVE                    PIC  X(20)  VALUE SPACES.
+           05  WS-CONTEXT-CD              PIC  X(16)  VALUE SPACES.
+0002       05  WS-CONTEXT-CD1             PIC  X(16)  VALUE SPACES.
+0010       05  WS-CONTEXT-CD2             PIC  X(16)  VALUE SPACES.
+0017       05  WS-CONTEXT-CD3             PIC  X(16)  VALUE SPACES.
+0017       05  WS-CONTEXT-CD4             PIC  X(16)  VALUE SPACES.
+0021       05  WS-CONTEXT-CD5             PIC  X(16)  VALUE SPACES.
+0021       05  WS-CONTEXT-CD6             PIC  X(16)  VALUE SPACES.
+
+       01  WS-COMPILE-DATE-TIME.
+           05  WS-WHEN-COMPILED      PIC X(26)   VALUE SPACES.
+           05  WS-WHEN-COMPILED-DISP.
+             10  WS-WHEN-COMPILED-MM-DD-YY.
+               15 WS-COMP-MM      PIC X(02)  VALUE SPACES.
+               15 FILLER          PIC X(01)  VALUE '/'.
+               15 WS-COMP-DD      PIC X(02)  VALUE SPACES.
+               15 FILLER          PIC X(01)  VALUE '/'.
+               15 WS-COMP-YY      PIC X(02)  VALUE SPACES.
+             10  FILLER           PIC X(01)  VALUE SPACE.
+             10  WS-WHEN-COMPILED-HH-MM.
+               15 WS-COMP-HH      PIC X(02)  VALUE SPACES.
+               15 FILLER          PIC X(01)  VALUE ':'.
+               15 WS-COMP-MI      PIC X(02)  VALUE SPACES.
+      *
+      **  "GET HMS CONTRACT" SUBROUTINE AREA :
+      *
+0004   01  WS-CASGETCC                   PIC X(08) VALUE 'CASGETCC'.
+0004   01  CASGETCC-CALLING-AREA.
+0004       05  HMS-3BYTE-CONTRACT-NUM    PIC X(03)  VALUE  SPACES.
+0004       05  FILLER                    PIC X(08)  VALUE  SPACES.
+0004       05  FILLER                    PIC X(04)  VALUE  SPACES.
+0004       05  FILLER                    PIC X(64)  VALUE  SPACES.
+0004       05  CASGETCC-RETURN-CODE      PIC X(01)  VALUE  SPACE.
+
+       01  WS-COUNTERS.
+           05  REC-WRITE-CTR             PIC S9(07) COMP-3  VALUE ZERO.
+           05  OPEN-NCTC-REC-CTR         PIC S9(07) COMP-3  VALUE ZERO.
+           05  CLOSED-NCTC-REC-CTR       PIC S9(07) COMP-3  VALUE ZERO.
+           05  OTHER-NCTC-REC-CTR        PIC S9(07) COMP-3  VALUE ZERO.
+           05  TIME-OUT-CTR              PIC S9(01) COMP-3  VALUE ZERO.
+           05  WS-COMP-01                PIC S9(04) COMP    VALUE ZERO.
+0019       05  NUM-REC-OUT               PIC ZZZ,ZZZ,ZZ9    VALUE ZERO.
+      *
+      **  DB2  AREA  START  ******
+      **  ERROR MESSAGE VARIABLES TO BE PASSED TO DSNTIAR :
+      *
+       01 ERROR-MESSAGE.
+           05 ERROR-MESSAGE-LENGTH   PIC S9(4) COMP   VALUE +560.
+           05 ERROR-MESSAGE-LINE     PIC X(80)  OCCURS 7 TIMES
+                                                 INDEXED BY EML-INDEX.
+       01 ERROR-LINE-LENGTH          PIC S9(9) COMP   VALUE +80.
+      *
+           EXEC SQL
+                INCLUDE SQLCA
+           END-EXEC.
+
+0002   01  WS-CURSOR-VALUES.
+0002       10 CASE-CONTEXT-CD1.
+0002          49 CASE-CONTEXT-CD1-L     PIC S9(4) USAGE COMP.
+0002          49 CASE-CONTEXT-CD1-T     PIC X(16).
+
+0010   01  WS-CURSOR-VALUES.
+0010       10 CASE-CONTEXT-CD2.
+0010          49 CASE-CONTEXT-CD2-L     PIC S9(4) USAGE COMP.
+0010          49 CASE-CONTEXT-CD2-T     PIC X(16).
+0017
+0017   01  WS-CURSOR-VALUES.
+0017       10 CASE-CONTEXT-CD3.
+0017          49 CASE-CONTEXT-CD3-L     PIC S9(4) USAGE COMP.
+0017          49 CASE-CONTEXT-CD3-T     PIC X(16).
+0017
+0017   01  WS-CURSOR-VALUES.
+0017       10 CASE-CONTEXT-CD4.
+0017          49 CASE-CONTEXT-CD4-L     PIC S9(4) USAGE COMP.
+0017          49 CASE-CONTEXT-CD4-T     PIC X(16).
+0017
+0017   01  WS-CURSOR-VALUES.
+0017       10 CASE-CONTEXT-CD5.
+0017          49 CASE-CONTEXT-CD5-L     PIC S9(4) USAGE COMP.
+0017          49 CASE-CONTEXT-CD5-T     PIC X(16).
+0017
+0017   01  WS-CURSOR-VALUES.
+0017       10 CASE-CONTEXT-CD6.
+0017          49 CASE-CONTEXT-CD6-L     PIC S9(4) USAGE COMP.
+0017          49 CASE-CONTEXT-CD6-T     PIC X(16).
+
+TANYA  01  WS-NULL-INDICATORS.
+           05 WS-PREV-ICN-NUM-IND       PIC S9(04) COMP.
+           05 WS-RECIP-MANUM-IND        PIC S9(04) COMP.
+TANYA      05 WS-CLMST-RF-NULL-IND      PIC S9(04) COMP.
+      *
+
+      *
+      **  ARTCLKP  DCLGEN :
+      *
+           EXEC SQL
+                INCLUDE  ARTCLKP
+           END-EXEC.
+      *
+      **  ARTCCLM  DCLGEN :
+      *
+           EXEC SQL
+                INCLUDE  ARTCCLM
+           END-EXEC.
+      *
+      *
+      **  MAIN CURSOR :
+      *
+           EXEC SQL  DECLARE  ART_CSR  CURSOR  FOR
+              SELECT
+                D.RECIP_MA_NUM
+               ,C.CASE_ID
+0003           ,D.ICN_NUM
+               ,D.PREV_ICN_NUM
+               ,D.CLMST_RF
+                  FROM   ARTCLKP C
+                  JOIN   ARTCCLM D
+                  ON    (C.CONTEXT_CD = :CLKP-CONTEXT-CD  OR
+0002                     C.CONTEXT_CD = :CASE-CONTEXT-CD1 OR
+0010                     C.CONTEXT_CD = :CASE-CONTEXT-CD2 OR
+0017                     C.CONTEXT_CD = :CASE-CONTEXT-CD3 OR
+0017                     C.CONTEXT_CD = :CASE-CONTEXT-CD4 OR
+0021                     C.CONTEXT_CD = :CASE-CONTEXT-CD5 OR
+0021                     C.CONTEXT_CD = :CASE-CONTEXT-CD6)
+                    AND  C.CLAIM_ID = D.CLAIM_ID
+                    AND  C.CONTEXT_CD = D.CONTEXT_CD
+             FOR  READ  ONLY
+           END-EXEC.
+      *
+      ******  DB2  AREA  END  ******
+      *
+       PROCEDURE DIVISION.
+       0000-MAIN.
+           DISPLAY '+++'
+           DISPLAY '+++ ENTERED CASNCTC0 +++'
+
+           MOVE FUNCTION WHEN-COMPILED    TO  WS-WHEN-COMPILED
+           MOVE  WS-WHEN-COMPILED (5:2)    TO  WS-COMP-MM
+           MOVE  WS-WHEN-COMPILED (7:2)    TO  WS-COMP-DD
+           MOVE  WS-WHEN-COMPILED (3:2)    TO  WS-COMP-YY
+           MOVE  WS-WHEN-COMPILED (9:2)    TO  WS-COMP-HH
+           MOVE  WS-WHEN-COMPILED (11:2)   TO  WS-COMP-MI
+           DISPLAY '+++ PGM CASNCTC0 COMPILED ON ' WS-WHEN-COMPILED-DISP
+                                                           ' START  **'.
+           OPEN OUTPUT  SRCPCF-OUT.
+
+           PERFORM 1000-MAINLINE     THRU  1000-MAINLINE-EXIT.
+           PERFORM 9000-TERMINATION  THRU  9000-TERMINATION-EXIT.
+           CLOSE        SRCPCF-OUT.
+           MOVE  WS-RETURN-CODE      TO  RETURN-CODE
+           GOBACK.
+      **
+       1000-MAINLINE.
+           CALL WS-CASGETCC USING  CASGETCC-CALLING-AREA.
+           DISPLAY 'CALLING_AREA CONTRACT NUM =' CASGETCC-CALLING-AREA.
+
+           IF  CASGETCC-RETURN-CODE  NOT =  '0'
+              DISPLAY '** ERR: RETRIEVE CONTRACT NUMBER **'
+              MOVE  +0999  TO  DUMP-CODE
+              GO TO  Z9999-ERROR-EXIT
+           END-IF.
+
+           DISPLAY 'HMS-3BYTE-CONTRACT-NUM =' HMS-3BYTE-CONTRACT-NUM.
+           MOVE  'ZZZZZZZZZZZZZZZZ'   TO   WS-CONTEXT-CD1
+           MOVE  'ZZZZZZZZZZZZZZZZ'   TO   WS-CONTEXT-CD2
+0017       MOVE  'ZZZZZZZZZZZZZZZZ'   TO   WS-CONTEXT-CD3
+0017       MOVE  'ZZZZZZZZZZZZZZZZ'   TO   WS-CONTEXT-CD4
+0021       MOVE  'ZZZZZZZZZZZZZZZZ'   TO   WS-CONTEXT-CD5
+0021       MOVE  'ZZZZZZZZZZZZZZZZ'   TO   WS-CONTEXT-CD6
+           EVALUATE  HMS-3BYTE-CONTRACT-NUM
+             WHEN  '320'  MOVE  'CTSCASNY'    TO  WS-CONTEXT-CD
+                          MOVE  'CTSCASNYC'   TO WS-CONTEXT-CD1
+                          MOVE  'CTSCASEX-NY' TO WS-CONTEXT-CD2
+0017                      MOVE  'CTSESTNY'    TO  WS-CONTEXT-CD3
+0017                      MOVE  'CTSESTEX-NY' TO  WS-CONTEXT-CD4
+0021                      MOVE  'CTSCASNYOP1' TO  WS-CONTEXT-CD5
+0021                      MOVE  'CTSESTNYOP1' TO  WS-CONTEXT-CD6
+             WHEN  '300'  MOVE  'CTSCASTST'  TO   WS-CONTEXT-CD
+                                  WS-CONTEXT-CD1 WS-CONTEXT-CD2
+             WHEN  '330'  MOVE  'CTSCASAR'   TO   WS-CONTEXT-CD
+                                  WS-CONTEXT-CD1 WS-CONTEXT-CD2
+             WHEN  '326'  MOVE  'CTSCASCO'   TO   WS-CONTEXT-CD
+                                                  WS-CONTEXT-CD2
+0005                      MOVE  'CTSESTCO'   TO   WS-CONTEXT-CD1
+0022                      MOVE  'CTSCASCO-HCPF' TO WS-CONTEXT-CD3
+             WHEN  '341'  MOVE  'CTSCASOH'   TO   WS-CONTEXT-CD
+                                  WS-CONTEXT-CD1 WS-CONTEXT-CD2
+0019         WHEN  '535'  MOVE  'CTSCASOH'   TO   WS-CONTEXT-CD
+0019                              WS-CONTEXT-CD1 WS-CONTEXT-CD2
+             WHEN  '319'  MOVE  'CTSCASCT'   TO   WS-CONTEXT-CD
+                                  WS-CONTEXT-CD1 WS-CONTEXT-CD2
+             WHEN  '317'  MOVE  'CTSWRCCA'   TO   WS-CONTEXT-CD
+                                  WS-CONTEXT-CD1 WS-CONTEXT-CD2
+             WHEN  '313'  MOVE  'CTSCASFL'   TO   WS-CONTEXT-CD
+                          MOVE  'CTSESTFL'   TO   WS-CONTEXT-CD1
+                          MOVE  'CTSTRSFL'   TO   WS-CONTEXT-CD2
+0018                      MOVE  'CTSCASMT-FL' TO   WS-CONTEXT-CD3
+0004         WHEN  '358'  MOVE  'CTSCASNV'   TO   WS-CONTEXT-CD
+0023                      MOVE  'CTSESTNV'   TO   WS-CONTEXT-CD1
+0023                      MOVE  'CTSTRSNV'   TO   WS-CONTEXT-CD2
+0023                      MOVE  'CTSTFRNV'   TO   WS-CONTEXT-CD3
+0001         WHEN  '359'
+0001                      MOVE  'CTSCASNM'   TO   WS-CONTEXT-CD
+0001                      MOVE  'CTSESTNM'   TO   WS-CONTEXT-CD1
+0026                      MOVE  'CTSTRSNM'   TO   WS-CONTEXT-CD2
+             WHEN  '590'
+                          MOVE  'CTSCASAL'   TO   WS-CONTEXT-CD
+                          MOVE  'CTSESTAL'   TO   WS-CONTEXT-CD1
+                          MOVE  'CTSTRSAL'   TO   WS-CONTEXT-CD2
+0003         WHEN  '645'  MOVE  'CTSCASWV'   TO   WS-CONTEXT-CD
+0020                      MOVE  'CTSESTWV'   TO   WS-CONTEXT-CD1
+0024                      MOVE 'CTSCASCH-WV' TO   WS-CONTEXT-CD2
+0025         WHEN  '564'  MOVE  'CTSCASTN'   TO   WS-CONTEXT-CD
+0025                              WS-CONTEXT-CD1 WS-CONTEXT-CD2
+0027         WHEN  '303'  MOVE  'CTSCASNJ'   TO   WS-CONTEXT-CD
+             WHEN  OTHER
+                   DISPLAY '** ERR: UNKNOWN HMS-3BYTE-CONTRACT-NUM **'
+                   GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+
+           DISPLAY 'WS-CONTEXT-CD : ' WS-CONTEXT-CD
+           DISPLAY 'WS-CONTEXT-CD1: ' WS-CONTEXT-CD1
+           DISPLAY 'WS-CONTEXT-CD2: ' WS-CONTEXT-CD2
+0017       DISPLAY 'WS-CONTEXT-CD3: ' WS-CONTEXT-CD3
+0017       DISPLAY 'WS-CONTEXT-CD4: ' WS-CONTEXT-CD4
+0021       DISPLAY 'WS-CONTEXT-CD5: ' WS-CONTEXT-CD5
+0021       DISPLAY 'WS-CONTEXT-CD6: ' WS-CONTEXT-CD6
+           DISPLAY '+'.
+      *
+           INITIALIZE  DCLARTCLKP
+                       DCLARTCCLM.
+
+           PERFORM 1100-OPEN-ART-CSR THRU 1100-OPEN-EXIT
+0021           UNTIL START-OF-ART-CSR OR TIME-OUT-CTR >= 7.
+0021       IF TIME-OUT-CTR >= 7
+               GO TO Z9999-ERROR-EXIT
+           END-IF.
+      *
+           PERFORM UNTIL END-OF-ART-CSR
+              PERFORM 1200-FETCH-ART-CSR THRU 1200-FETCH-EXIT
+              IF END-OF-ART-CSR
+                 CONTINUE
+              ELSE
+                PERFORM 1300-FORMAT-NCTCASE-REC
+                   THRU 1300-FORMAT-EXIT
+                WRITE CLMO-RECORD  FROM WS-HSTI-RECORD
+                ADD 1 TO REC-WRITE-CTR
+                ADD 1 TO OPEN-NCTC-REC-CTR
+                INITIALIZE  DCLARTCLKP
+                            DCLARTCCLM
+              END-IF
+           END-PERFORM.
+      *
+           EXEC SQL CLOSE ART_CSR END-EXEC.
+           EVALUATE SQLCODE
+              WHEN +0
+                  CONTINUE
+              WHEN OTHER
+                  MOVE SQLCODE  TO  WS-SQLCODE
+                  DISPLAY 'ERR: CLOSE ART_CSR, SQLCODE = ' WS-SQLCODE
+                  GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+
+       1000-MAINLINE-EXIT.      EXIT.
+      *
+       1100-OPEN-ART-CSR.
+           UNSTRING  WS-CONTEXT-CD           DELIMITED  BY  ALL SPACES
+               INTO   CLKP-CONTEXT-CD-T
+               COUNT IN  CLKP-CONTEXT-CD-L
+           END-UNSTRING.
+           UNSTRING  WS-CONTEXT-CD1          DELIMITED  BY  ALL SPACES
+               INTO   CASE-CONTEXT-CD1-T
+               COUNT IN  CASE-CONTEXT-CD1-L
+           END-UNSTRING.
+           UNSTRING  WS-CONTEXT-CD2          DELIMITED  BY  ALL SPACES
+               INTO   CASE-CONTEXT-CD2-T
+               COUNT IN  CASE-CONTEXT-CD2-L
+           END-UNSTRING.
+0017       UNSTRING  WS-CONTEXT-CD3  DELIMITED  BY  ALL SPACES
+0017           INTO  CASE-CONTEXT-CD3-T
+0017          COUNT  IN  CASE-CONTEXT-CD3-L
+0017       END-UNSTRING.
+0017       UNSTRING  WS-CONTEXT-CD4  DELIMITED  BY  ALL SPACES
+0017           INTO  CASE-CONTEXT-CD4-T
+0017          COUNT  IN  CASE-CONTEXT-CD4-L
+0017       END-UNSTRING.
+0021       UNSTRING  WS-CONTEXT-CD5  DELIMITED  BY  ALL SPACES
+0021           INTO  CASE-CONTEXT-CD5-T
+0021          COUNT  IN  CASE-CONTEXT-CD5-L
+0021       END-UNSTRING.
+0021       UNSTRING  WS-CONTEXT-CD6  DELIMITED  BY  ALL SPACES
+0021           INTO  CASE-CONTEXT-CD6-T
+0021          COUNT  IN  CASE-CONTEXT-CD6-L
+0021       END-UNSTRING.
+0021       DISPLAY 'CASE-CONTEXT-CD5 = ' WS-CONTEXT-CD5
+0021       DISPLAY 'CASE-CONTEXT-CD6 = ' WS-CONTEXT-CD6
+           EXEC SQL  OPEN ART_CSR  END-EXEC
+           EVALUATE  SQLCODE
+             WHEN +0
+               SET  START-OF-ART-CSR  TO  TRUE
+             WHEN -904
+             WHEN -911
+             WHEN -913
+LLL   * ==> UNFORTUNATELY WE WILL NEVER RECEIVE -913 IN OUR INSTALLATION
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: OPEN ART_CSR, SQLCODE = ' WS-SQLCODE
+               ADD 1  TO  TIME-OUT-CTR
+               DISPLAY 'DB2 ACCESS ATTEMPTED ' TIME-OUT-CTR ' TIME(S)'
+               DISPLAY '+'
+               GO TO  1100-OPEN-EXIT
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: OPEN ART_CSR, SQLCODE = ' WS-SQLCODE
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+       1100-OPEN-EXIT.     EXIT.
+      *
+       1200-FETCH-ART-CSR.
+           INITIALIZE  DCLARTCLKP
+                       DCLARTCCLM.
+           EXEC SQL  FETCH ART_CSR  INTO
+TANYA           :CCLM-RECIP-MA-NUM:WS-RECIP-MANUM-IND
+               ,:CLKP-CASE-ID
+               ,:CCLM-ICN-NUM
+TANYA          ,:CCLM-PREV-ICN-NUM:WS-PREV-ICN-NUM-IND
+TANYA          ,:CCLM-CLMST-RF:WS-CLMST-RF-NULL-IND
+           END-EXEC.
+           EVALUATE  SQLCODE
+             WHEN  +0
+               CONTINUE
+             WHEN  +100
+               SET  END-OF-ART-CSR  TO TRUE
+               IF  REC-WRITE-CTR  =  ZERO
+                DISPLAY 'WRN: NO MATCHING RECS FOUND IN  DB2AR01 TABLES'
+                DISPLAY '     ARTCASE  AND  ARTINDV . '
+                DISPLAY '+'
+                MOVE  04  TO  WS-RETURN-CODE
+               END-IF
+             WHEN  OTHER
+               MOVE  SQLCODE   TO  WS-SQLCODE
+               DISPLAY 'ERR: FETCH ART_CSR, SQLCODE = ' WS-SQLCODE
+               GO TO  Z9999-ERROR-EXIT
+           END-EVALUATE.
+       1200-FETCH-EXIT.     EXIT.
+      *
+       1300-FORMAT-NCTCASE-REC.
+           MOVE  CCLM-RECIP-MA-NUM-T  (1:CCLM-RECIP-MA-NUM-L)
+                                                         TO  WS-MOVE
+           MOVE  WS-MOVE(1:20)              TO  HST-RECIPIENT-ID-NUM
+           MOVE  CLKP-CASE-ID               TO  HST-HMS-CASE-KEY
+           MOVE  CCLM-ICN-NUM-T   (1:CCLM-ICN-NUM-L   )  TO  WS-MOVE
+           MOVE  WS-MOVE(1:20)              TO  HST-ICN
+           MOVE  CCLM-PREV-ICN-NUM-T (1:CCLM-PREV-ICN-NUM-L) TO WS-MOVE
+           MOVE  WS-MOVE(1:20)              TO  HST-FORMER-ICN
+           MOVE  CCLM-CLMST-RF-T  (1:CCLM-CLMST-RF-L)        TO WS-MOVE
+           MOVE  WS-MOVE(1:1)               TO  HST-XACTION-STATUS.
+       1300-FORMAT-EXIT.        EXIT.
+      *
+       9000-TERMINATION.
+           DISPLAY ' =================================================='
+           DISPLAY '       CASNCTC0 - PROGRAM COUNTERS'
+           DISPLAY '      -----------------------------'
+           MOVE     REC-WRITE-CTR         TO NUM-REC-OUT
+           DISPLAY 'NUMBER OF RECORDS  WRITTEN.......... :'
+                          NUM-REC-OUT
+           DISPLAY ' =================================================='
+           DISPLAY '*****  PGM  CASNCTC0  NORMAL  END  *****'
+           DISPLAY '+++'.
+       9000-TERMINATION-EXIT.        EXIT.
+
+       Z9999-ERROR-EXIT.
+           IF  SQLCODE   NOT =  +0
+              CALL 'DSNTIAR'  USING  SQLCA
+                                     ERROR-MESSAGE
+                                     ERROR-LINE-LENGTH
+              DISPLAY '++'
+              DISPLAY ERROR-MESSAGE-LINE (1)
+              DISPLAY ERROR-MESSAGE-LINE (2)
+              DISPLAY ERROR-MESSAGE-LINE (3)
+              DISPLAY ERROR-MESSAGE-LINE (4)
+              DISPLAY ERROR-MESSAGE-LINE (5)
+              DISPLAY ERROR-MESSAGE-LINE (6)
+              DISPLAY ERROR-MESSAGE-LINE (7)
+              DISPLAY '++'
+           END-IF.
+           DISPLAY '*****  PGM  CASNCTC0  ABENDED  *****'
+           DISPLAY ' '
+           CALL   'ILBOABN0'  USING  DUMP-CODE
+           GOBACK.
+

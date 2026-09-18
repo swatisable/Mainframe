@@ -1,0 +1,3 @@
+ SORT FIELDS=(21,09,ZD,A)           <== HMS-CASE-KEY (CLKP_CASE_ID)
+ END
+

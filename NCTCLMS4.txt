@@ -1,0 +1,38 @@
+        03  (PREFIX)-NCTCLMS.
+            05  (PREFIX)-RECIPIENT-ID-NUM         PIC X(20).
+            05  (PREFIX)-HMS-CASE-KEY             PIC 9(09).
+            05  (PREFIX)-ICN                      PIC X(20).
+            05  (PREFIX)-FORMER-ICN               PIC X(20).
+            05  (PREFIX)-CLAIM-STATUS             PIC X(01).
+            05  (PREFIX)-TRANSACTION-TYPE         PIC X(01).
+            05  (PREFIX)-CLAIM-TYPE               PIC X(03).
+            05  (PREFIX)-UNITS-OF-SERVICE         PIC X(05).
+            05  (PREFIX)-CHARGE-AMT               PIC Z(06)9.99-.
+            05  (PREFIX)-PAID-AMT                 PIC Z(06)9.99-.
+            05  (PREFIX)-DOR-A.
+                10  (PREFIX)-DOR-CC               PIC 9(02).
+                10  (PREFIX)-DOR                  PIC 9(06).
+            05  (PREFIX)-SERVICE-DATE-FROM-A.
+                10 (PREFIX)-SERVICE-DATE-FROM-CC  PIC 9(02).
+                10 (PREFIX)-SERVICE-DATE-FROM     PIC 9(06).
+            05  (PREFIX)-SERVICE-DATE-TO-A.
+                10 (PREFIX)-SERVICE-DATE-TO-CC    PIC 9(02).
+                10 (PREFIX)-SERVICE-DATE-TO       PIC 9(06).
+            05  (PREFIX)-LAST-NAME                PIC X(12).
+            05  (PREFIX)-FIRST-NAME               PIC X(07).
+            05  (PREFIX)-MI                       PIC X(01).
+            05  (PREFIX)-PROVIDER-NUM             PIC X(15).
+            05  (PREFIX)-PROVIDER-NAME            PIC X(35).
+            05  (PREFIX)-HMS-CLIENT-ID            PIC X(06).
+            05  (PREFIX)-SVC-CODE                 PIC X(11).
+            05  (PREFIX)-SVC-DESC                 PIC X(35).
+            05  (PREFIX)-PRIMARY-DIAG-CODE        PIC X(07).
+            05  (PREFIX)-PRIMARY-DIAG-DESC        PIC X(35).
+            05  (PREFIX)-SECOND-DIAG-CODE         PIC X(07).
+            05  (PREFIX)-CREATE-SOURCE            PIC X(02).
+            05  (PREFIX)-FILLER                   PIC X(02).
+            05  (PREFIX)-USER-RELATED             PIC X(01).
+            05  (PREFIX)-CDE-ICD-VERSION          PIC X(02).
+            05  (PREFIX)-AGENCY-CODE              PIC X(02).
+            05  (PREFIX)-SYSTEM-RELATED           PIC X(01).
+

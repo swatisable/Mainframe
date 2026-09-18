@@ -1,0 +1,186 @@
+      *****************************************************************
+      *  ALABAMA CLAIMS FILE - PHARMACY HEADER                        *
+      *****************************************************************
+        02 (ALT)-RXRX-REC.
+        03 (ALT)-RX-HEADER-SEG.
+      * IDENTIFIER FIELDS
+         05  (ALT)-RX-ICN                         PIC X(13).
+         05  (ALT)-RX-REC-TYPE                    PIC X(02).
+         05  (ALT)-RX-CLAIM-TYPE-ALPHA            PIC X(01).
+         05  (ALT)-RX-DTL-CNT                     PIC X(03).
+         05  (ALT)-RX-CLAIM-STAT-IND              PIC X(01).
+         05  (ALT)-RX-CDE-CLM-VERSION             PIC X(04).
+      * GENERAL FIELDS
+         05  (ALT)-RX-PLAN-CODE                   PIC X(03).
+         05  (ALT)-RX-HDR-DATE-DISPENSE           PIC X(08).
+         05  (ALT)-RX-HDR-DATE-PRESCRIBE          PIC X(08).
+         05  (ALT)-RX-ENTRY-CLERK                 PIC X(08).
+         05  (ALT)-RX-HDR-PA-NUM                  PIC X(10).
+         05  FILLER                               PIC X(38).
+         05  FILLER                               PIC X(50).
+         05 (ALT)-RX-PROV-PMP                     PIC X(15).
+         05 (ALT)-RX-PUB-PRIV-IND                 PIC X(01).
+      * RECIPIENT FIELDS
+         05  (ALT)-RX-BENE-MID                    PIC X(12).
+         05  (ALT)-RX-BENE-MID-CHK-DIG            PIC X(01).
+         05  (ALT)-RX-BENE-LNAME                  PIC X(60).
+         05  (ALT)-RX-BENE-FNAME                  PIC X(35).
+         05  (ALT)-RX-BENE-MI                     PIC X(01).
+         05  (ALT)-RX-BENE-CNTY                   PIC X(10).
+         05  (ALT)-RX-BENE-DOB                    PIC X(08).
+         05  (ALT)-RX-BENE-AGE                    PIC X(03).
+         05  (ALT)-RX-BENE-SEX                    PIC X(01).
+         05  (ALT)-RX-BENE-HIC                    PIC X(12).
+         05  (ALT)-RX-BENE-RACE                   PIC X(02).
+         05  (ALT)-RX-BENE-RETRO-ELIG-IND         PIC X(01).
+         05  (ALT)-RX-HDR-BENE-AID-CAT            PIC X(02).
+         05  (ALT)-RX-BENE-DISASTER-SURV-CDE      PIC X(02).
+      * PROVIDER FIELDS
+         05  FILLER                               PIC X(15).
+         05  (ALT)-RX-PRSC-PROV-LIC               PIC X(15).
+         05  (ALT)-RX-PRSC-PROV-NPI               PIC X(15).
+         05  (ALT)-RX-BILL-PROV-NPI               PIC X(15).
+         05  (ALT)-RX-BILL-PROV-MCD               PIC X(15).
+         05  (ALT)-RX-BILL-PROV-CNTY              PIC X(10).
+         05  (ALT)-RX-BILL-PROV-LOC               PIC X(01).
+         05  (ALT)-RX-BILL-PROV-TYPE              PIC X(02).
+         05  (ALT)-RX-BILL-PROV-SPEC-CNT          PIC X(02).
+         05  (ALT)-RX-BILL-PROV-SPEC
+               OCCURS 5 TIMES.
+             10  (ALT)-RX-PROV-SPEC               PIC X(03).
+      * FINANCIAL FIELDS
+         05  (ALT)-RX-FINAL-STATUS-DATE           PIC X(08).
+         05  (ALT)-RX-HDR-TOT-BILL                PIC X(10).
+         05  (ALT)-RX-HDR-ALLOW-AMT               PIC X(11).
+         05  (ALT)-RX-HDR-PAID-AMT                PIC X(11).
+         05  (ALT)-RX-HDR-TPL-AMT                 PIC X(10).
+         05  FILLER                               PIC X(10).
+         05  (ALT)-RX-HDR-PA-AMT-USED             PIC X(10).
+         05  (ALT)-RX-HDR-PA-UNITS-USED           PIC X(16).
+         05  (ALT)-RX-HDR-HDR-COPAY-AMT           PIC X(08).
+         05  (ALT)-RX-HDR-RA-NBR                  PIC X(09).
+      * INDICATOR FIELDS
+         05  (ALT)-RX-HDR-EMERG-IND               PIC X(01).
+         05  (ALT)-RX-SERV-AUTH-EXCEPT-CODE       PIC X(02).
+         05  (ALT)-RX-DELAY-RSN-CODE              PIC X(03).
+         05  FILLER                               PIC X(02).
+         05  FILLER                               PIC X(03).
+         05  FILLER                               PIC X(03).
+         05  FILLER                               PIC X(03).
+         05  (ALT)-RX-HDR-PA-IND                  PIC X(01).
+         05  FILLER                               PIC X(01).
+         05  (ALT)-RX-HDR-FP-IND                  PIC X(01).
+         05  (ALT)-RX-COPAY-IND                   PIC X(01).
+         05  FILLER                               PIC X(01).
+         05  (ALT)-RX-BUYIN-IND                   PIC X(01).
+         05  FILLER                               PIC X(01).
+         05  FILLER                               PIC X(01).
+      * ADJUSTMENT FIELDS
+         05  (ALT)-RX-OHDR-ICN                    PIC X(13).
+         05  (ALT)-RX-OHDR-PAY-DATE               PIC X(08).
+         05  (ALT)-RX-OHDR-PAID-AMT               PIC X(11).
+         05  (ALT)-RX-OHDR-ENC-PAID-AMT           PIC X(11).
+      * EOB FIELDS
+         05  (ALT)-RX-HDR-EOB-CNT                 PIC X(02).
+         05  (ALT)-RX-HDR-EOB-SEG
+               OCCURS 5 TIMES.
+             10  (ALT)-RX-HDR-EOB                 PIC X(04).
+             10  (ALT)-RX-HDR-EOB-CUT-AMT         PIC X(10).
+      * ERROR FIELDS
+         05  (ALT)-RX-HDR-ERR-CNT                 PIC X(02).
+         05  (ALT)-RX-HDR-ERR-SEG
+               OCCURS 5 TIMES.
+             10  (ALT)-RX-ERR-DISP                PIC X(01).
+             10  (ALT)-RX-HDR-ERR-NUM             PIC X(04).
+      * TPL FIELDS
+         05  (ALT)-RX-TPL-IN-IND                  PIC X(01).
+         05  (ALT)-RX-TPL-OUT-IND                 PIC X(01).
+         05  (ALT)-RX-HDR-TPL-PAID-DATE           PIC X(08).
+         05  FILLER                               PIC X(09).
+         05  (ALT)-RX-HDR-AMT-OP-PAT-RESP         PIC X(09).
+         05  FILLER                               PIC X(09).
+         05  FILLER                               PIC X(09).
+      * PHARMACY SPECIFIC FIELDS
+         05  (ALT)-RX-HDR-FUND-CODE               PIC X(03).
+         05  (ALT)-RX-RX-NUM                      PIC X(12).
+         05  (ALT)-RX-REFILL-NBR                  PIC X(02).
+         05  (ALT)-RX-NCPDP-TPL-CODE              PIC X(02).
+         05  (ALT)-RX-PREF-DRUG-IND               PIC X(01).
+         05  (ALT)-RX-DISPENSE-FEE-IND            PIC X(01).
+         05  (ALT)-RX-DISPENSE-FEE                PIC X(08).
+         05  (ALT)-RX-BENE-LTC-IND                PIC X(01).
+         05  (ALT)-RX-IND-PREGNANCY               PIC X(01).
+         05  (ALT)-RX-DAYS-SUPPLY                 PIC X(09).
+         05  (ALT)-RX-DAW-CODE                    PIC X(01).
+         05  (ALT)-RX-REFILL                      PIC X(01).
+      *****************************************************************
+      *  ALABAMA CLAIMS FILE - PHARMACY DETAIL                        *
+      *****************************************************************
+         03 (ALT)-RX-DETAIL-SEG.
+      * IDENTIFIER FIELDS
+            05  (ALT)-RX-DTL-ICN                  PIC X(13).
+            05  (ALT)-RX-DTL-REC-ID               PIC X(02).
+            05  (ALT)-RX-DTL-CLM-TYPE-ALPHA       PIC X(01).
+            05  (ALT)-RX-DTL-DTL-NUM              PIC X(03).
+            05  (ALT)-RX-CLM-STAT-IND             PIC X(01).
+            05  (ALT)-RX-DTL-STAT-IND             PIC X(01).
+      * GENERAL FIELDS
+            05  FILLER                            PIC X(08).
+            05  FILLER                            PIC X(08).
+            05  FILLER                            PIC X(15).
+            05  FILLER                            PIC X(15).
+            05  (ALT)-RX-DTL-UNITS                PIC X(16).
+            05  FILLER                            PIC X(06).
+            05  FILLER                            PIC X(04).
+            05  FILLER                            PIC X(02).
+            05  FILLER                            PIC X(08).
+            05  (ALT)-RX-DTL-DTL-FP-IND           PIC X(01).
+            05  FILLER                            PIC X(01).
+            05  (ALT)-RX-DTL-NDC                  PIC X(11).
+            05  (ALT)-RX-DTL-NDC-REQ              PIC X(01).
+      * RECIPIENT FIELDS
+            05  (ALT)-RX-DTL-BENE-AID-CAT         PIC X(02).
+            05  (ALT)-RX-DTL-BENE-CNTY            PIC X(02).
+            05  (ALT)-RX-DTL-BENE-AGE             PIC X(03).
+            05  (ALT)-RX-DTL-BENE-MID             PIC X(12).
+      * FINANCIAL FIELDS
+            05  (ALT)-RX-DTL-PA-NBR               PIC X(10).
+            05  (ALT)-RX-DTL-PA-AMT-USED          PIC X(10).
+            05  (ALT)-RX-DTL-PA-UNITS-USED        PIC X(16).
+            05  (ALT)-RX-DTL-TOT-BILL             PIC X(10).
+            05  (ALT)-RX-DTL-ALLOW-AMT            PIC X(10).
+            05  (ALT)-RX-DTL-PAID-AMT             PIC X(10).
+            05  (ALT)-RX-DTL-PRICING-IND          PIC X(06).
+            05  FILLER                            PIC X(08).
+            05  FILLER                            PIC X(10).
+            05  (ALT)-RX-DTL-FUND-CODE            PIC X(03).
+      * ADJUSTMENT FIELDS
+            05  (ALT)-RX-ODTL-ICN                 PIC X(13).
+            05  (ALT)-RX-ODTL-PAYDATE             PIC X(08).
+            05  (ALT)-RX-ODTL-PAID-AMT            PIC X(11).
+            05  (ALT)-RX-ODTL-ENC-PAID-AMT        PIC X(11).
+      * EOB FIELDS
+            05  (ALT)-RX-DTL-EOB-CNT              PIC X(02).
+            05  (ALT)-RX-DTL-EOB-SEG
+                OCCURS 5 TIMES.
+                10  (ALT)-RX-DTL-EOB              PIC X(04).
+                10  (ALT)-RX-DTL-EOB-CUT-AMT      PIC X(10).
+      * ERROR FIELDS
+            05  (ALT)-RX-DTL-ERR-CNT              PIC X(02).
+            05  (ALT)-RX-DTL-ERR-SEG
+                OCCURS 5 TIMES.
+                10  (ALT)-RX-DTL-ERR-DISP         PIC X(01).
+                10  (ALT)-RX-DTL-ERR-NUM          PIC X(04).
+      * TPL FIELDS
+            05  FILLER                            PIC X(08).
+            05  FILLER                            PIC X(09).
+            05  FILLER                            PIC X(09).
+            05  FILLER                            PIC X(09).
+            05  FILLER                            PIC X(09).
+      * PHARMACY SPECIFIC FIELDS
+            05  (ALT)-RX-DTL-DRUG-SCHED-IND       PIC X(02).
+            05  (ALT)-RX-DTL-GENERIC-PROD-IND     PIC X(01).
+            05  (ALT)-RX-DTL-RATE-TYPE            PIC X(04).
+            05  (ALT)-RX-DTL-RATE-PRICE           PIC X(18).
+            05  (ALT)-RX-DTL-THER-CLASS           PIC X(10).
+
