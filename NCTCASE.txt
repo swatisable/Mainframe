@@ -1,0 +1,51 @@
+******* MODIFICATIONS :
+LLL01 * LLL01 - 07/15/2004 - REDEFINE MF-HIT AREA FOR DIFFERENT USE.
+LLL02 * LLL02 - 07/01/2016 - REDEFINE MF-HIT FOR ADDITIONAL USE.
+**********************************************************************
+            05  (PREFIX)-HMS-CLIENT-ID         PIC X(06).
+            05  (PREFIX)-HMS-CASE-KEY          PIC 9(09).
+            05  (PREFIX)-RECIPIENT-ID-NUM      PIC X(20).
+            05  (PREFIX)-CASE-SOURCE-CODE      PIC 9(09).
+            05  (PREFIX)-CASE-TYPE-CODE        PIC 9(04).
+            05  (PREFIX)-CASE-STATUS-CODE      PIC X(01).
+            05  (PREFIX)-CASE-STAGE-CODE       PIC 9(04).
+            05  (PREFIX)-CASE-PRIORITY-CODE    PIC 9(04).
+            05  (PREFIX)-CASE-OPEN-DATE        PIC X(10).
+            05  (PREFIX)-CASE-CLOSE-DATE       PIC X(10).
+            05  (PREFIX)-LAST-NAME             PIC X(25).
+            05  (PREFIX)-FIRST-NAME            PIC X(20).
+            05  (PREFIX)-MIDDLE-INIT           PIC X(01).
+            05  (PREFIX)-SEX                   PIC X(01).
+            05  (PREFIX)-SSN                   PIC X(09).
+            05  (PREFIX)-DATE-OF-BIRTH         PIC X(10).
+            05  (PREFIX)-MARITAL-STATUS        PIC X(01).
+            05  (PREFIX)-SETTLEMENT-AMT        PIC S9(13)V9(02).
+            05  (PREFIX)-EXPENSES-AMT          PIC S9(13)V9(02).
+            05  (PREFIX)-COMPROMISE-AMT        PIC S9(13)V9(02).
+            05  (PREFIX)-LIEN-MEDICAID-AMT     PIC S9(13)V9(02).
+            05  (PREFIX)-LIEN-ADJUST-AMT       PIC S9(13)V9(02).
+            05  (PREFIX)-LIEN-NOTICE-DATE      PIC X(10).
+            05  (PREFIX)-LIEN-RELEASE-DATE     PIC X(10).
+            05  (PREFIX)-INCIDENT-DATE         PIC X(10).
+            05  (PREFIX)-CLAIMS-THRU-DATE      PIC X(10).
+            05  (PREFIX)-REGISTERED-IND        PIC X(01).
+            05  (PREFIX)-ALL-CLAIMS-IND        PIC X(01).
+            05  (PREFIX)-THERAPY-IND           PIC X(01).
+            05  (PREFIX)-ATTOR-FEE-PCT         PIC 9V9(04).
+            05  (PREFIX)-FEE-ADJUST-AMT        PIC S9(13)V9(02).
+            05  (PREFIX)-WEL-NUM               PIC X(06).
+            05  (PREFIX)-LIKELY-SETTLE-DATE    PIC X(10).
+            05  (PREFIX)-LIEN-HMO-AMT          PIC S9(13)V9(02).
+            05  (PREFIX)-CASE-WORKER-IPKEY     PIC 9(06).
+            05  (PREFIX)-COUNTY-CODE           PIC X(10).
+            05  (PREFIX)-LAST-UPDATE-TMS       PIC X(26).
+LLL01       05  (PREFIX)-MF-HIT-DATA.
+              10  (PREFIX)-MF-HIT-IND            PIC X(01).
+              10  (PREFIX)-MF-HITS-LAST-RUN      PIC X(09).
+              10  (PREFIX)-MF-HITS-CUMMULATIVE   PIC X(09).
+              10  (PREFIX)-MF-HIT-LAST-DTS       PIC X(10).
+LLL01        05  (PREFIX)-FILLER-1   REDEFINES   (PREFIX)-MF-HIT-DATA.
+LLL01          10  (PREFIX)-INDV-ID            PIC 9(12).
+LLL02          10  (PREFIX)-CLIENT-CD          PIC X(05).
+LLL01          10  (PREFIX)-FILLER-2           PIC X(12).
+
