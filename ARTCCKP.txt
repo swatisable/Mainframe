@@ -1,0 +1,77 @@
+      ******************************************************************
+      * DCLGEN TABLE(DB2AR01.ARTCCKP)                                  *
+      *        LIBRARY(E003167.USER.DCLGEN(ARTCCKP))                   *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(CCKP-)                                            *
+      *        QUOTE                                                   *
+      *        DBCSDELIM(NO)                                           *
+      *        COLSUFFIX(YES)                                          *
+      *        INDVAR(YES)                                             *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE ARTCCKP TABLE (
+             LOOKUP_ID                   INTEGER NOT NULL,
+             CONTEXT_CD                  VARCHAR(16) NOT NULL,
+             CASE_ID                     DECIMAL(12,0) NOT NULL,
+             CASLK_RF                    VARCHAR(10) NOT NULL,
+             CASLK2_RF                   VARCHAR(10) NOT NULL,
+             DATA_TXT                    VARCHAR(200) NOT NULL,
+             DATA_AMT                    DECIMAL(9,2) NOT NULL,
+             DATA_DT                     DATE NOT NULL,
+             STATUS_CD                   VARCHAR(10) NOT NULL,
+             LAST_UPDATE_NM              VARCHAR(8) NOT NULL,
+             LAST_UPDATE_DTM             TIMESTAMP NOT NULL
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE DB2AR01.ARTCCKP                    *
+      ******************************************************************
+       01  DCLARTCCKP.
+      *                       LOOKUP_ID
+           10 CCKP-LOOKUP-ID          PIC S9(9) USAGE COMP.
+           10 CCKP-CONTEXT-CD.
+      *                       CONTEXT_CD LENGTH
+              49 CCKP-CONTEXT-CD-L    PIC S9(4) USAGE COMP.
+      *                       CONTEXT_CD
+              49 CCKP-CONTEXT-CD-T    PIC X(16).
+      *                       CASE_ID
+           10 CCKP-CASE-ID            PIC S9(12)V USAGE COMP-3.
+           10 CCKP-CASLK-RF.
+      *                       CASLK_RF LENGTH
+              49 CCKP-CASLK-RF-L      PIC S9(4) USAGE COMP.
+      *                       CASLK_RF
+              49 CCKP-CASLK-RF-T      PIC X(10).
+           10 CCKP-CASLK2-RF.
+      *                       CASLK2_RF LENGTH
+              49 CCKP-CASLK2-RF-L     PIC S9(4) USAGE COMP.
+      *                       CASLK2_RF
+              49 CCKP-CASLK2-RF-T      PIC X(10).
+           10 CCKP-DATA-TXT.
+      *                       DATA_TXT LENGTH
+              49 CCKP-DATA-TXT-L       PIC S9(4) USAGE COMP.
+      *                       DATA_TXT
+              49 CCKP-DATA-TXT-T       PIC X(200).
+      *                       DATA_AMT
+           10 CCKP-DATA-AMT            PIC S9(7)V9(2) USAGE COMP-3.
+      *                       DATA_DT
+           10 CCKP-DATA-DT             PIC X(10).
+           10 CCKP-STATUS-CD.
+      *                       STATUS_CD LENGTH
+              49 CCKP-STATUS-CD-L      PIC S9(4) USAGE COMP.
+      *                       STATUS_CD
+              49 CCKP-STATUS-CD-T      PIC X(10).
+           10 CCKP-LAST-UPDATE-NM.
+      *                       LAST_UPDATE_NM LENGTH
+              49 CCKP-LAST-UPDATE-NM-L PIC S9(4) USAGE COMP.
+      *                       LAST_UPDATE_NM
+              49 CCKP-LAST-UPDATE-NM-T PIC X(8).
+      *                       LAST_UPDATE_DTM
+           10 CCKP-LAST-UPDATE-DTM     PIC X(26).
+      ******************************************************************
+      * INDICATOR VARIABLE STRUCTURE                                   *
+      ******************************************************************
+       01  IARTCCKP.
+           10 INDSTRUC           PIC S9(4) USAGE COMP OCCURS 11 TIMES.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 11      *
+      ******************************************************************
+

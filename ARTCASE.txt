@@ -1,0 +1,152 @@
+      ******************************************************************
+      * DCLGEN TABLE(DB2AR01.ARTCASE)                                  *
+      *        LIBRARY(T.HMS.COPYLIB(ARTCASE))                         *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(CASE-)                                            *
+      *        QUOTE                                                   *
+      *        DBCSDELIM(NO)                                           *
+      *        COLSUFFIX(YES)                                          *
+      *        INDVAR(YES)                                             *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE  ARTCASE  TABLE  (
+             CONTEXT_CD                     VARCHAR(16) NOT NULL,
+             CASE_ID                        DECIMAL(12, 0) NOT NULL,
+             CLIENT_CD                      CHAR(5) NOT NULL,
+             INDV_ID                        DECIMAL(12, 0),
+             USER_CD                        VARCHAR(8),
+             COUNTY_CD                      VARCHAR(12),
+             WEL_NUMBER_CD                  VARCHAR(20),
+             DOS_FROM_DT                    DATE,
+             DOS_TO_DT                      DATE,
+             INCIDENT_DT                    DATE,
+             CASE_OPEN_DT                   DATE,
+             CASE_CLOSE_DT                  DATE,
+             CASE_TYPE_CD                   VARCHAR(10),
+             CASE_STATUS_CD                 VARCHAR(10),
+             CASE_PRIORITY_CD               VARCHAR(10),
+             CASE_STAGE_CD                  VARCHAR(10),
+             CASE_SOURCE_CD                 VARCHAR(10),
+             COMPROMISE_AMT                 DECIMAL(15, 2),
+             EXPENSES_AMT                   DECIMAL(15, 2),
+             FEE_ADJUST_AMT                 DECIMAL(15, 2),
+             LIEN_ADJUST_AMT                DECIMAL(15, 2),
+             LIEN_HMO_AMT                   DECIMAL(15, 2),
+             LIEN_MEDICAID_AMT              DECIMAL(15, 2),
+             LIEN_NOTICE_DT                 DATE,
+             LIEN_RELEASE_DT                DATE,
+             LIKELY_SETTLE_DT               DATE,
+             SETTLEMENT_AMT                 DECIMAL(15, 2),
+             ATTORNEY_FEE_PCT               DECIMAL(5, 2),
+             LAST_UPDATE_NM                 VARCHAR(8) NOT NULL,
+             LAST_UPDATE_DTM                TIMESTAMP,
+             INS_CLAIM_NUM                  VARCHAR(20)
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE DB2AR01.ARTCASE                    *
+      ******************************************************************
+       01  DCLARTCASE.
+           10 CASE-CONTEXT-CD.
+      *                       CONTEXT_CD LENGTH
+              49 CASE-CONTEXT-CD-L    PIC S9(4) USAGE COMP.
+      *                       CONTEXT_CD
+              49 CASE-CONTEXT-CD-T     PIC X(16).
+      *                       CASE_ID
+           10 CASE-CASE-ID         PIC S9(12)V USAGE COMP-3.
+      *                       CLIENT_CD
+           10 CASE-CLIENT-CD       PIC X(5).
+      *                       INDV_ID
+           10 CASE-INDV-ID         PIC S9(12)V USAGE COMP-3.
+           10 CASE-USER-CD.
+      *                       USER_CD LENGTH
+              49 CASE-USER-CD-L    PIC S9(4) USAGE COMP.
+      *                       USER_CD
+              49 CASE-USER-CD-T     PIC X(8).
+           10 CASE-COUNTY-CD.
+      *                       COUNTY_CD LENGTH
+              49 CASE-COUNTY-CD-L    PIC S9(4) USAGE COMP.
+      *                       COUNTY_CD
+              49 CASE-COUNTY-CD-T     PIC X(12).
+           10 CASE-WEL-NUMBER-CD.
+      *                       WEL_NUMBER_CD LENGTH
+              49 CASE-WEL-NUMBER-CD-L    PIC S9(4) USAGE COMP.
+      *                       WEL_NUMBER_CD
+              49 CASE-WEL-NUMBER-CD-T     PIC X(20).
+      *                       DOS_FROM_DT
+           10 CASE-DOS-FROM-DT     PIC X(10).
+      *                       DOS_TO_DT
+           10 CASE-DOS-TO-DT       PIC X(10).
+      *                       INCIDENT_DT
+           10 CASE-INCIDENT-DT     PIC X(10).
+      *                       CASE_OPEN_DT
+           10 CASE-CASE-OPEN-DT    PIC X(10).
+      *                       CASE_CLOSE_DT
+           10 CASE-CASE-CLOSE-DT   PIC X(10).
+           10 CASE-CASE-TYPE-CD.
+      *                       CASE_TYPE_CD LENGTH
+              49 CASE-CASE-TYPE-CD-L    PIC S9(4) USAGE COMP.
+      *                       CASE_TYPE_CD
+              49 CASE-CASE-TYPE-CD-T     PIC X(10).
+           10 CASE-CASE-STATUS-CD.
+      *                       CASE_STATUS_CD LENGTH
+              49 CASE-CASE-STATUS-CD-L    PIC S9(4) USAGE COMP.
+      *                       CASE_STATUS_CD
+              49 CASE-CASE-STATUS-CD-T     PIC X(10).
+           10 CASE-CASE-PRIORITY-CD.
+      *                       CASE_PRIORITY_CD LENGTH
+              49 CASE-CASE-PRIORITY-CD-L    PIC S9(4) USAGE COMP.
+      *                       CASE_PRIORITY_CD
+              49 CASE-CASE-PRIORITY-CD-T     PIC X(10).
+           10 CASE-CASE-STAGE-CD.
+      *                       CASE_STAGE_CD LENGTH
+              49 CASE-CASE-STAGE-CD-L    PIC S9(4) USAGE COMP.
+      *                       CASE_STAGE_CD
+              49 CASE-CASE-STAGE-CD-T     PIC X(10).
+           10 CASE-CASE-SOURCE-CD.
+      *                       CASE_SOURCE_CD LENGTH
+              49 CASE-CASE-SOURCE-CD-L    PIC S9(4) USAGE COMP.
+      *                       CASE_SOURCE_CD
+              49 CASE-CASE-SOURCE-CD-T     PIC X(10).
+      *                       COMPROMISE_AMT
+           10 CASE-COMPROMISE-AMT  PIC S9(13)V9(2) USAGE COMP-3.
+      *                       EXPENSES_AMT
+           10 CASE-EXPENSES-AMT    PIC S9(13)V9(2) USAGE COMP-3.
+      *                       FEE_ADJUST_AMT
+           10 CASE-FEE-ADJUST-AMT  PIC S9(13)V9(2) USAGE COMP-3.
+      *                       LIEN_ADJUST_AMT
+           10 CASE-LIEN-ADJUST-AMT  PIC S9(13)V9(2) USAGE COMP-3.
+      *                       LIEN_HMO_AMT
+           10 CASE-LIEN-HMO-AMT    PIC S9(13)V9(2) USAGE COMP-3.
+      *                       LIEN_MEDICAID_AMT
+           10 CASE-LIEN-MEDICAID-AMT  PIC S9(13)V9(2) USAGE COMP-3.
+      *                       LIEN_NOTICE_DT
+           10 CASE-LIEN-NOTICE-DT  PIC X(10).
+      *                       LIEN_RELEASE_DT
+           10 CASE-LIEN-RELEASE-DT  PIC X(10).
+      *                       LIKELY_SETTLE_DT
+           10 CASE-LIKELY-SETTLE-DT  PIC X(10).
+      *                       SETTLEMENT_AMT
+           10 CASE-SETTLEMENT-AMT  PIC S9(13)V9(2) USAGE COMP-3.
+      *                       ATTORNEY_FEE_PCT
+           10 CASE-ATTORNEY-FEE-PCT  PIC S9(3)V9(2) USAGE COMP-3.
+           10 CASE-LAST-UPDATE-NM.
+      *                       LAST_UPDATE_NM LENGTH
+              49 CASE-LAST-UPDATE-NM-L    PIC S9(4) USAGE COMP.
+      *                       LAST_UPDATE_NM
+              49 CASE-LAST-UPDATE-NM-T     PIC X(8).
+      *                       LAST_UPDATE_DTM
+           10 CASE-LAST-UPDATE-DTM  PIC X(26).
+           10 CASE-INS-CLAIM-NUM.
+      *                       INS_CLAIM_NUM LENGTH
+              49 CASE-INS-CLAIM-NUM-L    PIC S9(4) USAGE COMP.
+      *                       INS_CLAIM_NUM
+              49 CASE-INS-CLAIM-NUM-T     PIC X(20).
+      ******************************************************************
+      * INDICATOR VARIABLE STRUCTURE                                   *
+      ******************************************************************
+       01  IARTCASE.
+           10 INDSTRUC           PIC S9(4) USAGE COMP OCCURS 31 TIMES.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 31      *
+      ******************************************************************
+

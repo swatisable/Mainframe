@@ -1,0 +1,290 @@
+      ******************************************************************
+      * DCLGEN TABLE(IND.ARTINDV_L2)                                   *
+      *        LIBRARY(DB2X.DB.DCLGEN(ARTINDVL))                       *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(INDV-)                                            *
+      *        QUOTE                                                   *
+      *        DBCSDELIM(NO)                                           *
+      *        COLSUFFIX(YES)                                          *
+      *        INDVAR(YES)                                             *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE IND.ARTINDV_L2 TABLE  (
+             INDV_ID                        DECIMAL(12, 0) NOT NULL,
+             CLIENT_CD                      CHAR(5) NOT NULL,
+             MA_NUM                         VARCHAR(20) NOT NULL,
+             MC_NUM                         VARCHAR(20) NOT NULL,
+             SSN_NUM                        CHAR(9) NOT NULL,
+             TITLE_NM                       VARCHAR(12) NOT NULL,
+             LAST_NM                        CHAR(20) NOT NULL,
+             FIRST_NM                       CHAR(20) NOT NULL,
+             MI_NM                          CHAR(1) NOT NULL,
+             SUFFIX_NM                      VARCHAR(12) NOT NULL,
+             MAIDEN_NM                      VARCHAR(40) NOT NULL,
+             ALT_LAST_NM                    CHAR(20) NOT NULL,
+             ALT_FIRST_NM                   CHAR(20) NOT NULL,
+             ALT_MI_NM                      CHAR(1) NOT NULL,
+             DOB_DT                         DATE,
+             MA_START_DT                    DATE,
+             MA_STOP_DT                     DATE,
+             GENCD_RF                       VARCHAR(10) NOT NULL,
+             MARST_RF                       VARCHAR(10) NOT NULL,
+             EGPCD_RF                       VARCHAR(10) NOT NULL,
+             RLGCD_RF                       VARCHAR(10) NOT NULL,
+             LNGCD_RF                       VARCHAR(10) NOT NULL,
+             LAST_UPDATE_NM                 VARCHAR(8) NOT NULL,
+             LAST_UPDATE_DTM                TIMESTAMP NOT NULL,
+             MA2_NUM                        VARCHAR(20),
+             MA2_NUM_DSC                    VARCHAR(5),
+             MA3_NUM                        VARCHAR(20),
+             MA3_NUM_DSC                    VARCHAR(5),
+             MSE_NUM                        VARCHAR(20),
+             LIFETIME_REC_NUM               DECIMAL(9, 0),
+             RUNTIME_SEQ_NUM                DECIMAL(9, 0),
+             HISTORY_PURGE_IND              CHAR(1),
+             ORG_SRC_FILE_DT                DATE,
+             ORG_IPL_DT                     DATE,
+             LAST_MA_SRC_UPD_DT             DATE,
+             LAST_MA_IPL_DT                 DATE,
+             OVER_MATCH_IND                 CHAR(1),
+             ELG_UPD_FLAG_IND               CHAR(1),
+             CASE_NUM                       VARCHAR(10),
+             LAST_MC_SRC_DT                 DATE,
+             LAST_MC_IPL_UPD_DT             DATE,
+             MCA_SUMMED_SCR_CD              CHAR(3),
+             MCB_SUMMED_SRC_CD              CHAR(3),
+             PM_USER_AREA_TXT               VARCHAR(50),
+             ORG_SRC_TO__ADD_CD             CHAR(3),
+             ORG_SRC_TO_UPD_CD              CHAR(3),
+             LAST_SRC_UPD_MC_CD             CHAR(3),
+             CONVERT_DOB_TXT                CHAR(5),
+             MATCH_QHIT_TXT                 VARCHAR(10),
+             OVERRIDE_QHIT_TXT              VARCHAR(10),
+             EXCLUDE_IND                    CHAR(1),
+             DEATH_DT                       DATE,
+             SOURCE_FROM_CD                 CHAR(3) NOT NULL,
+             FORM_ID                        VARCHAR(20),
+             AIDCAT_RF                      VARCHAR(10) NOT NULL,
+             AID_EFFECT_DT                  DATE,
+             AID_END_DT                     DATE,
+             LATEST_COUNTY_CD               VARCHAR(10),
+             HMOST_RF                       VARCHAR(10),
+             LOB_CD                         CHAR(10),
+             DO_NOT_UPDATE_IND              CHAR(1)
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE DB2AR01.ARTINDV                    *
+      ******************************************************************
+       01  DCLARTINDV.
+      *                       INDV_ID
+           10 INDV-INDV-ID         PIC S9(12)V USAGE COMP-3.
+      *                       CLIENT_CD
+           10 INDV-CLIENT-CD       PIC X(5).
+           10 INDV-MA-NUM.
+      *                       MA_NUM LENGTH
+              49 INDV-MA-NUM-LEN   PIC S9(4) USAGE COMP.
+      *                       MA_NUM
+              49 INDV-MA-NUM-TEXT  PIC X(20).
+           10 INDV-MC-NUM.
+      *                       MC_NUM LENGTH
+              49 INDV-MC-NUM-LEN   PIC S9(4) USAGE COMP.
+      *                       MC_NUM
+              49 INDV-MC-NUM-TEXT  PIC X(20).
+      *                       SSN_NUM
+           10 INDV-SSN-NUM         PIC X(9).
+           10 INDV-TITLE-NM.
+      *                       TITLE_NM LENGTH
+              49 INDV-TITLE-NM-LEN  PIC S9(4) USAGE COMP.
+      *                       TITLE_NM
+              49 INDV-TITLE-NM-TEXT  PIC X(12).
+      *                       LAST_NM
+           10 INDV-LAST-NM         PIC X(20).
+      *                       FIRST_NM
+           10 INDV-FIRST-NM        PIC X(20).
+      *                       MI_NM
+           10 INDV-MI-NM           PIC X(1).
+           10 INDV-SUFFIX-NM.
+      *                       SUFFIX_NM LENGTH
+              49 INDV-SUFFIX-NM-LEN  PIC S9(4) USAGE COMP.
+      *                       SUFFIX_NM
+              49 INDV-SUFFIX-NM-TEXT  PIC X(12).
+           10 INDV-MAIDEN-NM.
+      *                       MAIDEN_NM LENGTH
+              49 INDV-MAIDEN-NM-LEN  PIC S9(4) USAGE COMP.
+      *                       MAIDEN_NM
+              49 INDV-MAIDEN-NM-TEXT  PIC X(40).
+      *                       ALT_LAST_NM
+           10 INDV-ALT-LAST-NM     PIC X(20).
+      *                       ALT_FIRST_NM
+           10 INDV-ALT-FIRST-NM    PIC X(20).
+      *                       ALT_MI_NM
+           10 INDV-ALT-MI-NM       PIC X(1).
+      *                       DOB_DT
+           10 INDV-DOB-DT          PIC X(10).
+      *                       MA_START_DT
+           10 INDV-MA-START-DT     PIC X(10).
+      *                       MA_STOP_DT
+           10 INDV-MA-STOP-DT      PIC X(10).
+      *                       GENCD_RF
+           10 INDV-GENCD-RF.
+      *                       GENCD_RF LENGTH
+              49 INDV-GENCD-RF-LEN  PIC S9(4) USAGE COMP.
+      *                       GENCD_RF
+              49 INDV-GENCD-RF-TEXT  PIC X(10).
+           10 INDV-MARST-RF.
+      *                       MARST_RF LENGTH
+              49 INDV-MARST-RF-LEN  PIC S9(4) USAGE COMP.
+      *                       MARST_RF
+              49 INDV-MARST-RF-TEXT  PIC X(10).
+           10 INDV-EGPCD-RF.
+      *                       EGPCD_RF LENGTH
+              49 INDV-EGPCD-RF-LEN  PIC S9(4) USAGE COMP.
+      *                       EGPCD_RF
+              49 INDV-EGPCD-RF-TEXT  PIC X(10).
+           10 INDV-RLGCD-RF.
+      *                       RLGCD_RF LENGTH
+              49 INDV-RLGCD-RF-LEN  PIC S9(4) USAGE COMP.
+      *                       RLGCD_RF
+              49 INDV-RLGCD-RF-TEXT  PIC X(10).
+           10 INDV-LNGCD-RF.
+      *                       LNGCD_RF LENGTH
+              49 INDV-LNGCD-RF-LEN  PIC S9(4) USAGE COMP.
+      *                       LNGCD_RF
+              49 INDV-LNGCD-RF-TEXT  PIC X(10).
+           10 INDV-LAST-UPDATE-NM.
+      *                       LAST_UPDATE_NM LENGTH
+              49 INDV-LAST-UPDATE-NM-LEN  PIC S9(4) USAGE COMP.
+      *                       LAST_UPDATE_NM
+              49 INDV-LAST-UPDATE-NM-TEXT  PIC X(8).
+      *                       LAST_UPDATE_DTM
+           10 INDV-LAST-UPDATE-DTM  PIC X(26).
+           10 INDV-MA2-NUM.
+      *                       MA2_NUM LENGTH
+              49 INDV-MA2-NUM-LEN  PIC S9(4) USAGE COMP.
+      *                       MA2_NUM
+              49 INDV-MA2-NUM-TEXT  PIC X(20).
+           10 INDV-MA2-NUM-DSC.
+      *                       MA2_NUM_DSC LENGTH
+              49 INDV-MA2-NUM-DSC-LEN  PIC S9(4) USAGE COMP.
+      *                       MA2_NUM_DSC
+              49 INDV-MA2-NUM-DSC-TEXT  PIC X(5).
+           10 INDV-MA3-NUM.
+      *                       MA3_NUM LENGTH
+              49 INDV-MA3-NUM-LEN  PIC S9(4) USAGE COMP.
+      *                       MA3_NUM
+              49 INDV-MA3-NUM-TEXT  PIC X(20).
+           10 INDV-MA3-NUM-DSC.
+      *                       MA3_NUM_DSC LENGTH
+              49 INDV-MA3-NUM-DSC-LEN  PIC S9(4) USAGE COMP.
+      *                       MA3_NUM_DSC
+              49 INDV-MA3-NUM-DSC-TEXT  PIC X(5).
+           10 INDV-MSE-NUM.
+      *                       MSE_NUM LENGTH
+              49 INDV-MSE-NUM-LEN  PIC S9(4) USAGE COMP.
+      *                       MSE_NUM
+              49 INDV-MSE-NUM-TEXT  PIC X(20).
+      *                       LIFETIME_REC_NUM
+           10 INDV-LIFETIME-REC-NUM   PIC S9(9)V USAGE COMP-3.
+      *                       RUNTIME_SEQ_NUM
+           10 INDV-RUNTIME-SEQ-NUM    PIC S9(9)V USAGE COMP-3.
+      *                       HISTORY_PURGE_IND
+           10 INDV-HISTORY-PURGE-IND  PIC X(1).
+      *                       ORG_SRC_FILE_DT
+           10 INDV-ORG-SRC-FILE-DT    PIC X(10).
+      *                       ORG_IPL_DT
+           10 INDV-ORG-IPL-DT         PIC X(10).
+      *                       LAST_MA_SRC_UPD_DT
+           10 INDV-LAST-MA-SRC-UPD-DT PIC X(10).
+      *                       LAST_MA_IPL_DT
+           10 INDV-LAST-MA-IPL-DT     PIC X(10).
+      *                       OVER_MATCH_IND
+           10 INDV-OVER-MATCH-IND     PIC X(1).
+      *                       ELG_UPD_FLAG_IND
+           10 INDV-ELG-UPD-FLAG-IND   PIC X(1).
+      *                       CASE_NUM
+           10 INDV-CASE-NUM.
+      *                       CASE_NUM LENGTH
+              49 INDV-CASE-NUM-LEN    PIC S9(4) USAGE COMP.
+      *                       CASE_NUM
+              49 INDV-CASE-NUM-TEXT   PIC X(10).
+      *                       LAST_MC_SRC_DT
+           10 INDV-LAST-MC-SRC-DT     PIC X(10).
+      *                       LAST_MC_IPL_UPD_DT
+           10 INDV-LAST-MC-IPL-UPD-DT PIC X(10).
+      *                       MCA_SUMMED_SCR_CD
+           10 INDV-MCA-SUMMED-SCR-CD  PIC X(3).
+      *                       MCB-SUMMED_SRC_CD
+           10 INDV-MCB-SUMMED-SRC-CD  PIC X(3).
+      *                       PM_USER_AREA_TXT
+           10 INDV-PM-USER-AREA-TXT.
+      *                       PM_USER_AREA_TXT LENGTH
+              49 INDV-PM-USER-AREA-TXT-LEN PIC S9(4) USAGE COMP.
+      *                       PM_USER_AREA_TXT
+              49 INDV-PM-USER-AREA-TXT-TEXT PIC X(50).
+      *                       ORG_SRC_TO__ADD_CD
+           10 INDV-ORG-SRC-TO--ADD-CD PIC X(3).
+      *                       ORG_SRC_TO_UPD_CD
+           10 INDV-ORG-SRC-TO-UPD-CD  PIC X(3).
+      *                       LAST_SRC_UPD_MC_CD
+           10 INDV-LAST-SRC-UPD-MC-CD PIC X(3).
+      *                       CONVERT_DOB_TXT
+           10 INDV-CONVERT-DOB-TXT    PIC X(5).
+      *                       MATCH_QHIT_TXT
+           10 INDV-MATCH-QHIT-TXT.
+      *                       MATCH_QHIT_TXT LENGTH
+              49 INDV-MATCH-QHIT-TXT-LEN PIC S9(4) USAGE COMP.
+      *                       MATCH_QHIT_TXT
+              49 INDV-MATCH-QHIT-TXT-TEXT PIC X(10).
+      *                       OVERRIDE_QHIT_TXT
+           10 INDV-OVERRIDE-QHIT-TXT.
+      *                       OVERRIDE_QHIT_TXT LENGTH
+              49 INDV-OVERRIDE-QHIT-TXT-LEN PIC S9(4) USAGE COMP.
+      *                       PM_USER_AREA_TXT
+              49 INDV-OVERRIDE-QHIT-TXT-TEXT PIC X(10).
+      *                       EXCLUDE_IND
+           10 INDV-EXCLUDE-IND        PIC X(1).
+      *                       DEATH_DT
+           10 INDV-DEATH-DT           PIC X(10).
+      *                       SOURCE_FROM_CD
+           10 INDV-SOURCE-FROM-CD     PIC X(3).
+      *                       FORM_ID
+           10 INDV-FORM-ID.
+      *                       FORM_ID LENGTH
+              49 INDV-FORM-ID-LEN     PIC S9(4) USAGE COMP.
+      *                       FORM_ID
+              49 INDV-FORM-ID-TEXT    PIC X(20).
+      *                       AIDCAT_RF
+           10 INDV-AIDCAT-RF.
+      *                       AIDCAT_RF LENGTH
+              49 INDV-AIDCAT-RF-LEN   PIC S9(4) USAGE COMP.
+      *                       AIDCAT_RF
+              49 INDV-AIDCAT-RF-TEXT  PIC X(10).
+      *                       AID_EFFECT_DT
+           10 INDV-AID-EFFECT-DT      PIC X(10).
+      *                       AID_END_DT
+           10 INDV-AID-END-DT         PIC X(10).
+      *                       LATEST_COUNTY_CD
+           10 INDV-LATEST-COUNTY-CD.
+      *                       LATEST_COUNTY_CD LENGTH
+              49 INDV-LATEST-COUNTY-CD-LEN PIC S9(4) USAGE COMP.
+      *                       LATEST_COUNTY_CD
+              49 INDV-LATEST-COUNTY-CD-TEXT PIC X(10).
+      *                       HMOST_RF
+           10 INDV-HMOST-RF.
+      *                       HMOST_RF LENGTH
+              49 INDV-HMOST-RF-LEN       PIC S9(4) USAGE COMP.
+      *                       LATEST_COUNTY_CD
+              49 INDV-HMOST-RF-TEXT      PIC X(10).
+      *                       LOB_CD
+           10 INDV-LOB-CD                PIC X(10).
+      *                       DO_NOT_UPDATE_IND
+           10 INDV-DO-NOT-UPDATE-IND     PIC X(1).
+      ******************************************************************
+      * INDICATOR VARIABLE STRUCTURE                                   *
+      ******************************************************************
+       01  IARTINDV.
+           10 INDSTRUC           PIC S9(4) USAGE COMP OCCURS 61 TIMES.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 61      *
+      ******************************************************************
+

@@ -1,0 +1,171 @@
+      ************************************************ *****************
+      * DCLGEN TABLE(DB2AR01.ARTCCLM)                                  *
+      *        LIBRARY(PG3LLL.USER.COPY(ARTCCLM))                      *
+      *        ACTION(REPLACE)                                         *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(CCLM-)                                            *
+      *        QUOTE                                                   *
+      *        DBCSDELIM(NO)                                           *
+      *        COLSUFFIX(YES)                                          *
+      *        INDVAR(YES)                                             *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE  ARTCCLM  TABLE  (
+             CONTEXT_CD                     VARCHAR(16) NOT NULL,
+             CLAIM_ID                       DECIMAL(12, 0) NOT NULL,
+             ICN_NUM                        VARCHAR(20) NOT NULL,
+             PREV_ICN_NUM                   VARCHAR(20),
+             RECIP_MA_NUM                   VARCHAR(20),
+             PROVIDER_ID                    VARCHAR(15) NOT NULL,
+             CLMST_RF                       VARCHAR(10),
+             TRNTP_RF                       VARCHAR(10),
+             CLMTP_RF                       VARCHAR(10),
+             UNITS_NUM                      VARCHAR(10),
+             CHARGE_AMT                     DECIMAL(15, 2),
+             PAID_AMT                       DECIMAL(15, 2),
+             REMIT_DT                       DATE,
+             SERVICE_FROM_DT                DATE,
+             SERVICE_TO_DT                  DATE,
+             CARRIER_CD                     CHAR(5),
+             ICD9P_RF                       VARCHAR(10),
+             ICD9D_RF                       VARCHAR(10),
+             ICD9D_2ND_RF                   VARCHAR(10),
+             NDCCD_RF                       VARCHAR(15),
+             LAST_UPDATE_NM                 VARCHAR(8) NOT NULL,
+             LAST_UPDATE_DTM                TIMESTAMP NOT NULL,
+             CREATE_SOURCE_NM               CHAR(20),
+             LOGICAL_DELETE_IND             CHAR(1),
+             ERROR_CD                       VARCHAR(8),
+             ICD_VERSION                    VARCHAR(2),
+             ALT_CLIENT_CD                  CHAR(5),
+             AGENCY_CD                      VARCHAR(2),
+             COUNTY_CD                      CHAR(2),
+             ENC_IND                        CHAR(1),
+             MCO_CD                         CHAR(10),
+             RX_WRITTEN_DT                  DATE
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE DB2AR01.ARTCCLM                    *
+      ******************************************************************
+       01  DCLARTCCLM.
+           10 CCLM-CONTEXT-CD.
+      *                       CONTEXT_CD LENGTH
+              49 CCLM-CONTEXT-CD-L    PIC S9(4) USAGE COMP.
+      *                       CONTEXT_CD
+              49 CCLM-CONTEXT-CD-T     PIC X(16).
+      *                       CLAIM_ID
+           10 CCLM-CLAIM-ID        PIC S9(12)V USAGE COMP-3.
+           10 CCLM-ICN-NUM.
+      *                       ICN_NUM LENGTH
+              49 CCLM-ICN-NUM-L    PIC S9(4) USAGE COMP.
+      *                       ICN_NUM
+              49 CCLM-ICN-NUM-T     PIC X(20).
+           10 CCLM-PREV-ICN-NUM.
+      *                       PREV_ICN_NUM LENGTH
+              49 CCLM-PREV-ICN-NUM-L    PIC S9(4) USAGE COMP.
+      *                       PREV_ICN_NUM
+              49 CCLM-PREV-ICN-NUM-T     PIC X(20).
+           10 CCLM-RECIP-MA-NUM.
+      *                       RECIP_MA_NUM LENGTH
+              49 CCLM-RECIP-MA-NUM-L    PIC S9(4) USAGE COMP.
+      *                       RECIP_MA_NUM
+              49 CCLM-RECIP-MA-NUM-T     PIC X(20).
+           10 CCLM-PROVIDER-ID.
+      *                       PROVIDER_ID LENGTH
+              49 CCLM-PROVIDER-ID-L    PIC S9(4) USAGE COMP.
+      *                       PROVIDER_ID
+              49 CCLM-PROVIDER-ID-T     PIC X(15).
+           10 CCLM-CLMST-RF.
+      *                       CLMST_RF LENGTH
+              49 CCLM-CLMST-RF-L    PIC S9(4) USAGE COMP.
+      *                       CLMST_RF
+              49 CCLM-CLMST-RF-T     PIC X(10).
+           10 CCLM-TRNTP-RF.
+      *                       TRNTP_RF LENGTH
+              49 CCLM-TRNTP-RF-L    PIC S9(4) USAGE COMP.
+      *                       TRNTP_RF
+              49 CCLM-TRNTP-RF-T     PIC X(10).
+           10 CCLM-CLMTP-RF.
+      *                       CLMTP_RF LENGTH
+              49 CCLM-CLMTP-RF-L    PIC S9(4) USAGE COMP.
+      *                       CLMTP_RF
+              49 CCLM-CLMTP-RF-T     PIC X(10).
+           10 CCLM-UNITS-NUM.
+      *                       UNITS_NUM LENGTH
+              49 CCLM-UNITS-NUM-L    PIC S9(4) USAGE COMP.
+      *                       UNITS_NUM
+              49 CCLM-UNITS-NUM-T     PIC X(10).
+      *                       CHARGE_AMT
+           10 CCLM-CHARGE-AMT      PIC S9(13)V9(2) USAGE COMP-3.
+      *                       PAID_AMT
+           10 CCLM-PAID-AMT        PIC S9(13)V9(2) USAGE COMP-3.
+      *                       REMIT_DT
+           10 CCLM-REMIT-DT        PIC X(10).
+      *                       SERVICE_FROM_DT
+           10 CCLM-SERVICE-FROM-DT  PIC X(10).
+      *                       SERVICE_TO_DT
+           10 CCLM-SERVICE-TO-DT   PIC X(10).
+      *                       CARRIER_CD
+           10 CCLM-CARRIER-CD      PIC X(5).
+           10 CCLM-ICD9P-RF.
+      *                       ICD9P_RF LENGTH
+              49 CCLM-ICD9P-RF-L    PIC S9(4) USAGE COMP.
+      *                       ICD9P_RF
+              49 CCLM-ICD9P-RF-T     PIC X(10).
+           10 CCLM-ICD9D-RF.
+      *                       ICD9D_RF LENGTH
+              49 CCLM-ICD9D-RF-L    PIC S9(4) USAGE COMP.
+      *                       ICD9D_RF
+              49 CCLM-ICD9D-RF-T     PIC X(10).
+           10 CCLM-ICD9D-2ND-RF.
+      *                       ICD9D_2ND_RF LENGTH
+              49 CCLM-ICD9D-2ND-RF-L    PIC S9(4) USAGE COMP.
+      *                       ICD9D_2ND_RF
+              49 CCLM-ICD9D-2ND-RF-T     PIC X(10).
+           10 CCLM-NDCCD-RF.
+      *                       NDCCD_RF LENGTH
+              49 CCLM-NDCCD-RF-L    PIC S9(4) USAGE COMP.
+      *                       NDCCD_RF
+              49 CCLM-NDCCD-RF-T     PIC X(15).
+           10 CCLM-LAST-UPDATE-NM.
+      *                       LAST_UPDATE_NM LENGTH
+              49 CCLM-LAST-UPDATE-NM-L    PIC S9(4) USAGE COMP.
+      *                       LAST_UPDATE_NM
+              49 CCLM-LAST-UPDATE-NM-T     PIC X(8).
+      *                       LAST_UPDATE_DTM
+           10 CCLM-LAST-UPDATE-DTM  PIC X(26).
+      *                       CREATE_SOURCE_NM
+           10 CCLM-CREATE-SOURCE-NM  PIC X(20).
+      *                       LOGICAL_DELETE_IND
+           10 CCLM-LOGICAL-DELETE-IND PIC X(1).
+           10 CCLM-ERROR-CD.
+      *                       ERROR_CD LENGTH
+              49 CCLM-ERROR-CD-L    PIC S9(4) USAGE COMP.
+      *                       ERROR_CD
+              49 CCLM-ERROR-CD-T     PIC X(8).
+           10 CCLM-ICD-VERSION.
+      *                       ICD_VERSION LENGTH
+              49 CCLM-ICD-VERSION-L    PIC S9(4) USAGE COMP.
+      *                       ICD_VERSION
+              49 CCLM-ICD-VERSION-T     PIC X(2).
+           10 CCLM-ALT-CLIENT-CD PIC X(5).
+           10 CCLM-AGENCY-CD.
+      *                       AGENCY_CD LENGTH
+              49 CCLM-AGENCY-CD-L      PIC S9(4) USAGE COMP.
+      *                       AGENCY_CD
+              49 CCLM-AGENCY-CD-T       PIC X(2).
+           10 CCLM-COUNTY-CD            PIC X(2).
+           10 CCLM-ENC-IND              PIC X(1).
+           10 CCLM-MCO-CD               PIC X(10).
+      *                       RX_WRITTEN_DT
+           10 CCLM-RX-WRITTEN-DT        PIC X(10).
+
+      ******************************************************************
+      * INDICATOR VARIABLE STRUCTURE                                   *
+      ******************************************************************
+       01  IARTCCLM.
+           10 INDSTRUC           PIC S9(4) USAGE COMP OCCURS 31 TIMES.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 31      *
+      ******************************************************************
+

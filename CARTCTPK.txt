@@ -1,0 +1,70 @@
+      ******************************************************************
+      * DCLGEN TABLE(CTSPROD.DB2AR01.ARTCTPK)                          *
+      *        LIBRARY(DB2P.DB.DCLGEN(CARTCTPK))                       *
+      *        ACTION(REPLACE)                                         *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(CTPK-)                                            *
+      *        QUOTE                                                   *
+      *        COLSUFFIX(YES)                                          *
+      *        INDVAR(YES)                                             *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE CTSPROD.DB2AR01.ARTCTPK TABLE
+           ( CONTEXT_CD                     VARCHAR(16) NOT NULL,
+             PK_TYPE_CD                     VARCHAR(8) NOT NULL,
+             PK_DSC                         VARCHAR(255) NOT NULL,
+             PK_MASK_TXT                    CHAR(16) NOT NULL,
+             PK_NEXT_NUM                    DECIMAL(16, 0) NOT NULL,
+             LAST_UPDATE_NM                 VARCHAR(8) NOT NULL,
+             LAST_UPDATE_DTM                TIMESTAMP NOT NULL,
+             LOCK_IND                       CHAR(1) NOT NULL
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE CTSPROD.DB2AR01.ARTCTPK            *
+      ******************************************************************
+       01  DCLARTCTPK.
+           10 CTPK-CONTEXT-CD.
+      *                       CONTEXT_CD LENGTH
+              49 CTPK-CONTEXT-CD-LEN
+                 PIC S9(4) USAGE COMP.
+      *                       CONTEXT_CD
+              49 CTPK-CONTEXT-CD-TEXT
+                 PIC X(16).
+           10 CTPK-PK-TYPE-CD.
+      *                       PK_TYPE_CD LENGTH
+              49 CTPK-PK-TYPE-CD-LEN
+                 PIC S9(4) USAGE COMP.
+      *                       PK_TYPE_CD
+              49 CTPK-PK-TYPE-CD-TEXT
+                 PIC X(8).
+           10 CTPK-PK-DSC.
+      *                       PK_DSC LENGTH
+              49 CTPK-PK-DSC-LEN   PIC S9(4) USAGE COMP.
+      *                       PK_DSC
+              49 CTPK-PK-DSC-TEXT
+                 PIC X(255).
+      *                       PK_MASK_TXT
+           10 CTPK-PK-MASK-TXT     PIC X(16).
+      *                       PK_NEXT_NUM
+           10 CTPK-PK-NEXT-NUM     PIC S9(16)V USAGE COMP-3.
+           10 CTPK-LAST-UPDATE-NM.
+      *                       LAST_UPDATE_NM LENGTH
+              49 CTPK-LAST-UPDATE-NM-LEN
+                 PIC S9(4) USAGE COMP.
+      *                       LAST_UPDATE_NM
+              49 CTPK-LAST-UPDATE-NM-TEXT
+                 PIC X(8).
+      *                       LAST_UPDATE_DTM
+           10 CTPK-LAST-UPDATE-DTM
+              PIC X(26).
+      *                       LOCK_IND
+           10 CTPK-LOCK-IND        PIC X(1).
+      ******************************************************************
+      * INDICATOR VARIABLE STRUCTURE                                   *
+      ******************************************************************
+       01  IARTCTPK.
+           10 INDSTRUC           PIC S9(4) USAGE COMP OCCURS 8 TIMES.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 8       *
+      ******************************************************************
+

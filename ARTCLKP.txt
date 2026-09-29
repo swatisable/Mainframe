@@ -1,0 +1,72 @@
+      *************************************************** **************
+      * DCLGEN TABLE(DB2AR01.ARTCLKP)                                  *
+      *        LIBRARY(PG3LLL.USER.COPY(ARTCLKP))                      *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(CLKP-)                                            *
+      *        QUOTE                                                   *
+      *        DBCSDELIM(NO)                                           *
+      *        COLSUFFIX(YES)                                          *
+      *        INDVAR(YES)                                             *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      *                                                                *
+      ******************************************************************
+           EXEC SQL DECLARE  ARTCLKP  TABLE  (
+             CONTEXT_CD                     VARCHAR(16) NOT NULL,
+             CASE_ID                        DECIMAL(12, 0) NOT NULL,
+             CLAIM_ID                       DECIMAL(12, 0) NOT NULL,
+             RELATE_IND                     CHAR(1) NOT NULL,
+             LAST_UPDATE_NM                 VARCHAR(8) NOT NULL,
+             LAST_UPDATE_DTM                TIMESTAMP NOT NULL,
+             IS_AUTO_CHECKED                CHAR(1),
+             RELATE_PRCNT                   DECIMAL(15, 2),
+             DISPUTE_CLM_IND                CHAR(1),
+             COMMENTS                       VARCHAR(1000),
+             CREATE_NM                      VARCHAR(8),
+             CREATE_DTM                     TIMESTAMP
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE DB2AR01.ARTCLKP                    *
+      ******************************************************************
+       01  DCLARTCLKP.
+           10 CLKP-CONTEXT-CD.
+      *                       CONTEXT_CD LENGTH
+              49 CLKP-CONTEXT-CD-L    PIC S9(4) USAGE COMP.
+      *                       CONTEXT_CD
+              49 CLKP-CONTEXT-CD-T     PIC X(16).
+      *                       CASE_ID
+           10 CLKP-CASE-ID         PIC S9(12)V USAGE COMP-3.
+      *                       CLAIM_ID
+           10 CLKP-CLAIM-ID        PIC S9(12)V USAGE COMP-3.
+      *                       RELATE_IND
+           10 CLKP-RELATE-IND      PIC X(1).
+           10 CLKP-LAST-UPDATE-NM.
+      *                       LAST_UPDATE_NM LENGTH
+              49 CLKP-LAST-UPDATE-NM-L    PIC S9(4) USAGE COMP.
+      *                       LAST_UPDATE_NM
+              49 CLKP-LAST-UPDATE-NM-T     PIC X(8).
+      *                       LAST_UPDATE_DTM
+           10 CLKP-LAST-UPDATE-DTM  PIC X(26).
+      *                       IS_AUTO_CHECKED
+           10 CLKP-IS-AUTO-CHECKED       PIC X(1).
+      *                       RELATE_PRCNT
+           10 CLKP-RELATE-PRCNT    PIC S9(15)V9(2) USAGE COMP-3.
+      *                       DISPUTE_CLM_IND
+           10 CLKP-DISPUTE-CLM-IND       PIC X(1).
+      *                       COMMENTS
+           10 CLKP-COMMENTS              PIC X(1000).
+           10 CLKP-CREATE-NM.
+      *                       CREATE_NM LENGTH
+              49 CLKP-CREATE-NM-L    PIC S9(4) USAGE COMP.
+      *                       CREATE_NM
+              49 CLKP-CREATE-NM-T     PIC X(8).
+      *                       CREATE_DTM
+           10 CLKP-CREATE-DTM       PIC X(26).
+      ******************************************************************
+      * INDICATOR VARIABLE STRUCTURE                                   *
+      ******************************************************************
+       01  IARTCLKP.
+           10 INDSTRUC           PIC S9(4) USAGE COMP OCCURS 12 TIMES.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 12      *
+      ******************************************************************
+
