@@ -1,0 +1,234 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.   CASGETCC.
+       AUTHOR.       RTG.
+       INSTALLATION. HMS.
+       DATE-WRITTEN. OCTOBER 10,2008.
+      *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      * THIS PROGRAM CALL DPSGTJOB TO GET ACCOUNTING CODE OFF
+      * OF JOB CARD AND USING ACCOUNTING CODE SELECT CLIENT CODE
+      * FOR LOOKUP OF DATA IN DB2 TABLES.
+      *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      * MODIFICATION HISTORY:
+      * --------------------------------------------------------------
+      * CHG#  DATE    PGM PM    DESCRIPTION
+      *****************************************************************
+0001  * 0001 10/10/08 PQN RTG  MODIFIED TO ADD NEW STATE JOB ACCOUNTING
+0001  *                        INFORMATION AND CLIENT CODE
+0002  * 0002 10/10/08 YZG RTG  MODIFIED TO ADD NEW STATE JOB ACCOUNTING
+0002  *                        INFORMATION AND CLIENT CODE
+0003  * 0003 12/08/08 PQN RTG  MODIFIED TO ADD NEW STATE JOB ACCOUNTING
+0003  *                        INFORMATION AND CLIENT CODE
+0004  * 0004 09/24/12 MJR MJR  MODIFIED TO ADD NEW STATE JOB ACCOUNTING
+0004  *                        INFORMATION AND CLIENT CODES
+0004  * 0005 11/04/13 BJW MJR  MODIFIED TO ADD NEW STATE JOB ACCOUNTING
+0004  *                        INFORMATION AND CLIENT CODES
+0004  * 0006 10/29/14 BJW MJR  MODIFIED TO ADD NEW STATE JOB ACCOUNTING
+0004  *                        INFORMATION AND CLIENT CODES
+0004  * 0007 05/27/15 MXM      MODIFIED TO ADD NEW STATE JOB ACCOUNTING
+0004  *                        INFORMATION AND CLIENT CODES,
+0004  *                        T178674, T179785
+0008  * 0008 05/02/16 BJW      MODIFIED TO ADD NEW STATE JOB ACCOUNTING
+0008  *                        INFORMATION AND CLIENT CODES
+0008  * 0009 05/17/16 BJW      MODIFIED TO ADD NEW STATE JOB ACCOUNTING
+0008  *                        INFORMATION AND CLIENT CODES
+      *****************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.       IBM-370.
+       OBJECT-COMPUTER.       IBM-370.
+       SPECIAL-NAMES.         C01 IS TOP-OF-PAGE.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+       DATA DIVISION.
+       FILE SECTION.
+       WORKING-STORAGE SECTION.
+       01  WS-LITERAL.
+           02 FILLER                 PIC X(32) VALUE
+              'WORK STORAGE FOR CASGETCC SUBRTN'.
+       01  WS-DPSGTJOB-AREA.
+           COPY DPSGTJOB REPLACING ==(DPSGTJOB)== BY ==WS==.
+       01  WS-COUNTERS.
+           02 STR-CNT                PIC S9(04) COMP.
+           02 STR-PTR                PIC S9(04) COMP.
+           02 CLS                    PIC S9(04) COMP.
+       01  WS-FINCODE                PIC X(1).
+
+       01  WS-LOOK-AT.
+           02 WS-LOOK-X              PIC X(01) OCCURS 25 TIMES.
+       01  LOOK-FND                  PIC S9(04).
+       01  F-S                       PIC S9(04).
+
+       01  WS-CON-ARG                PIC X(03).
+       01  WS-LEDGER-ARG             PIC X(06).
+
+       01  WS-CLNTPROF-WORK.
+           COPY CLNTPNCH.
+
+       LINKAGE SECTION.
+       01  L-CASGETCC-AREA.
+           02 L-CON-NBR              PIC X(03).
+           02 L-PARTITION-ID         PIC X(02).
+           02 L-RESERVED.
+             03 L-LOW-VALUE          PIC X(01).
+             03 FILLER               PIC X(02).
+           02 FILLER REDEFINES L-RESERVED PIC X(03).
+           02 L-JOBNAME              PIC X(08).
+           02 FILLER                 PIC X(63).
+           02 L-RET-CODE             PIC X(01).
+       EJECT
+
+       PROCEDURE DIVISION USING L-CASGETCC-AREA.
+           DISPLAY '+++ CASGETCC ENTERED +++'
+           MOVE SPACES              TO  L-CASGETCC-AREA
+           MOVE ' '                 TO  L-RET-CODE.
+           INITIALIZE WS-COUNTERS.
+
+           CALL 'DPSGTJOB' USING WS-DPSGTJOB-AREA.
+
+           DISPLAY   '+++ AFTER DPSGTJOB CALL +++'
+           DISPLAY   'WS-RETCODE='   WS-RETCODE
+           DISPLAY   'WS-JOBNAME='   WS-JOBNAME
+           DISPLAY   'WS-CLASS='     WS-CLASS
+           DISPLAY   'WS-MSGCLASS='  WS-MSGCLASS
+           DISPLAY   'WS-PRTY='      WS-PRTY
+           DISPLAY   'WS-STARTIME='  WS-STARTIME
+           DISPLAY   'WS-SRBTIME='   WS-SRBTIME
+           DISPLAY   'WS-USER='      WS-USER
+           DISPLAY   'WS-NOTIFY='    WS-NOTIFY
+           DISPLAY   'WS-PGMR-NAME=' WS-PGMR-NAME
+           DISPLAY   'WS-REGION='    WS-REGION
+           DISPLAY   'WS-COND='      WS-COND
+           DISPLAY   'WS-RESTART='   WS-RESTART
+           DISPLAY   'WS-JOBSERNO='  WS-JOBSERNO
+           DISPLAY   'WS-JOBLENG-1=' WS-JOBLENG-1
+           DISPLAY   'WS-JOBACCT-1=' WS-JOBACCT-1
+           DISPLAY   'WS-JOBLENG-2=' WS-JOBLENG-2
+           DISPLAY   'WS-JOBACCT-2=' WS-JOBACCT-2
+           DISPLAY   'WS-RETCODE  =' WS-RETCODE
+           MOVE WS-RETCODE            TO L-RET-CODE.
+
+           IF WS-RETCODE IS EQUAL TO '0'
+              EVALUATE WS-JOBACCT-1
+
+                 WHEN '700491'
+                    MOVE '041' TO L-CON-NBR
+
+                 WHEN '902350'
+                 WHEN '601260'
+                    MOVE '303' TO L-CON-NBR
+
+                 WHEN '600720'
+                    MOVE '316' TO L-CON-NBR
+
+                 WHEN '600120'
+                 WHEN '600140'
+                 WHEN '902040'
+                 WHEN '902042'
+                    MOVE '317' TO L-CON-NBR
+
+                 WHEN '600460'
+                 WHEN '905290'
+                 WHEN '995290'
+                    MOVE '319' TO L-CON-NBR
+
+                 WHEN '601361'
+                    MOVE '320' TO L-CON-NBR
+
+                 WHEN '600360'
+                 WHEN '600420'
+                 WHEN '902053'
+                 WHEN '902050'
+                    MOVE '326' TO L-CON-NBR
+
+ 0007            WHEN '600060'
+ 0007               MOVE '330' TO L-CON-NBR
+ 0007            WHEN '600540'
+ 0007               MOVE '313' TO L-CON-NBR
+
+                 WHEN '900200'
+                 WHEN '600920'
+                    MOVE '333' TO L-CON-NBR
+
+                 WHEN '902250'
+                 WHEN '600900'
+                    MOVE '335' TO L-CON-NBR
+
+                 WHEN '902480'
+                 WHEN '601420'
+                 WHEN '601440'
+                    MOVE '341' TO L-CON-NBR
+
+ 0009            WHEN '700400'
+ 0009               MOVE '535' TO L-CON-NBR
+
+                 WHEN '902356'
+                 WHEN '601280'
+                    MOVE '359' TO L-CON-NBR
+
+                 WHEN '700860'
+                    MOVE '383' TO L-CON-NBR
+
+                 WHEN '601200'
+                    MOVE '395' TO L-CON-NBR
+
+                 WHEN '900140'
+                 WHEN '600640'
+                    MOVE '396' TO L-CON-NBR
+
+                 WHEN '601130'
+                    MOVE '444' TO L-CON-NBR
+
+                 WHEN '702100'
+                    MOVE '481' TO L-CON-NBR
+
+                 WHEN '700495'
+                    MOVE '491' TO L-CON-NBR
+
+                 WHEN '700880'
+                    MOVE '534' TO L-CON-NBR
+
+                 WHEN '700380'
+                    MOVE '537' TO L-CON-NBR
+
+                 WHEN '601680'
+                    MOVE '564' TO L-CON-NBR
+
+                 WHEN '602310'
+                    MOVE '569' TO L-CON-NBR
+
+                 WHEN '600100'
+                    MOVE '585' TO L-CON-NBR
+
+                 WHEN '600040'
+                    MOVE '590' TO L-CON-NBR
+
+                 WHEN '900520'
+                 WHEN '601715'
+                    MOVE '593' TO L-CON-NBR
+
+                 WHEN '600740'
+                    MOVE '600' TO L-CON-NBR
+
+                 WHEN '700470'
+                    MOVE '631' TO L-CON-NBR
+
+                 WHEN '601220'
+                    MOVE '633' TO L-CON-NBR
+
+0008             WHEN '602320'
+0008                MOVE '645' TO L-CON-NBR
+
+0008             WHEN '601300'
+0008                MOVE '358' TO L-CON-NBR
+
+                 WHEN OTHER
+                    MOVE '000' TO L-CON-NBR
+
+              END-EVALUATE
+              DISPLAY 'CC SELECTED =' L-CON-NBR
+           END-IF.
+           DISPLAY '+++ CASGETCC EXIT +++'.
+
+           EXIT PROGRAM.
+
+
