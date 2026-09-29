@@ -636,8 +636,10 @@ flowchart TD
   `SERVICE_TO_DT`. *(594-613)*
 - **BR-T3** Service code routes to `NDCCD_RF` for RX (`'12'`) or `ICD9P_RF` otherwise, capped at 10.
   *(615-629)*
-- **BR-T4** Diagnosis codes with exactly 3 characters before a decimal point have the `.` stripped;
-  otherwise a single leading space is trimmed. *(631-681)*
+- **BR-T4** Diagnosis codes with exactly 3 characters before a decimal point (`COUNT-M=3`, e.g.
+  `250.01`) have the `.` stripped (→`25001`); otherwise, only when there is at least one character
+  before the `.` **and** the first character is a space is a single leading space trimmed; all other
+  values (including no-dot codes) pass through unchanged. *(631-681)*
 - **BR-T5** `CREATE_SOURCE_NM` is `'STANDARD MEDICAID'` for `'00'`, `'DSS'` for `'01'`, else spaces
   (no default). *(683-688)*
 - **BR-T6** The context code stored to all three tables is the trailing-space-trimmed token of
@@ -702,7 +704,11 @@ Uniform pattern at each DB2 statement (e.g., 731-745, 800-813, 837-850, 875-896,
 - Contract `300` is a **TEST** route (context `CTSCASTST`), tagged `TEST` in the source margin
   (line 249).
 - `CREATE_SOURCE` other than `'00'/'01'` ⇒ `CREATE_SOURCE_NM` left as spaces (no `WHEN OTHER`, 683-688).
-- Diagnosis code with `0` chars before `'.'` ⇒ no left-shift, `UNSTRING` as-is (644-654).
+- Diagnosis reformat depends on `COUNT-M` = characters before the first `'.'` (and, when no `'.'` is
+  present, **all** characters of the `X(7)` field are counted — so a no-dot code yields `COUNT-M=7`,
+  not `0`). When `COUNT-M ≠ 3` and either the first character is not a space or `COUNT-M=0`
+  (leading-dot code), the value is `UNSTRING`ed as-is with no left-shift (644-654). *(COUNT-M values
+  verified empirically with GnuCOBOL: `V700`→7, `250.01`→3, `.123`→0.)*
 - Service code longer than 10 (non-`'12'`) ⇒ length forced to 10 (626-628).
 - `WS-CONTEXT-CD` counting is capped at **5** distinct codes (`WS-CONTEXT-CD-1..5`); a 6th distinct
   code would not be separately counted for `P_MONITOR` (980-1014). *(Proven from the fixed 5-slot

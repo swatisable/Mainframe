@@ -62,7 +62,7 @@ given meaningful values; **defined-but-unused** fields (`LAST-NAME`, `PROVIDER-N
 | S17 | Non-RX service code (cap 10) | `CLM-CLAIM-TYPE≠'12'` | `ICD9P_RF` capped 10 (621-628) |
 | S18 | Diagnosis `nnn.nn` | 3 chars before `.` | strip `.` (639-648) |
 | S19 | Diagnosis leading-space | >0 chars before `.`, first is space | left-shift 1 (649-654) |
-| S20 | Diagnosis no dot | 0 chars before `.` | UNSTRING as-is (644-654) |
+| S20 | Diagnosis no reformat (no dot) | >0 chars before `.`, first **not** space | UNSTRING as-is (649-654) |
 | S21 | Create-source map | `'00'`/`'01'`/other | text/`DSS`/spaces (683-688) |
 | S22 | Amount de-edit | any `CHARGE/PAID` | packed via `WS-DE-EDIT` (589-592) |
 | S23 | Date reformat | any date field | `CCYY-MM-DD` (594-613) |
@@ -250,9 +250,16 @@ subsequent `SELECT PK_NEXT_NUM - 1` yields **1** — the first claim id for that
 **Trigger:** `CLM-PRIMARY-DIAG-CODE=' V70.0'` (leading space, `COUNT-M>0`, first char space).
 **Result:** shifted one position left before `UNSTRING` (`'V70.0'` used).
 
-## S20 — Diagnosis with no dot → as-is *(644-654)*
-**Trigger:** `CLM-SECOND-DIAG-CODE='V700'` (no `.`, `COUNT-M=0`).
+## S20 — Diagnosis needing no reformat (no dot, no leading space) → as-is *(649-654)*
+**Trigger:** `CLM-SECOND-DIAG-CODE='V700'` (no `.`). Because `INSPECT … TALLYING COUNT-M FOR
+CHARACTERS BEFORE INITIAL '.'` counts **all** character positions when no `.` is present, `COUNT-M=7`
+(the full `X(7)` width), which is `> 0` but `≠ 3`; the first character `'V'` is not a space, so no
+left-shift occurs.
 **Result:** `CCLM-ICD9D-2ND-RF='V700'` (no reformat).
+
+> *(Empirically verified with GnuCOBOL: `V700`→`COUNT-M=7`, `250.01`→`COUNT-M=3`, and a leading-dot
+> code such as `.123`→`COUNT-M=0`. The rare `COUNT-M=0` leading-dot case also falls through to
+> UNSTRING-as-is because the `COUNT-M > 0` guard is false.)*
 
 ## S21 — Create-source mapping *(683-688)*
 
