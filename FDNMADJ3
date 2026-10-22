@@ -1,0 +1,495 @@
+
+      *****************************************************************
+      *                                                               *
+      *    MEMBER:  W1C41611                                          *
+      *      NAME:  C-ADJ-VW                                          *
+      * SUBSYSTEM:  C Claims                                          *
+      *   VERSION:  1                                                 *
+      * GENERATED:  2010-08-11 08:03:23 REQUESTED BY CTEC784          *
+      *                                                               *
+      * Adjustment Claim View                                         *
+      *                                                               *
+      *****************************************************************
+      *                                                               *
+      *01  (ADJ)-C-ADJ-VW.                                              S4161
+           05  (ADJ)-C-HDR-COMMON-VW.                                   S5777
+               10  (ADJ)-C-SORT-GRP.                                    S4521
+                   15  (ADJ)-C-SORT-DAT                                 F6298
+                                       PIC  X(30).
+                   15  (ADJ)-C-LI-REC-STRT-NUM                          F9342
+                                       PIC 9(04) COMP.
+               10  (ADJ)-C-COUNTERS-VW.                                 S6118
+                   15  (ADJ)-C-CNT-COE-NUM                              F5337
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-COND-NUM                             F5787
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-OCC-CD-NUM                           F7538
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-OCC-SPN-NUM                          F2734
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-VALU-CD-NUM                          F5350
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-ICD-NUM                              F7130
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-DIAG-NUM                             F9343
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-COB-NUM                              F7481
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-HDR-CAS-NUM                              F2096
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-LOCN-NUM                             F5026
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-OVRD-EOB-NUM                         F7026
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-HDR-OVRD-EOB-NUM                         F2079
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-OVRD-EXC-NUM                         F7715
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-HDR-OVRD-EXC-NUM                         F2417
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-RLTD-HST-NUM                         F9838
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-LI-NUM                               F7569
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-LI-MCARE-NUM                         F5921
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-LI-COB-NUM                           F3747
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-LI-CAS-NUM                           F9691
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-BSE-CHG-NUM                          F5345
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-HDR-BSE-CHG-NUM                          F2416
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-EXC-NUM                              F3615
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-HDR-EXC-NUM                              F8546
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-LI-TPL-NUM                           F4203
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-LI-CAP-NUM                           F3301
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-LI-DRUG-NUM                          F2849
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-UNUSED-NUM                           F5554
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-AUX-NUM                              F2542
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CNT-LI-AUX-NUM                           F2567
+                                       PIC S9(04) COMP.
+               10  (ADJ)-C-HDR-TB.                                      S0078
+                   15  (ADJ)-C-TCN-NUM            PIC S9(17) COMP-3.    F1024
+                   15  (ADJ)-C-XCN-NUM            PIC X(31).            F3486
+                   15  (ADJ)-C-HDR-ID-CD          PIC X(02).            F1006
+                   15  (ADJ)-C-HDR-EMC-CD         PIC X(01).            F0993
+                   15  (ADJ)-C-HDR-SUBMITTER-ID   PIC X(16).            F0994
+                   15  (ADJ)-C-CNTL-ORGN-CD       PIC X(01).            F0147
+                   15  (ADJ)-C-HDR-STAT-CD        PIC X(01).            F1020
+                   15  (ADJ)-C-HDR-TXN-TY-CD      PIC X(01).            F1030
+                   15  (ADJ)-C-HDR-TY-CD          PIC X(01).            F1031
+                   15  (ADJ)-C-BAT-MED-SRC-CD     PIC X(01).            F0142
+                   15  (ADJ)-C-BAT-JLN-DT-NUM     PIC X(05).            F0727
+                   15  (ADJ)-C-BT-IMGD-CNTL-NUM   PIC X(02).            F0738
+                   15  (ADJ)-C-BAT-NUM            PIC X(03).            F0729
+                   15  (ADJ)-C-BAT-DOC-TY-CD      PIC X(01).            F0161
+                   15  (ADJ)-C-BAT-PYMT-TY-CD     PIC X(01).            F0070
+                   15  (ADJ)-C-BAT-TY-CD          PIC X(01).            F0140
+                   15  (ADJ)-C-HDR-DOC-NUM        PIC X(06).            F0983
+                   15  (ADJ)-C-NSF-X12N-CD        PIC X(01).            F1780
+                   15  (ADJ)-C-MCARE-STAT-CD      PIC X(01).            F4859
+                   15  (ADJ)-C-CLNT-MCARE-CD      PIC X(01).            F0109
+                   15  (ADJ)-B-SYS-ID             PIC S9(09) COMP.      F0694
+                   15  (ADJ)-B-FST-NAM            PIC X(15).            F0637
+                   15  (ADJ)-B-LAST-NAM           PIC X(21).            F0639
+                   15  (ADJ)-B-MI-NAM                                   F0640
+                                       PIC  X(01).
+                   15  (ADJ)-B-ALT-ID                                   F0535
+                                       PIC  X(14).
+                   15  (ADJ)-B-CURR-ID                                  F8688
+                                       PIC  X(14).
+                   15  (ADJ)-B-RACE-CD                                  F0230
+                                       PIC  X(01).
+                   15  (ADJ)-B-GENDER-CD                                F0229
+                                       PIC  X(01).
+                   15  (ADJ)-B-MAJ-PROG-CD                              F4429
+                                       PIC  X(01).
+                   15  (ADJ)-T-MSQ-TY-CD                                F0209
+                                       PIC  X(01).
+                   15  (ADJ)-A-ID      PIC  X(11).                      F0426
+                   15  (ADJ)-C-BLNG-PROV-ID                             F0403
+                                       PIC  X(08).
+                   15  (ADJ)-C-BLNG-NPI-ID                              F6209
+                                       PIC  X(10).
+                   15  (ADJ)-C-BLNG-TXNMY-CD                            F4741
+                                       PIC  X(10).
+                   15  (ADJ)-C-BLNG-PROV-ZIP-CD                         F0655
+                                       PIC  X(09).
+                   15  (ADJ)-C-BLNG-PROV-TY-CD                          F0733
+                                       PIC  X(03).
+                   15  (ADJ)-C-BLNG-SPECL-CD                            F3507
+                                       PIC  X(03).
+                   15  (ADJ)-C-BLNG-NTRPRS-ID                           F5424
+                                       PIC  X(08).
+                   15  (ADJ)-C-PROV-SIGN-IND                            F1143
+                                       PIC  X(01).
+                   15  (ADJ)-C-ATTACH-1ST-CD                            F6701
+                                       PIC  X(02).
+                   15  (ADJ)-C-ATTACH-2ND-CD                            F3737
+                                       PIC  X(02).
+                   15  (ADJ)-C-ATTACH-3RD-CD                            F1342
+                                       PIC  X(02).
+                   15  (ADJ)-C-ATTACH-4TH-CD                            F5056
+                                       PIC  X(02).
+                   15  (ADJ)-C-ATTACH-5TH-CD                            F0080
+                                       PIC  X(02).
+                   15  (ADJ)-C-HDR-RMK-IND                              F1019
+                                       PIC  X(01).
+                   15  (ADJ)-C-HDR-PAT-ACCT-NUM                         F1016
+                                       PIC  X(20).
+                   15  (ADJ)-C-MED-REC-NUM                              F1193
+                                       PIC  X(24).
+                   15  (ADJ)-C-ELIG-TWO-PASS-CD                         F6178
+                                       PIC  X(01).
+                   15  (ADJ)-C-CREDIT-CD                                F0978
+                                       PIC  X(01).
+                   15  (ADJ)-C-OTHR-INSR-IND                            F3078
+                                       PIC  X(01).
+                   15  (ADJ)-P-LOCN-CD                                  F0190
+                                       PIC  X(01).
+                   15  (ADJ)-P-PROFIT-IND                               F1617
+                                       PIC  X(01).
+                   15  (ADJ)-P-TAX-DISCT-IND                            F1693
+                                       PIC  X(01).
+                   15  (ADJ)-P-PROF-TECH-IND                            F2662
+                                       PIC  X(01).
+                   15  (ADJ)-P-IHS-IND                                  F1564
+                                       PIC  X(01).
+                   15  (ADJ)-P-PSY-SOC-IND                              F2113
+                                       PIC  X(01).
+                   15  (ADJ)-C-COST-AVOID-IND                           F0777
+                                       PIC  X(01).
+                   15  (ADJ)-C-PRIOR-AUTH-IND                           F1142
+                                       PIC  X(01).
+                   15  (ADJ)-C-DAILY-RPT-IND                            F0806
+                                       PIC  X(01).
+                   15  (ADJ)-C-HDR-RA-NUM                               F1042
+                                       PIC S9(09) COMP.
+                   15  (ADJ)-C-EXC-LOCN-CD                              F2822
+                                       PIC  X(03).
+                   15  (ADJ)-C-EXC-LOCN-ID                              F3969
+                                       PIC  X(07).
+                   15  (ADJ)-C-SUSP-LOCN-EXC-CD                         F1174
+                                       PIC  X(04).
+                   15  (ADJ)-C-OVRRD-EXC-LOC-CD                         F1126
+                                       PIC  X(03).
+                   15  (ADJ)-C-COST-CENTER-CD                           F7827
+                                       PIC  X(05).
+                   15  (ADJ)-C-FAM-PLN-CC-CD                            F8738
+                                       PIC  X(05).
+                   15  (ADJ)-C-RLTD-FCN-NUM                             F6659
+                                       PIC  X(15).
+                   15  (ADJ)-F-RSN-CD                                   F9884
+                                       PIC  X(03).
+                   15  (ADJ)-C-CYCL-NUM                                 F1014
+                                       PIC S9(02) COMP.
+                   15  (ADJ)-C-HDR-CLNT-AGE                             F0971
+                                       PIC S9(03) COMP.
+                   15  (ADJ)-C-TOT-CHRG-AMT                             F1025
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-CALC-TOT-AMT                             F0776
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-TOT-TPL-AMT                              F1029
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-TOT-TPL-DIR-AMT                          F2142
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-HD-TPL-COPAY-AMT                         F6179
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-TOT-NET-CHRG-AMT                         F1027
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-TOT-REIMB-AMT                            F1028
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-TOT-COPAY-AMT                            F1026
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-REIMB-STAT-CD                            F0162
+                                       PIC  X(01).
+                   15  (ADJ)-C-PREV-REIMB-AMT                           F1154
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-PREV-REIMB-CD                            F1149
+                                       PIC  X(01).
+                   15  (ADJ)-C-PAT-LIAB-AMT                             F1137
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-B-DOB-DT                                   F0601
+                                       PIC  X(10).
+                   15  (ADJ)-C-SUBM-CLNT-DOB-DT                         F8073
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-ENTRD-DT                             F0995
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-ADJUD-DT                             F0963
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-ADJUD-TM                             F2478
+                                       PIC  X(08).
+                   15  (ADJ)-C-HDR-ITERM-ADJ-DT                         F1008
+                                       PIC  X(10).
+                   15  (ADJ)-C-BILLED-DT                                F0966
+                                       PIC  X(10).
+                   15  (ADJ)-C-EXC-LOCN-DT                              F4798
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-BATCH-DT                             F0965
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-SVC-FST-DT                           F1022
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-SVC-LST-DT                           F1023
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-LST-CYCL-DT                          F1010
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-PD-DT                                F1017
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-ORIG-PD-DT                           F1015
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-SUSP-DT                              F1021
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-HX-DT                                F1005
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-CLIA-NUM                             F2064
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-DENT-OCCP-DT                         F0981
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-DENT-AUTO-DT                         F0979
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-DENT-OTHR-DT                         F0982
+                                       PIC  X(10).
+                   15  (ADJ)-C-REF-PROV-ID                              F9253
+                                       PIC  X(08).
+                   15  (ADJ)-C-REF-NPI-ID                               F1590
+                                       PIC  X(10).
+                   15  (ADJ)-C-OCCUP-RLTD-IND                           F0770
+                                       PIC  X(01).
+                   15  (ADJ)-C-AUTO-RLTD-IND                            F0762
+                                       PIC  X(01).
+                   15  (ADJ)-C-OTHR-RLTD-IND                            F0772
+                                       PIC  X(01).
+                   15  (ADJ)-C-ILLNESS-DT                               F0767
+                                       PIC  X(10).
+                   15  (ADJ)-C-ADMIT-DT                                 F0758
+                                       PIC  X(10).
+                   15  (ADJ)-C-DISCH-DT                                 F0765
+                                       PIC  X(10).
+                   15  (ADJ)-R-DRG-CD                                   F1783
+                                       PIC  X(05).
+                   15  (ADJ)-C-OTHR-PROV-ID                             F8329
+                                       PIC  X(08).
+                   15  (ADJ)-C-OTHR-PROV-NPI-ID                         F4059
+                                       PIC  X(10).
+                   15  (ADJ)-C-OPR-PROV-ID                              F2654
+                                       PIC  X(08).
+                   15  (ADJ)-C-OPR-NPI-ID                               F9292
+                                       PIC  X(10).
+                   15  (ADJ)-C-ATNDG-PROV-ID                            F0711
+                                       PIC  X(08).
+                   15  (ADJ)-C-ATNDG-NPI-ID                             F1912
+                                       PIC  X(10).
+                   15  (ADJ)-C-ATNDG-TXNMY-CD                           F8193
+                                       PIC  X(10).
+                   15  (ADJ)-C-LTC-PROV-ID                              F9983
+                                       PIC  X(08).
+                   15  (ADJ)-C-PAT-STAT-CD                              F0168
+                                       PIC  X(02).
+                   15  (ADJ)-C-ADM-SRC-CD                               F0138
+                                       PIC  X(01).
+                   15  (ADJ)-C-TY-OF-ADM-CD                             F0137
+                                       PIC  X(01).
+                   15  (ADJ)-C-TY-OF-BLL-PFX-CD                         F1382
+                                       PIC  X(01).
+                   15  (ADJ)-C-TY-OF-BLL-1-2-CD                         F1180
+                                       PIC  X(02).
+                   15  (ADJ)-C-TY-OF-BILL-3-CD                          F1179
+                                       PIC  X(01).
+                   15  (ADJ)-C-COS-CD                                   F0175
+                                       PIC  X(02).
+                   15  (ADJ)-C-UB92-A-DIAG-CD                           F1032
+                                       PIC  X(10).
+                   15  (ADJ)-C-UB92-ADM-HR-CD                           F1182
+                                       PIC  X(02).
+                   15  (ADJ)-C-UB92-DISCH-HR-CD                         F1186
+                                       PIC  X(02).
+                   15  (ADJ)-C-BSE-AMT-SRC-CD                           F0167
+                                       PIC  X(02).
+                   15  (ADJ)-C-PRCNG-PROCESS-CD                         F5183
+                                       PIC  X(02).
+                   15  (ADJ)-C-UB92-ABORT-IND                           F1181
+                                       PIC  X(01).
+                   15  (ADJ)-C-HDR-FAM-PLNG-IND                         F1003
+                                       PIC  X(01).
+                   15  (ADJ)-C-UB92-STERIL-IND                          F1198
+                                       PIC  X(01).
+                   15  (ADJ)-C-UB92-HYSTER-IND                          F1192
+                                       PIC  X(01).
+                   15  (ADJ)-C-HDR-BSE-AMT                              F0968
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-CALC-ALLOW-AMT                           F0743
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-HDR-ALLOW-AMT                            F0964
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-NCVRD-CHRG-AMT                           F1177
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-CVRD-DAYS-NUM                            F1184
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-NCVRD-DAYS-NUM                           F1116
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-OUTLIER-DAYS-NUM                         F1125
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-CALC-DAYS-NUM                            F1183
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-C-DRG-PD-DAYS-NUM                          F0819
+                                       PIC S9(04) COMP.
+                   15  (ADJ)-B-GUARANTEE-NUM                            F0611
+                                       PIC  X(12).
+                   15  (ADJ)-C-ORIG-PAPER-IND                           F0357
+                                       PIC  X(01).
+                   15  (ADJ)-C-CREATION-DT                              F1750
+                                       PIC  X(10).
+                   15  (ADJ)-C-SVC-FACI-NPI-ID                          F2684
+                                       PIC  X(10).
+                   15  (ADJ)-R-CD-REL-WT-AMT                            F1735
+                                       PIC S9(04)V9(05) COMP-3.
+                   15  (ADJ)-C-BLNG-TAX-ID                              F1381
+                                       PIC  X(09).
+                   15  (ADJ)-C-BLNG-SSN-NUM                             F0255
+                                       PIC  X(09).
+                   15  (ADJ)-C-FUT-PROV-ID                              F2441
+                                       PIC  X(08).
+                   15  (ADJ)-C-MC-PROV-ID                               F1011
+                                       PIC  X(08).
+                   15  (ADJ)-H-PLN-NUM                                  F1402
+                                       PIC  X(04).
+                   15  (ADJ)-H-PLN-TY-CD                                F3579
+                                       PIC  X(01).
+                   15  (ADJ)-H-PLN-BEG-DT                               F1397
+                                       PIC  X(10).
+                   15  (ADJ)-C-HDR-FUT-1-CD                             F1056
+                                       PIC  X(03).
+                   15  (ADJ)-C-HDR-FUT-2-CD                             F2442
+                                       PIC  X(03).
+                   15  (ADJ)-B-PARENT-IND                               F5228
+                                       PIC  X(01).
+                   15  (ADJ)-C-HDR-AUD-IND                              F2590
+                                       PIC  X(01).
+                   15  (ADJ)-C-HDR-FUT-1-AMT                            F1082
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-HDR-FUT-2-AMT                            F2685
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (ADJ)-C-EPSDT-CERT1-CD                           F2470
+                                       PIC  X(03).
+                   15  (ADJ)-C-EPSDT-CERT2-CD                           F6955
+                                       PIC  X(03).
+                   15  (ADJ)-C-ANES-REL-PROC-CD                         F2591
+                                       PIC  X(07).
+                   15  (ADJ)-R-ICD-VER-CD                               F4475
+                                       PIC  X(02).
+                   15  (ADJ)-C-HDR-FUT-1-IND                            F2443
+                                       PIC  X(01).
+                   15  (ADJ)-C-HDR-FUT-2-IND                            F2444
+                                       PIC  X(01).
+                   15  (ADJ)-G-AUD-USER-ID                              F0531
+                                       PIC  X(07).
+                   15  (ADJ)-G-AUD-DT                                   F0528
+                                       PIC  X(10).
+                   15  (ADJ)-G-AUD-TM                                   F0529
+                                       PIC  X(08).
+0000***-- Occurs Counters
+               10  (ADJ)-C-HMS-OCC-DEP.
+                   15  (ADJ)-C-OCC-LI-EXC          PIC S9(04) COMP.
+                   15  (ADJ)-C-OCC-HDR-COE         PIC S9(04) COMP.
+0000***--
+               10  (ADJ)-C-LI-EXC-GRP.                                  S7922
+                   15  (ADJ)-C-LI-EXC-VW  OCCURS 0 TO 0099 TIMES        S2498
+                           DEPENDING ON (ADJ)-C-OCC-LI-EXC
+                           INDEXED BY (ADJ)-C-LI-EXC-VW-X .
+                       20  (ADJ)-C-LI-NUM                               F1073
+                                       PIC S9(03) COMP.
+                       20  (ADJ)-R-CLM-EXC-CD                           F1737
+                                       PIC  X(04).
+                       20  (ADJ)-C-LI-EXC-CLRK-ID                       F1077
+                                       PIC  X(07).
+                       20  (ADJ)-C-EXC-STAT-CD                          F4200
+                                       PIC  X(01).
+                       20  (ADJ)-R-EXC-FORCE-APP-CD                     F1903
+                                       PIC  X(01).
+                       20  (ADJ)-R-FORCE-DENY-CD                        F1914
+                                       PIC  X(01).
+               10  (ADJ)-C-HDR-PARAM-ERR-VW.                            S9202
+                   15  (ADJ)-C-ERR-PARAM-CD                             F0999
+                                       PIC  X(04).
+                   15  (ADJ)-C-ERR-PROG-ID                              F1000
+                                       PIC  X(08).
+                   15  (ADJ)-C-ERR-MSG-DAT                              F0998
+                                       PIC  X(10).
+               10  (ADJ)-C-HDR-ADJ-VD-VW.                               S3518
+                   15  (ADJ)-C-KEYED-REPLCD-NUM                         F1068
+                                       PIC S9(17) COMP-3.
+                   15  (ADJ)-C-HDR-ADJ-RSN-CD                           F0961
+                                       PIC  X(03).
+                   15  (ADJ)-C-REPLCD-TCN-NUM                           F0701
+                                       PIC S9(17) COMP-3.
+                   15  (ADJ)-C-HDR-ADJ-STAT-CD                          F0962
+                                       PIC  X(01).
+                   15  (ADJ)-C-REPLCMT-TCN-NUM                          F0702
+                                       PIC S9(17) COMP-3.
+                   15  (ADJ)-F-FCN-DT                                   F5689
+                                       PIC  X(10).
+                   15  (ADJ)-F-FCN-MED-CD                               F7607
+                                       PIC  X(01).
+                   15  (ADJ)-F-FCN-NUM                                  F6613
+                                       PIC S9(03) COMP.
+                   15  (ADJ)-C-ADJ-ORIG-TCN-NUM                         F0960
+                                       PIC S9(17) COMP-3.
+                   15  (ADJ)-C-ADJ-SEQ-NUM                              F0708
+                                       PIC S9(02) COMP.
+               10  (ADJ)-C-HDR-COE-GRP.                                 S1448
+                   15  (ADJ)-C-HDR-COE-VW OCCURS 0 TO 0004 TIMES        S9079
+                           DEPENDING ON (ADJ)-C-OCC-HDR-COE
+                           INDEXED BY (ADJ)-C-HDR-COE-VW-X .
+                       20  (ADJ)-C-SEQ-NUM                              F1161
+                                       PIC S9(02) COMP.
+                       20  (ADJ)-B-COE-CD                               F2678
+                                       PIC  X(03).
+                       20  (ADJ)-B-FED-MTCH-CD                          F2671
+                                       PIC  X(01).
+                       20  (ADJ)-B-FED-CAT-CD                           F2672
+                                       PIC  X(01).
+                       20  (ADJ)-B-GEO-CNTY-CD                          F1394
+                                       PIC  X(02).
+                       20  (ADJ)-B-ADMIN-CNTY-CD                        F2674
+                                       PIC  X(02).
+                       20  (ADJ)-B-MONEY-CD                             F2673
+                                       PIC  X(01).
+           05  (ADJ)-C-HDR-FIN-TXN-VW.                                  S2838
+               10  (ADJ)-C-ACCOUNTING-CD                                F8387
+                                       PIC  X(08).
+               10  (ADJ)-F-PYE-PYR-CD                                   F5875
+                                       PIC  X(01).
+           05  (ADJ)-C-HDR-WARRANT-VW.                                  S4552
+               10  (ADJ)-C-HDR-RA-NUM                                   F1042
+                                       PIC S9(09) COMP.
+               10  (ADJ)-C-HDR-WARR-NUM                                 F1041
+                                       PIC  X(11).
+               10  (ADJ)-C-HDR-WARR-MED-CD                              F1040
+                                       PIC  X(01).
+               10  (ADJ)-C-HDR-WARR-AMT                                 F1038
+                                       PIC S9(13)V9(02) COMP-3.
+               10  (ADJ)-C-HDR-WARR-DT                                  F1039
+                                       PIC  X(10).
+               10  (ADJ)-C-EFT-TRC-ID                                   F5690
+                                       PIC  X(15).
+           05  (ADJ)-C-HDR-ENCTR-VW.                                    S5108
+               10  (ADJ)-C-MCO-TCN-DAT                                  F1018
+                                       PIC  X(20).
+               10  (ADJ)-C-SUB-CAP-CD                                   F6991
+                                       PIC  X(01).
+               10  (ADJ)-C-MC-ENCTR-PD-AMT                              F5531
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (ADJ)-C-MC-ENCTR-PD-DT                               F2514
+                                       PIC  X(10).
+               10  (ADJ)-C-MC-ENCTR-RECD-DT                             F0887
+                                       PIC  X(10).
+

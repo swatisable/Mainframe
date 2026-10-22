@@ -1,0 +1,1067 @@
+
+      *****************************************************************
+      *                                                               *
+      *    MEMBER:  W1C41521                                          *
+      *      NAME:  C-INST-VW                                         *
+      * SUBSYSTEM:  C Claims                                          *
+      *   VERSION:  1                                                 *
+      * GENERATED:  2010-08-11 08:03:23 REQUESTED BY CTEC784          *
+      *                                                               *
+      * Institutional Claim View                                      *
+      *                                                               *
+      *****************************************************************
+      *                                                               *
+      *01  (INS)-C-INST-VW.                                             S4152
+           05  (INS)-C-HDR-COMMON-VW.                                   S5777
+               10  (INS)-C-SORT-GRP.                                    S4521
+                   15  (INS)-C-SORT-DAT                                 F6298
+                                       PIC  X(30).
+                   15  (INS)-C-LI-REC-STRT-NUM                          F9342
+                                       PIC 9(04) COMP.
+               10  (INS)-C-COUNTERS-VW.                                 S6118
+                   15  (INS)-C-CNT-COE-NUM                              F5337
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-COND-NUM                             F5787
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-OCC-CD-NUM                           F7538
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-OCC-SPN-NUM                          F2734
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-VALU-CD-NUM                          F5350
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-ICD-NUM                              F7130
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-DIAG-NUM                             F9343
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-COB-NUM                              F7481
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-HDR-CAS-NUM                              F2096
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-LOCN-NUM                             F5026
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-OVRD-EOB-NUM                         F7026
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-HDR-OVRD-EOB-NUM                         F2079
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-OVRD-EXC-NUM                         F7715
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-HDR-OVRD-EXC-NUM                         F2417
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-RLTD-HST-NUM                         F9838
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-LI-NUM                               F7569
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-LI-MCARE-NUM                         F5921
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-LI-COB-NUM                           F3747
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-LI-CAS-NUM                           F9691
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-BSE-CHG-NUM                          F5345
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-HDR-BSE-CHG-NUM                          F2416
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-EXC-NUM                              F3615
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-HDR-EXC-NUM                              F8546
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-LI-TPL-NUM                           F4203
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-LI-CAP-NUM                           F3301
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-LI-DRUG-NUM                          F2849
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-UNUSED-NUM                           F5554
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-AUX-NUM                              F2542
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CNT-LI-AUX-NUM                           F2567
+                                       PIC S9(04) COMP.
+               10  (INS)-C-HDR-TB.                                      S0078
+                   15  (INS)-C-TCN-NUM                                  F1024
+                                       PIC S9(17) COMP-3.
+                   15  (INS)-C-XCN-NUM                                  F3486
+                                       PIC  X(31).
+                   15  (INS)-C-HDR-ID-CD                                F1006
+                                       PIC  X(02).
+                   15  (INS)-C-HDR-EMC-CD                               F0993
+                                       PIC  X(01).
+                   15  (INS)-C-HDR-SUBMITTER-ID                         F0994
+                                       PIC  X(16).
+                   15  (INS)-C-CNTL-ORGN-CD                             F0147
+                                       PIC  X(01).
+                   15  (INS)-C-HDR-STAT-CD                              F1020
+                                       PIC  X(01).
+                   15  (INS)-C-HDR-TXN-TY-CD                            F1030
+                                       PIC  X(01).
+                   15  (INS)-C-HDR-TY-CD                                F1031
+                                       PIC  X(01).
+                   15  (INS)-C-BAT-MED-SRC-CD                           F0142
+                                       PIC  X(01).
+                   15  (INS)-C-BAT-JLN-DT-NUM                           F0727
+                                       PIC  X(05).
+                   15  (INS)-C-BT-IMGD-CNTL-NUM                         F0738
+                                       PIC  X(02).
+                   15  (INS)-C-BAT-NUM                                  F0729
+                                       PIC  X(03).
+                   15  (INS)-C-BAT-DOC-TY-CD                            F0161
+                                       PIC  X(01).
+                   15  (INS)-C-BAT-PYMT-TY-CD                           F0070
+                                       PIC  X(01).
+                   15  (INS)-C-BAT-TY-CD                                F0140
+                                       PIC  X(01).
+                   15  (INS)-C-HDR-DOC-NUM                              F0983
+                                       PIC  X(06).
+                   15  (INS)-C-NSF-X12N-CD                              F1780
+                                       PIC  X(01).
+                   15  (INS)-C-MCARE-STAT-CD                            F4859
+                                       PIC  X(01).
+                   15  (INS)-C-CLNT-MCARE-CD                            F0109
+                                       PIC  X(01).
+                   15  (INS)-B-SYS-ID                                   F0694
+                                       PIC S9(09) COMP.
+                   15  (INS)-B-FST-NAM                                  F0637
+                                       PIC  X(15).
+                   15  (INS)-B-LAST-NAM                                 F0639
+                                       PIC  X(21).
+                   15  (INS)-B-MI-NAM                                   F0640
+                                       PIC  X(01).
+                   15  (INS)-B-ALT-ID                                   F0535
+                                       PIC  X(14).
+                   15  (INS)-B-CURR-ID                                  F8688
+                                       PIC  X(14).
+                   15  (INS)-B-RACE-CD                                  F0230
+                                       PIC  X(01).
+                   15  (INS)-B-GENDER-CD                                F0229
+                                       PIC  X(01).
+                   15  (INS)-B-MAJ-PROG-CD                              F4429
+                                       PIC  X(01).
+                   15  (INS)-T-MSQ-TY-CD                                F0209
+                                       PIC  X(01).
+                   15  (INS)-A-ID      PIC  X(11).                      F0426
+                   15  (INS)-C-BLNG-PROV-ID                             F0403
+                                       PIC  X(08).
+                   15  (INS)-C-BLNG-NPI-ID                              F6209
+                                       PIC  X(10).
+                   15  (INS)-C-BLNG-TXNMY-CD                            F4741
+                                       PIC  X(10).
+                   15  (INS)-C-BLNG-PROV-ZIP-CD                         F0655
+                                       PIC  X(09).
+                   15  (INS)-C-BLNG-PROV-TY-CD                          F0733
+                                       PIC  X(03).
+                   15  (INS)-C-BLNG-SPECL-CD                            F3507
+                                       PIC  X(03).
+                   15  (INS)-C-BLNG-NTRPRS-ID                           F5424
+                                       PIC  X(08).
+                   15  (INS)-C-PROV-SIGN-IND                            F1143
+                                       PIC  X(01).
+                   15  (INS)-C-ATTACH-1ST-CD                            F6701
+                                       PIC  X(02).
+                   15  (INS)-C-ATTACH-2ND-CD                            F3737
+                                       PIC  X(02).
+                   15  (INS)-C-ATTACH-3RD-CD                            F1342
+                                       PIC  X(02).
+                   15  (INS)-C-ATTACH-4TH-CD                            F5056
+                                       PIC  X(02).
+                   15  (INS)-C-ATTACH-5TH-CD                            F0080
+                                       PIC  X(02).
+                   15  (INS)-C-HDR-RMK-IND                              F1019
+                                       PIC  X(01).
+                   15  (INS)-C-HDR-PAT-ACCT-NUM                         F1016
+                                       PIC  X(20).
+                   15  (INS)-C-MED-REC-NUM                              F1193
+                                       PIC  X(24).
+                   15  (INS)-C-ELIG-TWO-PASS-CD                         F6178
+                                       PIC  X(01).
+                   15  (INS)-C-CREDIT-CD                                F0978
+                                       PIC  X(01).
+                   15  (INS)-C-OTHR-INSR-IND                            F3078
+                                       PIC  X(01).
+                   15  (INS)-P-LOCN-CD                                  F0190
+                                       PIC  X(01).
+                   15  (INS)-P-PROFIT-IND                               F1617
+                                       PIC  X(01).
+                   15  (INS)-P-TAX-DISCT-IND                            F1693
+                                       PIC  X(01).
+                   15  (INS)-P-PROF-TECH-IND                            F2662
+                                       PIC  X(01).
+                   15  (INS)-P-IHS-IND                                  F1564
+                                       PIC  X(01).
+                   15  (INS)-P-PSY-SOC-IND                              F2113
+                                       PIC  X(01).
+                   15  (INS)-C-COST-AVOID-IND                           F0777
+                                       PIC  X(01).
+                   15  (INS)-C-PRIOR-AUTH-IND                           F1142
+                                       PIC  X(01).
+                   15  (INS)-C-DAILY-RPT-IND                            F0806
+                                       PIC  X(01).
+                   15  (INS)-C-HDR-RA-NUM                               F1042
+                                       PIC S9(09) COMP.
+                   15  (INS)-C-EXC-LOCN-CD                              F2822
+                                       PIC  X(03).
+                   15  (INS)-C-EXC-LOCN-ID                              F3969
+                                       PIC  X(07).
+                   15  (INS)-C-SUSP-LOCN-EXC-CD                         F1174
+                                       PIC  X(04).
+                   15  (INS)-C-OVRRD-EXC-LOC-CD                         F1126
+                                       PIC  X(03).
+                   15  (INS)-C-COST-CENTER-CD                           F7827
+                                       PIC  X(05).
+                   15  (INS)-C-FAM-PLN-CC-CD                            F8738
+                                       PIC  X(05).
+                   15  (INS)-C-RLTD-FCN-NUM                             F6659
+                                       PIC  X(15).
+                   15  (INS)-F-RSN-CD                                   F9884
+                                       PIC  X(03).
+                   15  (INS)-C-CYCL-NUM                                 F1014
+                                       PIC S9(02) COMP.
+                   15  (INS)-C-HDR-CLNT-AGE                             F0971
+                                       PIC S9(03) COMP.
+                   15  (INS)-C-TOT-CHRG-AMT                             F1025
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-CALC-TOT-AMT                             F0776
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-TOT-TPL-AMT                              F1029
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-TOT-TPL-DIR-AMT                          F2142
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-HD-TPL-COPAY-AMT                         F6179
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-TOT-NET-CHRG-AMT                         F1027
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-TOT-REIMB-AMT                            F1028
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-TOT-COPAY-AMT                            F1026
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-REIMB-STAT-CD                            F0162
+                                       PIC  X(01).
+                   15  (INS)-C-PREV-REIMB-AMT                           F1154
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-PREV-REIMB-CD                            F1149
+                                       PIC  X(01).
+                   15  (INS)-C-PAT-LIAB-AMT                             F1137
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-B-DOB-DT                                   F0601
+                                       PIC  X(10).
+                   15  (INS)-C-SUBM-CLNT-DOB-DT                         F8073
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-ENTRD-DT                             F0995
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-ADJUD-DT                             F0963
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-ADJUD-TM                             F2478
+                                       PIC  X(08).
+                   15  (INS)-C-HDR-ITERM-ADJ-DT                         F1008
+                                       PIC  X(10).
+                   15  (INS)-C-BILLED-DT                                F0966
+                                       PIC  X(10).
+                   15  (INS)-C-EXC-LOCN-DT                              F4798
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-BATCH-DT                             F0965
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-SVC-FST-DT                           F1022
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-SVC-LST-DT                           F1023
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-LST-CYCL-DT                          F1010
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-PD-DT                                F1017
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-ORIG-PD-DT                           F1015
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-SUSP-DT                              F1021
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-HX-DT                                F1005
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-CLIA-NUM                             F2064
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-DENT-OCCP-DT                         F0981
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-DENT-AUTO-DT                         F0979
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-DENT-OTHR-DT                         F0982
+                                       PIC  X(10).
+                   15  (INS)-C-REF-PROV-ID                              F9253
+                                       PIC  X(08).
+                   15  (INS)-C-REF-NPI-ID                               F1590
+                                       PIC  X(10).
+                   15  (INS)-C-OCCUP-RLTD-IND                           F0770
+                                       PIC  X(01).
+                   15  (INS)-C-AUTO-RLTD-IND                            F0762
+                                       PIC  X(01).
+                   15  (INS)-C-OTHR-RLTD-IND                            F0772
+                                       PIC  X(01).
+                   15  (INS)-C-ILLNESS-DT                               F0767
+                                       PIC  X(10).
+                   15  (INS)-C-ADMIT-DT                                 F0758
+                                       PIC  X(10).
+                   15  (INS)-C-DISCH-DT                                 F0765
+                                       PIC  X(10).
+                   15  (INS)-R-DRG-CD                                   F1783
+                                       PIC  X(05).
+                   15  (INS)-C-OTHR-PROV-ID                             F8329
+                                       PIC  X(08).
+                   15  (INS)-C-OTHR-PROV-NPI-ID                         F4059
+                                       PIC  X(10).
+                   15  (INS)-C-OPR-PROV-ID                              F2654
+                                       PIC  X(08).
+                   15  (INS)-C-OPR-NPI-ID                               F9292
+                                       PIC  X(10).
+                   15  (INS)-C-ATNDG-PROV-ID                            F0711
+                                       PIC  X(08).
+                   15  (INS)-C-ATNDG-NPI-ID                             F1912
+                                       PIC  X(10).
+                   15  (INS)-C-ATNDG-TXNMY-CD                           F8193
+                                       PIC  X(10).
+                   15  (INS)-C-LTC-PROV-ID                              F9983
+                                       PIC  X(08).
+                   15  (INS)-C-PAT-STAT-CD                              F0168
+                                       PIC  X(02).
+                   15  (INS)-C-ADM-SRC-CD                               F0138
+                                       PIC  X(01).
+                   15  (INS)-C-TY-OF-ADM-CD                             F0137
+                                       PIC  X(01).
+                   15  (INS)-C-TY-OF-BLL-PFX-CD                         F1382
+                                       PIC  X(01).
+                   15  (INS)-C-TY-OF-BLL-1-2-CD                         F1180
+                                       PIC  X(02).
+                   15  (INS)-C-TY-OF-BILL-3-CD                          F1179
+                                       PIC  X(01).
+                   15  (INS)-C-COS-CD                                   F0175
+                                       PIC  X(02).
+                   15  (INS)-C-UB92-A-DIAG-CD                           F1032
+                                       PIC  X(10).
+                   15  (INS)-C-UB92-ADM-HR-CD                           F1182
+                                       PIC  X(02).
+                   15  (INS)-C-UB92-DISCH-HR-CD                         F1186
+                                       PIC  X(02).
+                   15  (INS)-C-BSE-AMT-SRC-CD                           F0167
+                                       PIC  X(02).
+                   15  (INS)-C-PRCNG-PROCESS-CD                         F5183
+                                       PIC  X(02).
+                   15  (INS)-C-UB92-ABORT-IND                           F1181
+                                       PIC  X(01).
+                   15  (INS)-C-HDR-FAM-PLNG-IND                         F1003
+                                       PIC  X(01).
+                   15  (INS)-C-UB92-STERIL-IND                          F1198
+                                       PIC  X(01).
+                   15  (INS)-C-UB92-HYSTER-IND                          F1192
+                                       PIC  X(01).
+                   15  (INS)-C-HDR-BSE-AMT                              F0968
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-CALC-ALLOW-AMT                           F0743
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-HDR-ALLOW-AMT                            F0964
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-NCVRD-CHRG-AMT                           F1177
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-CVRD-DAYS-NUM                            F1184
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-NCVRD-DAYS-NUM                           F1116
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-OUTLIER-DAYS-NUM                         F1125
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-CALC-DAYS-NUM                            F1183
+                                       PIC S9(04) COMP.
+                   15  (INS)-C-DRG-PD-DAYS-NUM                          F0819
+                                       PIC S9(04) COMP.
+                   15  (INS)-B-GUARANTEE-NUM                            F0611
+                                       PIC  X(12).
+                   15  (INS)-C-ORIG-PAPER-IND                           F0357
+                                       PIC  X(01).
+                   15  (INS)-C-CREATION-DT                              F1750
+                                       PIC  X(10).
+                   15  (INS)-C-SVC-FACI-NPI-ID                          F2684
+                                       PIC  X(10).
+                   15  (INS)-R-CD-REL-WT-AMT                            F1735
+                                       PIC S9(04)V9(05) COMP-3.
+                   15  (INS)-C-BLNG-TAX-ID                              F1381
+                                       PIC  X(09).
+                   15  (INS)-C-BLNG-SSN-NUM                             F0255
+                                       PIC  X(09).
+                   15  (INS)-C-FUT-PROV-ID                              F2441
+                                       PIC  X(08).
+                   15  (INS)-C-MC-PROV-ID                               F1011
+                                       PIC  X(08).
+                   15  (INS)-H-PLN-NUM                                  F1402
+                                       PIC  X(04).
+                   15  (INS)-H-PLN-TY-CD                                F3579
+                                       PIC  X(01).
+                   15  (INS)-H-PLN-BEG-DT                               F1397
+                                       PIC  X(10).
+                   15  (INS)-C-HDR-FUT-1-CD                             F1056
+                                       PIC  X(03).
+                   15  (INS)-C-HDR-FUT-2-CD                             F2442
+                                       PIC  X(03).
+                   15  (INS)-B-PARENT-IND                               F5228
+                                       PIC  X(01).
+                   15  (INS)-C-HDR-AUD-IND                              F2590
+                                       PIC  X(01).
+                   15  (INS)-C-HDR-FUT-1-AMT                            F1082
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-HDR-FUT-2-AMT                            F2685
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-EPSDT-CERT1-CD                           F2470
+                                       PIC  X(03).
+                   15  (INS)-C-EPSDT-CERT2-CD                           F6955
+                                       PIC  X(03).
+                   15  (INS)-C-ANES-REL-PROC-CD                         F2591
+                                       PIC  X(07).
+                   15  (INS)-R-ICD-VER-CD                               F4475
+                                       PIC  X(02).
+                   15  (INS)-C-HDR-FUT-1-IND                            F2443
+                                       PIC  X(01).
+                   15  (INS)-C-HDR-FUT-2-IND                            F2444
+                                       PIC  X(01).
+                   15  (INS)-G-AUD-USER-ID                              F0531
+                                       PIC  X(07).
+                   15  (INS)-G-AUD-DT                                   F0528
+                                       PIC  X(10).
+                   15  (INS)-G-AUD-TM                                   F0529
+                                       PIC  X(08).
+0000***-- Occurs Count
+               10 (INS)-C-HMS-OCC-DEP.
+                   15 (INS)-C-OCC-LI-EXC           PIC S9(04) COMP.
+                   15 (INS)-C-OCC-HDR-COE          PIC S9(04) COMP.
+                   15 (INS)-C-OCC-HDR-COND-CD      PIC S9(04) COMP.
+                   15 (INS)-C-OCC-HDR-OCC-CD       PIC S9(04) COMP.
+                   15 (INS)-C-OCC-HDR-OCC-SPN      PIC S9(04) COMP.
+                   15 (INS)-C-OCC-HDR-VALU-CD      PIC S9(04) COMP.
+                   15 (INS)-C-OCC-HDR-ICD          PIC S9(04) COMP.
+                   15 (INS)-C-OCC-HDR-DIAG         PIC S9(04) COMP.
+                   15 (INS)-C-OCC-HDR-COB          PIC S9(04) COMP.
+                   15 (INS)-C-OCC-HDR-PREV-LOCN PIC S9(04) COMP.
+                   15 (INS)-C-OCC-HDR-OVRRD-EOB PIC S9(04) COMP.
+                   15 (INS)-C-OCC-HDR-OVRRD-EXC PIC S9(04) COMP.
+                   15 (INS)-C-OCC-HDR-RLTD-HIST PIC S9(04) COMP.
+                   15 (INS)-C-OCC-LI               PIC S9(04) COMP.
+                   15 (INS)-C-OCC-LI-MCARE         PIC S9(04) COMP.
+                   15 (INS)-C-OCC-LI-COB           PIC S9(04) COMP.
+                   15 (INS)-C-OCC-CAS              PIC S9(04) COMP.
+                   15 (INS)-C-OCC-LI-BSE-CHG       PIC S9(04) COMP.
+                   15 (INS)-C-OCC-LI-TPL-BLNG      PIC S9(04) COMP.
+                   15 (INS)-C-OCC-LI-AUX           PIC S9(04) COMP.
+0000***-- End
+               10  (INS)-C-LI-EXC-GRP.                                  S7922
+                   15  (INS)-C-LI-EXC-VW  OCCURS 0 TO 0002 TIMES        S2498
+                           DEPENDING ON (INS)-C-OCC-LI-EXC
+                           INDEXED BY (INS)-C-LI-EXC-VW .
+                       20  (INS)-C-LI-NUM                               F1073
+                                       PIC S9(03) COMP.
+                       20  (INS)-R-CLM-EXC-CD                           F1737
+                                       PIC  X(04).
+                       20  (INS)-C-LI-EXC-CLRK-ID                       F1077
+                                       PIC  X(07).
+                       20  (INS)-C-EXC-STAT-CD                          F4200
+                                       PIC  X(01).
+                       20  (INS)-R-EXC-FORCE-APP-CD                     F1903
+                                       PIC  X(01).
+                       20  (INS)-R-FORCE-DENY-CD                        F1914
+                                       PIC  X(01).
+               10  (INS)-C-HDR-PARAM-ERR-VW.                            S9202
+                   15  (INS)-C-ERR-PARAM-CD                             F0999
+                                       PIC  X(04).
+                   15  (INS)-C-ERR-PROG-ID                              F1000
+                                       PIC  X(08).
+                   15  (INS)-C-ERR-MSG-DAT                              F0998
+                                       PIC  X(10).
+               10  (INS)-C-HDR-ADJ-VD-VW.                               S3518
+                   15  (INS)-C-KEYED-REPLCD-NUM                         F1068
+                                       PIC S9(17) COMP-3.
+                   15  (INS)-C-HDR-ADJ-RSN-CD                           F0961
+                                       PIC  X(03).
+                   15  (INS)-C-REPLCD-TCN-NUM                           F0701
+                                       PIC S9(17) COMP-3.
+                   15  (INS)-C-HDR-ADJ-STAT-CD                          F0962
+                                       PIC  X(01).
+                   15  (INS)-C-REPLCMT-TCN-NUM                          F0702
+                                       PIC S9(17) COMP-3.
+                   15  (INS)-F-FCN-DT                                   F5689
+                                       PIC  X(10).
+                   15  (INS)-F-FCN-MED-CD                               F7607
+                                       PIC  X(01).
+                   15  (INS)-F-FCN-NUM                                  F6613
+                                       PIC S9(03) COMP.
+                   15  (INS)-C-ADJ-ORIG-TCN-NUM                         F0960
+                                       PIC S9(17) COMP-3.
+                   15  (INS)-C-ADJ-SEQ-NUM                              F0708
+                                       PIC S9(02) COMP.
+               10  (INS)-C-HDR-COE-GRP.                                 S1448
+                   15  (INS)-C-HDR-COE-VW OCCURS 0 TO 0001 TIMES        S9079
+                           DEPENDING ON (INS)-C-OCC-HDR-COE
+                           INDEXED BY (INS)-C-HDR-COE-VW-X .
+                       20  (INS)-C-SEQ-NUM                              F1161
+                                       PIC S9(02) COMP.
+                       20  (INS)-B-COE-CD                               F2678
+                                       PIC  X(03).
+                       20  (INS)-B-FED-MTCH-CD                          F2671
+                                       PIC  X(01).
+                       20  (INS)-B-FED-CAT-CD                           F2672
+                                       PIC  X(01).
+                       20  (INS)-B-GEO-CNTY-CD                          F1394
+                                       PIC  X(02).
+                       20  (INS)-B-ADMIN-CNTY-CD                        F2674
+                                       PIC  X(02).
+                       20  (INS)-B-MONEY-CD                             F2673
+                                       PIC  X(01).
+           05  (INS)-C-HDR-ENCTR-VW.                                    S5108
+               10  (INS)-C-MCO-TCN-DAT                                  F1018
+                                       PIC  X(20).
+               10  (INS)-C-SUB-CAP-CD                                   F6991
+                                       PIC  X(01).
+               10  (INS)-C-MC-ENCTR-PD-AMT                              F5531
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (INS)-C-MC-ENCTR-PD-DT                               F2514
+                                       PIC  X(10).
+               10  (INS)-C-MC-ENCTR-RECD-DT                             F0887
+                                       PIC  X(10).
+           05  (INS)-C-HDR-COND-CD-GRP.                                 S8726
+               10  (INS)-C-HDR-COND-CD-VW OCCURS 0 TO 0010 TIMES        S6798
+                           DEPENDING ON (INS)-C-OCC-HDR-COND-CD
+                           INDEXED BY (INS)-C-HDR-COND-CD-VW-X .
+                   15  (INS)-C-SEQ-NUM                                  F1161
+                                       PIC S9(02) COMP.
+                   15  (INS)-C-COND-CD                                  F0158
+                                       PIC  X(02).
+           05  (INS)-C-HDR-OCC-CD-GRP.                                  S1515
+               10  (INS)-C-HDR-OCC-CD-VW OCCURS 0 TO 0008 TIMES         S9824
+                           DEPENDING ON (INS)-C-OCC-HDR-OCC-CD
+                           INDEXED BY (INS)-C-HDR-OCC-CD-VW-X .
+                   15  (INS)-C-SEQ-NUM                                  F1161
+                                       PIC S9(02) COMP.
+                   15  (INS)-C-OCC-CD                                   F0159
+                                       PIC  X(02).
+                   15  (INS)-C-UB92-OCC-CD-DT                           F1194
+                                       PIC  X(10).
+           05  (INS)-C-HDR-OCC-SPN-GRP.                                 S1714
+               10  (INS)-C-HDR-OCC-SPN-VW OCCURS 0 TO 0002 TIMES        S5510
+                           DEPENDING ON (INS)-C-OCC-HDR-OCC-SPN
+                           INDEXED BY (INS)-C-HDR-OCC-SPN-VW-X .
+                   15  (INS)-C-SEQ-NUM                                  F1161
+                                       PIC S9(02) COMP.
+                   15  (INS)-C-OCC-SPN-CD                               F0172
+                                       PIC  X(02).
+                   15  (INS)-C-OCC-SPN-FR-DT                            F1118
+                                       PIC  X(10).
+                   15  (INS)-C-OCC-SPN-THRU-DT                          F1119
+                                       PIC  X(10).
+           05  (INS)-C-HDR-VALU-CD-GRP.                                 S1923
+               10  (INS)-C-HDR-VALU-CD-VW OCCURS 0 TO 0012 TIMES        S7945
+                           DEPENDING ON (INS)-C-OCC-HDR-VALU-CD
+                           INDEXED BY (INS)-C-HDR-VALU-CD-VW-X .
+                   15  (INS)-C-SEQ-NUM                                  F1161
+                                       PIC S9(02) COMP.
+                   15  (INS)-C-VALU-CD                                  F0157
+                                       PIC  X(02).
+                   15  (INS)-C-UB92-VALU-CD-AMT                         F1199
+                                       PIC S9(09)V9(02) COMP-3.
+           05  (INS)-C-HDR-ICD-GRP.                                     S4939
+               10  (INS)-C-HDR-ICD-VW OCCURS 0 TO 0024 TIMES            S4873
+                           DEPENDING ON (INS)-C-OCC-HDR-ICD
+                           INDEXED BY (INS)-C-HDR-ICD-VW-X .
+                   15  (INS)-C-ICD9-SEQ-NUM                             F1161
+                                       PIC S9(02) COMP.
+                   15  (INS)-R-ICD9-CD                                  F1931
+                                       PIC  X(07).
+                   15  (INS)-C-HDR-UB92-ICD9-DT                         F1035
+                                       PIC  X(10).
+           05  (INS)-C-HDR-DIAG-INST-GRP.                               S4714
+               10  (INS)-C-HDR-DIAG-VW OCCURS 0 TO 0010 TIMES           S4756
+                           DEPENDING ON (INS)-C-OCC-HDR-DIAG
+                           INDEXED BY (INS)-C-HDR-DIAG-VW-X .
+                   15  (INS)-C-DIAG-SEQ-NUM                             F1161
+                                       PIC S9(02) COMP.
+                   15  (INS)-R-DIAG-CD                                  F1756
+                                       PIC  X(10).
+                   15  (INS)-C-POA-IND                                  F1600
+                                       PIC  X(01).
+           05  (INS)-C-HDR-MCARE-VW.                                    S1827
+               10  (INS)-C-MCARE-PROV-ID                                F1054
+                                       PIC  X(13).
+               10  (INS)-C-MCARE-CLM-NUM                                F3970
+                                       PIC  X(26).
+               10  (INS)-C-HD-MCARE-CARR-ID                             F0957
+                                       PIC  X(06).
+               10  (INS)-C-MCARE-HIC-ID                                 F0959
+                                       PIC  X(19).
+               10  (INS)-C-HD-MCARE-EOMB-DT                             F0958
+                                       PIC  X(10).
+               10  (INS)-C-HDR-MCAR-STAT-CD                             F0953
+                                       PIC  X(01).
+               10  (INS)-C-MCARE-ALLOW-AMT                              F1106
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (INS)-C-MCARE-DED-AMT                                F1108
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (INS)-C-MCARE-COINS-AMT                              F1013
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (INS)-C-MCARE-PSY-AMT                                F2418
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (INS)-C-MCARE-O-PR-AMT                               F2419
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (INS)-C-MCARE-PD-AMT                                 F1110
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (INS)-C-HDR-MCAR-DED-AMT                             F7947
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (INS)-C-HDR-MCAR-COI-AMT                             F0590
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (INS)-C-HDR-MCAR-PSY-AMT                             F1611
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (INS)-C-HD-MCAR-O-PR-AMT                             F1117
+                                       PIC S9(09)V9(02) COMP-3.
+           05  (INS)-C-HDR-COB-GRP.                                     S6895
+               10  (INS)-C-HDR-COB-VW OCCURS 0 TO 0005 TIMES            S5817
+                           DEPENDING ON (INS)-C-OCC-HDR-COB
+                           INDEXED BY (INS)-C-HDR-COB-VW-X .
+                   15  (INS)-C-SEQ-NUM                                  F1161
+                                       PIC S9(02) COMP.
+                   15  (INS)-C-COB-PYR-ID                               F0462
+                                       PIC  X(15).
+                   15  (INS)-C-COB-PYR-NAM                              F1123
+                                       PIC  X(35).
+                   15  (INS)-C-COB-PYR-SEQ-CD                           F5779
+                                       PIC  X(01).
+                   15  (INS)-C-COB-PLCY-REL-CD                          F6737
+                                       PIC  X(02).
+                   15  (INS)-C-COB-PLCY-NUM                             F5235
+                                       PIC  X(09).
+                   15  (INS)-C-COB-GRP-PLN-NAM                          F5913
+                                       PIC  X(30).
+                   15  (INS)-C-COB-FLN-IND-CD                           F1384
+                                       PIC  X(02).
+                   15  (INS)-C-COB-PYR-PYMT-AMT                         F3777
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-COB-ADJUD-DT                             F8097
+                                       PIC  X(10).
+                   15  (INS)-C-COB-CLM-NUM                              F1799
+                                       PIC  X(26).
+                   15  (INS)-C-CERT-SSN-HIC-ID                          F1155
+                                       PIC  X(19).
+                   15  (INS)-C-UB92-EST-DUE-AMT                         F1189
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-UB92-PYR-AUTH-CD                         F1195
+                                       PIC  X(18).
+                   15  (INS)-C-COB-NN-CVRD-AMT                          F9686
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-HDR-RMK-CD                               F0944
+                                       PIC  X(05).
+                   15  (INS)-C-COB-DRG-AMT                              F2524
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-COB-DSP-SHR-AMT                          F1058
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-COB-CAP-IME-AMT                          F4801
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-COB-REIMB-PCT                            F0760
+                                       PIC S9(03)V9(02) COMP-3.
+                   15  (INS)-C-COB-HCPCS-AMT                            F2526
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-COB-ESRD-AMT                             F2529
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-COB-NONP-PC-AMT                          F9474
+                                       PIC S9(09)V9(02) COMP-3.
+           05  (INS)-C-HDR-PREV-LOCN-GRP.                               S3532
+               10  (INS)-C-HDR-PREV-LOCN-VW OCCURS 0 TO 0001 TIMES      S6428
+                           DEPENDING ON (INS)-C-OCC-HDR-PREV-LOCN
+                           INDEXED BY (INS)-C-HDR-PREV-LOCN-VW-X .
+                   15  (INS)-C-SEQ-NUM                                  F1161
+                                       PIC S9(02) COMP.
+                   15  W1C41522-C-EXC-LOCN-CD                           F2822
+                                       PIC  X(03).
+                   15  W1C41522-C-EXC-LOCN-ID                           F3969
+                                       PIC  X(07).
+                   15  W1C41522-C-SUSP-LOCN-EXC-CD                      F1174
+                                       PIC  X(04).
+                   15  W1C41522-C-EXC-LOCN-DT                           F4798
+                                       PIC  X(10).
+           05  (INS)-C-HDR-WARRANT-VW.                                  S4552
+               10  (INS)-C-HDR-RA-NUM                                   F1042
+                                       PIC S9(09) COMP.
+               10  (INS)-C-HDR-WARR-NUM                                 F1041
+                                       PIC  X(11).
+               10  (INS)-C-HDR-WARR-MED-CD                              F1040
+                                       PIC  X(01).
+               10  (INS)-C-HDR-WARR-AMT                                 F1038
+                                       PIC S9(13)V9(02) COMP-3.
+               10  (INS)-C-HDR-WARR-DT                                  F1039
+                                       PIC  X(10).
+               10  (INS)-C-EFT-TRC-ID                                   F5690
+                                       PIC  X(15).
+           05  (INS)-C-HDR-OVRRD-EOB-I-GRP.                             S8149
+               10  (INS)-C-HDR-OVRRD-EOB-VW OCCURS 0 TO 0100 TIMES      S4955
+                           DEPENDING ON (INS)-C-OCC-HDR-OVRRD-EOB
+                           INDEXED BY (INS)-C-HDR-OVRRD-EOB-VW-X .
+                   15  (INS)-C-LI-NUM                                   F1073
+                                       PIC S9(03) COMP.
+                   15  (INS)-C-SEQ-NUM                                  F1161
+                                       PIC S9(02) COMP.
+                   15  (INS)-C-OVRRD-EOB-CD                             F1128
+                                       PIC  X(04).
+                   15  (INS)-C-OVRRD-EOB-ID                             F1129
+                                       PIC  X(07).
+           05  (INS)-C-HDR-OVRRD-EXC-I-GRP.                             S0499
+               10  (INS)-C-HDR-OVRRD-EXC-VW OCCURS 0 TO 0001 TIMES      S1683
+                           DEPENDING ON (INS)-C-OCC-HDR-OVRRD-EXC
+                           INDEXED BY (INS)-C-HDR-OVRRD-EXC-VW-X .
+                   15  (INS)-C-LI-NUM                                   F1073
+                                       PIC S9(03) COMP.
+                   15  (INS)-C-SEQ-NUM                                  F1161
+                                       PIC S9(02) COMP.
+                   15  (INS)-C-OVRRD-EXC-CD                             F1130
+                                       PIC  X(04).
+                   15  (INS)-C-OVRRD-EXC-ID                             F1131
+                                       PIC  X(07).
+           05  (INS)-C-HDR-RLTD-HIST-GRP.                               S5403
+               10  (INS)-C-HDR-RLTD-HIST-VW OCCURS 0 TO 0001 TIMES      S5582
+                           DEPENDING ON (INS)-C-OCC-HDR-RLTD-HIST
+                           INDEXED BY (INS)-C-HDR-RLTD-HIST-VW-X .
+                   15  (INS)-C-LI-NUM                                   F1073
+                                       PIC S9(03) COMP.
+                   15  (INS)-C-RLTD-LI-TCN-NUM                          F0721
+                                       PIC S9(17) COMP-3.
+                   15  (INS)-C-RLTD-LI-NUM                              F0720
+                                       PIC S9(03) COMP.
+                   15  W1C41522-R-CLM-EXC-CD                            F1737
+                                       PIC  X(04).
+                   15  W1C41522-C-HDR-PD-DT                             F1017
+                                       PIC  X(10).
+                   15  W1C41522-C-EXC-STAT-CD                           F4200
+                                       PIC  X(01).
+                   15  W1C41522-C-HDR-TY-CD                             F1031
+                                       PIC  X(01).
+                   15  (INS)-C-SYS-REPLCD-IND                           F6886
+                                       PIC  X(01).
+           05  (INS)-C-HDR-AUX-VW.                                      S4418
+               10  (INS)-C-ATT-1ST-CNTL-NUM                             F0886
+                                       PIC  X(15).
+               10  (INS)-C-ATT-1ST-XMIT-CD                              F5248
+                                       PIC  X(02).
+               10  (INS)-C-ATT-1ST-RECD-IND                             F2476
+                                       PIC  X(01).
+               10  (INS)-C-ATT-2ND-CNTL-NUM                             F0755
+                                       PIC  X(15).
+               10  (INS)-C-ATT-2ND-XMIT-CD                              F2471
+                                       PIC  X(02).
+               10  (INS)-C-ATT-2ND-RECD-IND                             F1162
+                                       PIC  X(01).
+               10  (INS)-C-ATT-3RD-CNTL-NUM                             F2474
+                                       PIC  X(15).
+               10  (INS)-C-ATT-3RD-XMIT-CD                              F1386
+                                       PIC  X(02).
+               10  (INS)-C-ATT-3RD-RECD-IND                             F1532
+                                       PIC  X(01).
+               10  (INS)-C-ATT-4TH-CNTL-NUM                             F2475
+                                       PIC  X(15).
+               10  (INS)-C-ATT-4TH-XMIT-CD                              F2472
+                                       PIC  X(02).
+               10  (INS)-C-ATT-4TH-RECD-IND                             F2477
+                                       PIC  X(01).
+               10  (INS)-C-ATT-5TH-CNTL-NUM                             F1307
+                                       PIC  X(15).
+               10  (INS)-C-ATT-5TH-XMIT-CD                              F2473
+                                       PIC  X(02).
+               10  (INS)-C-ATT-5TH-RECD-IND                             F2686
+                                       PIC  X(01).
+               10  (INS)-C-AMBL-PU-LINE1-AD                             F8959
+                                       PIC  X(30).
+               10  (INS)-C-AMBL-PU-LINE2-AD                             F2479
+                                       PIC  X(30).
+               10  (INS)-C-AMBL-PU-CITY-NAM                             F3204
+                                       PIC  X(20).
+               10  (INS)-C-AMBL-PU-ST-CD                                F1721
+                                       PIC  X(02).
+               10  (INS)-C-AMBL-PU-ZIP5-CD                              F2481
+                                       PIC  X(05).
+               10  (INS)-C-AMBL-PU-ZIP4-CD                              F2480
+                                       PIC  X(04).
+               10  (INS)-C-AMBL-DO-LINE1-AD                             F1057
+                                       PIC  X(30).
+               10  (INS)-C-AMBL-DO-LINE2-AD                             F1004
+                                       PIC  X(30).
+               10  (INS)-C-AMBL-DO-CITY-NAM                             F2687
+                                       PIC  X(20).
+               10  (INS)-C-AMBL-DO-ST-CD                                F2482
+                                       PIC  X(02).
+               10  (INS)-C-AMBL-DO-ZIP5-CD                              F2504
+                                       PIC  X(05).
+               10  (INS)-C-AMBL-DO-ZIP4-CD                              F2483
+                                       PIC  X(04).
+           05  (INS)-C-LI-INST-GRP.                                     S7988
+               10  (INS)-C-LI-VW      OCCURS 0 TO 0080 TIMES            S6036
+                           DEPENDING ON (INS)-C-OCC-LI
+                           INDEXED BY (INS)-C-LI-VW-X .
+                   15  (INS)-C-LI-NUM                                   F1073
+                                       PIC S9(03) COMP.
+                   15  (INS)-R-PROC-CD                                  F2042
+                                       PIC  X(07).
+                   15  (INS)-C-PROC-MOD-1ST-CD                          F0489
+                                       PIC  X(02).
+                   15  (INS)-C-PROC-MOD-2ND-CD                          F0490
+                                       PIC  X(02).
+                   15  (INS)-C-PROC-MOD-3RD-CD                          F5103
+                                       PIC  X(02).
+                   15  (INS)-C-PROC-MOD-4TH-CD                          F5286
+                                       PIC  X(02).
+                   15  (INS)-R-PL-OF-SVC-CD                             F2017
+                                       PIC  X(02).
+                   15  (INS)-R-SVC-AREA-CD                              F8131
+                                       PIC  X(01).
+                   15  (INS)-C-SVC-COMPONENT-CD                         F5219
+                                       PIC  X(01).
+                   15  (INS)-A-LI-NUM                                   F0429
+                                       PIC S9(03) COMP.
+                   15  (INS)-C-PRIOR-AUTH-IND                           F1142
+                                       PIC  X(01).
+                   15  (INS)-C-LI-AUTH-ID                               F3905
+                                       PIC  X(11).
+                   15  (INS)-C-LI-CLIA-NUM                              F1075
+                                       PIC  X(10).
+                   15  (INS)-C-BSE-AMT-SRC-CD                           F0167
+                                       PIC  X(02).
+                   15  (INS)-C-PRCNG-PROCESS-CD                         F5183
+                                       PIC  X(02).
+                   15  (INS)-C-COS-CD                                   F0175
+                                       PIC  X(02).
+                   15  (INS)-C-REIMB-STAT-CD                            F0162
+                                       PIC  X(01).
+                   15  (INS)-C-COST-AVOID-IND                           F0777
+                                       PIC  X(01).
+                   15  (INS)-C-ONCE-IN-LFTM-IND                         F1120
+                                       PIC  X(01).
+                   15  (INS)-C-LI-DUPL-CHK-IND                          F1076
+                                       PIC  X(01).
+                   15  (INS)-C-ALLOW-UNTS-IND                           F0709
+                                       PIC  X(01).
+                   15  (INS)-C-LI-ABORT-IND                             F1069
+                                       PIC  X(01).
+                   15  (INS)-C-LI-STERIL-IND                            F1090
+                                       PIC  X(01).
+                   15  (INS)-C-LI-FAM-PLNG-IND                          F1078
+                                       PIC  X(01).
+                   15  (INS)-C-LI-HYSTER-IND                            F1081
+                                       PIC  X(01).
+                   15  (INS)-C-MULTI-SURG-IND                           F1113
+                                       PIC  X(01).
+                   15  (INS)-C-LI-FST-DOS-DT                            F1080
+                                       PIC  X(10).
+                   15  (INS)-C-LI-LAST-DOS-DT                           F1083
+                                       PIC  X(10).
+                   15  (INS)-C-MC-ENCTR-PD-AMT                          F5531
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-TPL-COPAY-AMT                         F0103
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-SUBM-CHRG-AMT                         F1091
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-BSE-AMT                               F1072
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-CLC-ALLW-AMT                          F1074
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-ALLW-CHRG-AMT                         F1071
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-REIMB-AMT                             F1087
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-UNT-MSR-CD                            F2932
+                                       PIC  X(02).
+                   15  (INS)-C-LI-UNT-MSR-NUM                           F2067
+                                       PIC S9(07)V9(02) COMP-3.
+                   15  (INS)-C-LI-SUBM-UNT-NUM                          F1092
+                                       PIC S9(07)V9(02) COMP-3.
+                   15  (INS)-C-LI-ALLOW-UNT-NUM                         F1070
+                                       PIC S9(07)V9(02) COMP-3.
+                   15  (INS)-C-LI-REIMB-UNT-NUM                         F1088
+                                       PIC S9(07)V9(02) COMP-3.
+                   15  (INS)-C-LI-FLLWP-LMT-DT                          F1079
+                                       PIC  X(10).
+                   15  (INS)-R-DRUG-CD                                  F1813
+                                       PIC  X(11).
+                   15  (INS)-C-DIAG-1ST-RLTD-CD                         F8526
+                                       PIC  X(01).
+                   15  (INS)-C-DIAG-2ND-RLTD-CD                         F7472
+                                       PIC  X(01).
+                   15  (INS)-C-DIAG-3RD-RLTD-CD                         F7351
+                                       PIC  X(01).
+                   15  (INS)-C-DIAG-4TH-RLTD-CD                         F5840
+                                       PIC  X(01).
+                   15  (INS)-C-DIAG-5TH-RLTD-CD                         F6883
+                                       PIC  X(01).
+                   15  (INS)-C-DIAG-6TH-RLTD-CD                         F8600
+                                       PIC  X(01).
+                   15  (INS)-C-DIAG-7TH-RLTD-CD                         F5019
+                                       PIC  X(01).
+                   15  (INS)-C-DIAG-8TH-RLTD-CD                         F6458
+                                       PIC  X(01).
+                   15  (INS)-R-PROC-ORAL-CAV-CD                         F2553
+                                       PIC  X(02).
+                   15  (INS)-R-PROC-TOOTH-CD                            F2100
+                                       PIC  X(02).
+                   15  (INS)-C-DENT-1ST-SURF-CD                         F0807
+                                       PIC  X(01).
+                   15  (INS)-C-DENT-2ND-SURF-CD                         F0808
+                                       PIC  X(01).
+                   15  (INS)-C-DENT-3RD-SURF-CD                         F0809
+                                       PIC  X(01).
+                   15  (INS)-C-DENT-4TH-SURF-CD                         F0810
+                                       PIC  X(01).
+                   15  (INS)-C-DENT-5TH-SURF-CD                         F0811
+                                       PIC  X(01).
+                   15  (INS)-C-RNDR-PROV-ID                             F1089
+                                       PIC  X(08).
+                   15  (INS)-C-RNDR-NPI-ID                              F2020
+                                       PIC  X(10).
+                   15  (INS)-C-RNDR-TXNMY-CD                            F5147
+                                       PIC  X(10).
+                   15  (INS)-C-RNDR-NTRPRS-ID                           F3588
+                                       PIC  X(08).
+                   15  (INS)-C-DSTN-PROV-ID                             F6514
+                                       PIC  X(08).
+                   15  (INS)-P-TY-CD                                    F0204
+                                       PIC  X(03).
+                   15  (INS)-P-SPECL-CD                                 F2653
+                                       PIC  X(03).
+                   15  (INS)-C-SUBM-FAM-PLN-IND                         F6393
+                                       PIC  X(01).
+                   15  (INS)-C-SUBM-EPSDT-IND                           F3084
+                                       PIC  X(01).
+                   15  (INS)-R-REV-CD                                   F2112
+                                       PIC  X(07).
+                   15  (INS)-R-REV-TY-CD                                F0102
+                                       PIC  X(01).
+                   15  (INS)-B-LEVEL-OF-CARE-CD                         F5075
+                                       PIC  X(03).
+                   15  (INS)-C-LI-UB92-RATE-AMT                         F1093
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-NN-CVRD-CHRG-AMT                         F1115
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-FUT-1-CD                              F0502
+                                       PIC  X(03).
+                   15  (INS)-C-LI-FUT-2-CD                              F0441
+                                       PIC  X(03).
+                   15  (INS)-C-LI-FUT-1-IND                             F1420
+                                       PIC  X(01).
+                   15  (INS)-C-LI-FUT-2-IND                             F0532
+                                       PIC  X(01).
+                   15  (INS)-C-LI-FUT-1-AMT                             F5480
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-FUT-2-AMT                             F8719
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-COST-CNTR-CD                          F1191
+                                       PIC  X(05).
+                   15  (INS)-C-LI-ATT-1ST-CD                            F7571
+                                       PIC  X(02).
+                   15  (INS)-C-LI-ATT-2ND-CD                            F0081
+                                       PIC  X(02).
+                   15  (INS)-C-LI-ATT-3RD-CD                            F2603
+                                       PIC  X(02).
+                   15  (INS)-C-LI-FUT-3-AMT                             F4675
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-FUT-4-AMT                             F2572
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-NDC-UNT-CD                            F2574
+                                       PIC  X(02).
+                   15  (INS)-C-LI-NDC-UNT-NUM                           F1308
+                                       PIC S9(07)V9(02) COMP-3.
+           05  (INS)-C-LI-MCARE-INST-GRP.                               S6551
+               10  (INS)-C-LI-MCARE-VW  OCCURS 0 TO 0010 TIMES          S8944
+                           DEPENDING ON (INS)-C-OCC-LI-MCARE
+                           INDEXED BY (INS)-C-LI-MCARE-VW-X .
+                   15  (INS)-C-LI-NUM                                   F1073
+                                       PIC S9(03) COMP.
+                   15  (INS)-C-LI-MCARE-COI-AMT                         F1107
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-MCARE-DED-AMT                         F1084
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-MCARE-PD-AMT                          F1085
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-MCAR-ALLW-AMT                         F1105
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-MCARE-STAT-CD                         F2074
+                                       PIC  X(01).
+                   15  (INS)-C-LI-MCAR-O-PR-AMT                         F2415
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-LI-MCARE-PSY-AMT                         F9146
+                                       PIC S9(09)V9(02) COMP-3.
+           05  (INS)-C-LI-COB-INST-GRP.                                 S0347
+               10  (INS)-C-LI-COB-VW  OCCURS 0 TO 0010 TIMES            S9938
+                           DEPENDING ON (INS)-C-OCC-LI-COB
+                           INDEXED BY (INS)-C-LI-COB-VW-X .
+                   15  (INS)-C-LI-NUM                                   F1073
+                                       PIC S9(03) COMP.
+                   15  (INS)-C-COB-LI-PYR-ID                            F1303
+                                       PIC  X(15).
+                   15  (INS)-C-COB-PD-PROC-CD                           F9447
+                                       PIC  X(08).
+                   15  (INS)-C-LI-PYR-PYMT-AMT                          F4065
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-COB-LI-ADJUD-DT                          F7037
+                                       PIC  X(10).
+                   15  (INS)-C-COB-REFER-LI-NUM                         F9762
+                                       PIC S9(03) COMP.
+           05  (INS)-C-LI-CAS-INST-GRP.                                 S6621
+               10  (INS)-C-CAS-VW  OCCURS 0 TO 0010 TIMES               S2276
+                           DEPENDING ON (INS)-C-OCC-CAS
+                           INDEXED BY (INS)-C-CAS-VW-X .
+                   15  (INS)-C-LI-NUM                                   F1073
+                                       PIC S9(03) COMP.
+                   15  (INS)-C-CAS-PYR-ID                               F5194
+                                       PIC  X(15).
+                   15  (INS)-C-CAS-PROC-CD                              F1426
+                                       PIC  X(08).
+                   15  (INS)-C-CAS-GRP-CD                               F7093
+                                       PIC  X(02).
+                   15  (INS)-C-CAS-RSN-CD                               F3992
+                                       PIC  X(05).
+                   15  (INS)-C-CAS-AMT                                  F2709
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (INS)-C-CAS-UNT-NUM                              F8911
+                                       PIC S9(09) COMP.
+           05  (INS)-C-LI-BSE-CHG-INST-GRP.                             S4118
+               10  (INS)-C-LI-BSE-CHG-VW OCCURS 0 TO 0010 TIMES         S9244
+                           DEPENDING ON (INS)-C-OCC-LI-BSE-CHG
+                           INDEXED BY (INS)-C-LI-BSE-CHG-VW-X .
+                   15  (INS)-C-LI-NUM                                   F1073
+                                       PIC S9(03) COMP.
+                   15  (INS)-C-SEQ-NUM                                  F1161
+                                       PIC S9(02) COMP.
+                   15  (INS)-C-BSE-CHNG-RSN-CD                          F0737
+                                       PIC  X(02).
+                   15  (INS)-C-BSE-AMT-CHG-AMT                          F0736
+                                       PIC S9(09)V9(02) COMP-3.
+           05  (INS)-C-LI-TPL-BLNG-GRP.                                 S6662
+               10  (INS)-C-LI-TPL-BLNG-VW  OCCURS 0 TO 0006 TIMES       S3551
+                           DEPENDING ON (INS)-C-OCC-LI-TPL-BLNG
+                           INDEXED BY (INS)-C-LI-TPL-BLNG-VW-X .
+                   15  (INS)-C-LI-NUM                                   F1073
+                                       PIC S9(03) COMP.
+                   15  (INS)-T-PLCY-NUM                                 F2561
+                                       PIC  X(20).
+                   15  (INS)-T-PLCY-SEQ-NUM                             F2588
+                                       PIC S9(03) COMP.
+                   15  (INS)-T-PLCY-RESRC-CD                            F2587
+                                       PIC  X(02).
+                   15  (INS)-T-CARR-ID                                  F2459
+                                       PIC  X(06).
+                   15  (INS)-T-CVRG-PLCY-CD                             F2558
+                                       PIC  X(02).
+           05  (INS)-C-LI-AUX-GRP-INST.                                 S1244
+               10  (INS)-C-LI-AUX-VW       OCCURS 0 TO 0006 TIMES       S3942
+                           DEPENDING ON (INS)-C-OCC-LI-AUX
+                           INDEXED BY (INS)-C-LI-AUX-VW-X .
+                   15  (INS)-C-LI-NUM                                   F1073
+                                       PIC S9(03) COMP.
+                   15  (INS)-C-ATT-1ST-CNTL-NUM                         F0886
+                                       PIC  X(15).
+                   15  (INS)-C-ATT-1ST-XMIT-CD                          F5248
+                                       PIC  X(02).
+                   15  (INS)-C-ATT-1ST-RECD-IND                         F2476
+                                       PIC  X(01).
+                   15  (INS)-C-ATT-2ND-CNTL-NUM                         F0755
+                                       PIC  X(15).
+                   15  (INS)-C-ATT-2ND-XMIT-CD                          F2471
+                                       PIC  X(02).
+                   15  (INS)-C-ATT-2ND-RECD-IND                         F1162
+                                       PIC  X(01).
+                   15  (INS)-C-ATT-3RD-CNTL-NUM                         F2474
+                                       PIC  X(15).
+                   15  (INS)-C-ATT-3RD-XMIT-CD                          F1386
+                                       PIC  X(02).
+                   15  (INS)-C-ATT-3RD-RECD-IND                         F1532
+                                       PIC  X(01).
+

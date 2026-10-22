@@ -1,0 +1,890 @@
+      *****************************************************************
+      *                                                               *
+      *    MEMBER:  FDNMMED2                                          *
+      *    CLONED FROM:  W1C41551                                     *
+      *      NAME:  C-MED-VW                                          *
+      * SUBSYSTEM:  C CLAIMS                                          *
+      *   VERSION:  1                                                 *
+      * GENERATED:  2007-03-15 08:03:47 REQUESTED BY CTEC784          *
+      *                                                               *
+      * MEDICAL CLAIM VIEW                                            *
+      *                                                               *
+      *****************************************************************
+      *                                                               *
+      *01  (MED)-C-MED-VW.
+           05  (MED)-C-HDR-COMMON-VW.
+               10  (MED)-C-SORT-GRP.
+                   15  (MED)-C-SORT-DAT
+                                       PIC  X(30).
+                   15  (MED)-C-LI-REC-STRT-NUM
+                                       PIC 9(04) COMP.
+               10  (MED)-C-COUNTERS-VW.
+                   15  (MED)-C-CNT-COE-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-COND-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-OCC-CD-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-OCC-SPN-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-VALU-CD-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-ICD-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-DIAG-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-COB-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-HDR-CAS-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-LOCN-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-OVRD-EOB-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-HDR-OVRD-EOB-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-OVRD-EXC-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-HDR-OVRD-EXC-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-RLTD-HST-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-LI-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-LI-MCARE-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-LI-COB-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-LI-CAS-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-BSE-CHG-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-HDR-BSE-CHG-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-EXC-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-HDR-EXC-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-LI-TPL-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-LI-CAP-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-LI-DRUG-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CNT-UNUSED-NUM
+                                       PIC S9(04) COMP.
+               10  (MED)-C-HDR-TB.
+                   15  (MED)-C-TCN-NUM
+                                       PIC S9(17) COMP-3.
+                   15  (MED)-C-XCN-NUM
+                                       PIC  X(23).
+                   15  (MED)-C-HDR-ID-CD
+                                       PIC  X(02).
+                   15  (MED)-C-HDR-EMC-CD
+                                       PIC  X(01).
+                   15  (MED)-C-HDR-SUBMITTER-ID
+                                       PIC  X(16).
+                   15  (MED)-C-CNTL-ORGN-CD
+                                       PIC  X(01).
+                   15  (MED)-C-HDR-STAT-CD
+                                       PIC  X(01).
+                   15  (MED)-C-HDR-TXN-TY-CD
+                                       PIC  X(01).
+                   15  (MED)-C-HDR-TY-CD
+                                       PIC  X(01).
+                   15  (MED)-C-BAT-MED-SRC-CD
+                                       PIC  X(01).
+                   15  (MED)-C-BAT-JLN-DT-NUM
+                                       PIC  X(05).
+                   15  (MED)-C-BT-IMGD-CNTL-NUM
+                                       PIC  X(02).
+                   15  (MED)-C-BAT-NUM
+                                       PIC  X(03).
+                   15  (MED)-C-BAT-DOC-TY-CD
+                                       PIC  X(01).
+                   15  (MED)-C-BAT-PYMT-TY-CD
+                                       PIC  X(01).
+                   15  (MED)-C-BAT-TY-CD
+                                       PIC  X(01).
+                   15  (MED)-C-HDR-DOC-NUM
+                                       PIC  X(06).
+                   15  (MED)-C-NSF-X12N-CD
+                                       PIC  X(01).
+                   15  (MED)-C-MCARE-STAT-CD
+                                       PIC  X(01).
+                   15  (MED)-C-CLNT-MCARE-CD
+                                       PIC  X(01).
+                   15  (MED)-B-SYS-ID
+                                       PIC S9(09) COMP.
+                   15  (MED)-B-FST-NAM
+                                       PIC  X(15).
+                   15  (MED)-B-LAST-NAM
+                                       PIC  X(21).
+                   15  (MED)-B-MI-NAM
+                                       PIC  X(01).
+                   15  (MED)-B-ALT-ID
+                                       PIC  X(14).
+                   15  (MED)-B-CURR-ID
+                                       PIC  X(14).
+                   15  (MED)-B-RACE-CD
+                                       PIC  X(01).
+                   15  (MED)-B-GENDER-CD
+                                       PIC  X(01).
+                   15  (MED)-B-MAJ-PROG-CD
+                                       PIC  X(01).
+                   15  (MED)-T-MSQ-TY-CD
+                                       PIC  X(01).
+                   15  (MED)-A-ID      PIC  X(11).
+                   15  (MED)-C-BLNG-PROV-ID
+                                       PIC  X(08).
+                   15  (MED)-C-BLNG-NPI-ID
+                                       PIC  X(10).
+                   15  (MED)-C-BLNG-TXNMY-CD
+                                       PIC  X(10).
+                   15  (MED)-C-BLNG-PROV-ZIP-CD
+                                       PIC  X(09).
+                   15  (MED)-C-BLNG-PROV-TY-CD
+                                       PIC  X(03).
+                   15  (MED)-C-BLNG-SPECL-CD
+                                       PIC  X(03).
+                   15  (MED)-C-BLNG-NTRPRS-ID
+                                       PIC  X(08).
+                   15  (MED)-C-PROV-SIGN-IND
+                                       PIC  X(01).
+                   15  (MED)-C-ATTACH-1ST-CD
+                                       PIC  X(02).
+                   15  (MED)-C-ATTACH-2ND-CD
+                                       PIC  X(02).
+                   15  (MED)-C-ATTACH-3RD-CD
+                                       PIC  X(02).
+                   15  (MED)-C-HDR-RMK-IND
+                                       PIC  X(01).
+                   15  (MED)-C-HDR-PAT-ACCT-NUM
+                                       PIC  X(20).
+                   15  (MED)-C-MED-REC-NUM
+                                       PIC  X(24).
+                   15  (MED)-C-ELIG-TWO-PASS-CD
+                                       PIC  X(01).
+                   15  (MED)-C-CREDIT-CD
+                                       PIC  X(01).
+                   15  (MED)-C-OTHR-INSR-IND
+                                       PIC  X(01).
+                   15  (MED)-P-LOCN-CD
+                                       PIC  X(01).
+                   15  (MED)-P-PROFIT-IND
+                                       PIC  X(01).
+                   15  (MED)-P-TAX-DISCT-IND
+                                       PIC  X(01).
+                   15  (MED)-P-PROF-TECH-IND
+                                       PIC  X(01).
+                   15  (MED)-P-IHS-IND
+                                       PIC  X(01).
+                   15  (MED)-P-PSY-SOC-IND
+                                       PIC  X(01).
+                   15  (MED)-C-COST-AVOID-IND
+                                       PIC  X(01).
+                   15  (MED)-C-PRIOR-AUTH-IND
+                                       PIC  X(01).
+                   15  (MED)-C-DAILY-RPT-IND
+                                       PIC  X(01).
+                   15  (MED)-C-HDR-RA-NUM
+                                       PIC S9(09) COMP.
+                   15  (MED)-C-EXC-LOCN-CD
+                                       PIC  X(03).
+                   15  (MED)-C-EXC-LOCN-ID
+                                       PIC  X(07).
+                   15  (MED)-C-SUSP-LOCN-EXC-CD
+                                       PIC  X(04).
+                   15  (MED)-C-OVRRD-EXC-LOC-CD
+                                       PIC  X(03).
+                   15  (MED)-C-COST-CENTER-CD
+                                       PIC  X(05).
+                   15  (MED)-C-FAM-PLN-CC-CD
+                                       PIC  X(05).
+                   15  (MED)-C-RLTD-FCN-NUM
+                                       PIC  X(15).
+                   15  (MED)-F-RSN-CD
+                                       PIC  X(03).
+                   15  (MED)-C-CYCL-NUM
+                                       PIC S9(02) COMP.
+                   15  (MED)-C-HDR-CLNT-AGE
+                                       PIC S9(03) COMP.
+                   15  (MED)-C-TOT-CHRG-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-CALC-TOT-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-TOT-TPL-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-TOT-TPL-DIR-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-HD-TPL-COPAY-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-TOT-NET-CHRG-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-TOT-REIMB-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-TOT-COPAY-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-REIMB-STAT-CD
+                                       PIC  X(01).
+                   15  (MED)-C-PREV-REIMB-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-PREV-REIMB-CD
+                                       PIC  X(01).
+                   15  (MED)-C-PAT-LIAB-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-B-DOB-DT
+                                       PIC  X(10).
+                   15  (MED)-C-SUBM-CLNT-DOB-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-ENTRD-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-ADJUD-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-ITERM-ADJ-DT
+                                       PIC  X(10).
+                   15  (MED)-C-BILLED-DT
+                                       PIC  X(10).
+                   15  (MED)-C-EXC-LOCN-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-BATCH-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-SVC-FST-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-SVC-LST-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-LST-CYCL-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-PD-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-ORIG-PD-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-SUSP-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-HX-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-CLIA-NUM
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-DENT-OCCP-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-DENT-AUTO-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-DENT-OTHR-DT
+                                       PIC  X(10).
+                   15  (MED)-C-REF-PROV-ID
+                                       PIC  X(08).
+                   15  (MED)-C-REF-NPI-ID
+                                       PIC  X(10).
+                   15  (MED)-C-OCCUP-RLTD-IND
+                                       PIC  X(01).
+                   15  (MED)-C-AUTO-RLTD-IND
+                                       PIC  X(01).
+                   15  (MED)-C-OTHR-RLTD-IND
+                                       PIC  X(01).
+                   15  (MED)-C-ANTHR-RLTD-IND
+                                       PIC  X(01).
+                   15  (MED)-C-ILLNESS-DT
+                                       PIC  X(10).
+                   15  (MED)-C-ADMIT-DT
+                                       PIC  X(10).
+                   15  (MED)-C-DISCH-DT
+                                       PIC  X(10).
+                   15  (MED)-R-DRG-CD
+                                       PIC  X(05).
+                   15  (MED)-C-OTHR-PROV-ID
+                                       PIC  X(08).
+                   15  (MED)-C-OTHR-PROV-NPI-ID
+                                       PIC  X(10).
+                   15  (MED)-C-OPR-PROV-ID
+                                       PIC  X(08).
+                   15  (MED)-C-OPR-NPI-ID
+                                       PIC  X(10).
+                   15  (MED)-C-ATNDG-PROV-ID
+                                       PIC  X(08).
+                   15  (MED)-C-ATNDG-NPI-ID
+                                       PIC  X(10).
+                   15  (MED)-C-ATNDG-TXNMY-CD
+                                       PIC  X(10).
+                   15  (MED)-C-LTC-PROV-ID
+                                       PIC  X(08).
+                   15  (MED)-C-PAT-STAT-CD
+                                       PIC  X(02).
+                   15  (MED)-C-ADM-SRC-CD
+                                       PIC  X(01).
+                   15  (MED)-C-TY-OF-ADM-CD
+                                       PIC  X(01).
+                   15  (MED)-C-TY-OF-BLL-PFX-CD
+                                       PIC  X(01).
+                   15  (MED)-C-TY-OF-BLL-1-2-CD
+                                       PIC  X(02).
+                   15  (MED)-C-TY-OF-BILL-3-CD
+                                       PIC  X(01).
+                   15  (MED)-C-COS-CD
+                                       PIC  X(02).
+                   15  (MED)-C-UB92-A-DIAG-CD
+                                       PIC  X(10).
+                   15  (MED)-C-UB92-ADM-HR-CD
+                                       PIC  X(02).
+                   15  (MED)-C-UB92-DISCH-HR-CD
+                                       PIC  X(02).
+                   15  (MED)-C-BSE-AMT-SRC-CD
+                                       PIC  X(02).
+                   15  (MED)-C-PRCNG-PROCESS-CD
+                                       PIC  X(02).
+                   15  (MED)-C-UB92-ABORT-IND
+                                       PIC  X(01).
+                   15  (MED)-C-HDR-FAM-PLNG-IND
+                                       PIC  X(01).
+                   15  (MED)-C-UB92-STERIL-IND
+                                       PIC  X(01).
+                   15  (MED)-C-UB92-HYSTER-IND
+                                       PIC  X(01).
+                   15  (MED)-C-HDR-BSE-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-CALC-ALLOW-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-HDR-ALLOW-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-NCVRD-CHRG-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-CVRD-DAYS-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-NCVRD-DAYS-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-OUTLIER-DAYS-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-CALC-DAYS-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-C-DRG-PD-DAYS-NUM
+                                       PIC S9(04) COMP.
+                   15  (MED)-B-GUARANTEE-NUM
+                                       PIC  X(12).
+                   15  (MED)-C-ORIG-PAPER-IND
+                                       PIC  X(01).
+                   15  (MED)-C-CREATION-DT
+                                       PIC  X(10).
+                   15  (MED)-C-SVC-FACI-NPI-ID
+                                       PIC  X(10).
+                   15  (MED)-R-CD-REL-WT-AMT
+                                       PIC S9(04)V9(05) COMP-3.
+                   15  (MED)-C-BLNG-TAX-ID
+                                       PIC  X(09).
+                   15  (MED)-C-BLNG-SSN-NUM
+                                       PIC  X(09).
+                   15  (MED)-C-FUT-PROV-ID
+                                       PIC  X(08).
+                   15  (MED)-H-PLN-NUM
+                                       PIC  X(04).
+                   15  (MED)-H-PLN-TY-CD
+                                       PIC  X(01).
+                   15  (MED)-H-PLN-BEG-DT
+                                       PIC  X(10).
+                   15  (MED)-C-HDR-FUT-1-CD
+                                       PIC  X(03).
+                   15  (MED)-C-HDR-FUT-2-CD
+                                       PIC  X(03).
+                   15  (MED)-C-HDR-FUT-1-IND
+                                       PIC  X(01).
+                   15  (MED)-C-HDR-FUT-2-IND
+                                       PIC  X(01).
+                   15  (MED)-C-HDR-FUT-1-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-HDR-FUT-2-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-G-AUD-USER-ID
+                                       PIC  X(07).
+                   15  (MED)-G-AUD-DT
+                                       PIC  X(10).
+                   15  (MED)-G-AUD-TM
+                                       PIC  X(08).
+               10 (MED)-C-HMS-OCC-DEP.
+                   15  (MED)-C-OCC-LI-EXC          PIC S9(4) COMP.
+                   15  (MED)-C-OCC-HDR-COE         PIC S9(4) COMP.
+                   15  (MED)-C-OCC-HDR-DIAG        PIC S9(4) COMP.
+                   15  (MED)-C-OCC-HDR-COB         PIC S9(4) COMP.
+                   15  (MED)-C-OCC-HDR-PREV-LOCN   PIC S9(4) COMP.
+                   15  (MED)-C-OCC-HDR-OVRRD-EOB   PIC S9(4) COMP.
+                   15  (MED)-C-OCC-HDR-OVRRD-EXC   PIC S9(4) COMP.
+                   15  (MED)-C-OCC-HDR-RLTD-HIST   PIC S9(4) COMP.
+                   15  (MED)-C-OCC-LI              PIC S9(4) COMP.
+                   15  (MED)-C-OCC-LI-CAP          PIC S9(4) COMP.
+                   15  (MED)-C-OCC-LI-MCARE        PIC S9(4) COMP.
+                   15  (MED)-C-OCC-LI-COB          PIC S9(4) COMP.
+                   15  (MED)-C-OCC-CAS             PIC S9(4) COMP.
+                   15  (MED)-C-OCC-LI-BSE-CHG      PIC S9(4) COMP.
+                   15  (MED)-C-OCC-LI-TPL-BLNG     PIC S9(4) COMP.
+               10  (MED)-C-LI-EXC-GRP.
+                   15  (MED)-C-LI-EXC-VW  OCCURS 0 TO 0002 TIMES
+                           DEPENDING ON (MED)-C-OCC-LI-EXC
+                           INDEXED BY (MED)-C-LI-EXC-VW-X .
+                       20  (MED)-C-LI-NUM
+                                       PIC S9(03) COMP.
+                       20  (MED)-R-CLM-EXC-CD
+                                       PIC  X(04).
+                       20  (MED)-C-LI-EXC-CLRK-ID
+                                       PIC  X(07).
+                       20  (MED)-C-EXC-STAT-CD
+                                       PIC  X(01).
+                       20  (MED)-R-EXC-FORCE-APP-CD
+                                       PIC  X(01).
+                       20  (MED)-R-FORCE-DENY-CD
+                                       PIC  X(01).
+               10  (MED)-C-HDR-PARAM-ERR-VW.
+                   15  (MED)-C-ERR-PARAM-CD
+                                       PIC  X(04).
+                   15  (MED)-C-ERR-PROG-ID
+                                       PIC  X(08).
+                   15  (MED)-C-ERR-MSG-DAT
+                                       PIC  X(10).
+               10  (MED)-C-HDR-ADJ-VD-VW.
+                   15  (MED)-C-KEYED-REPLCD-NUM
+                                       PIC S9(17) COMP-3.
+                   15  (MED)-C-HDR-ADJ-RSN-CD
+                                       PIC  X(03).
+                   15  (MED)-C-REPLCD-TCN-NUM
+                                       PIC S9(17) COMP-3.
+                   15  (MED)-C-HDR-ADJ-STAT-CD
+                                       PIC  X(01).
+                   15  (MED)-C-REPLCMT-TCN-NUM
+                                       PIC S9(17) COMP-3.
+                   15  (MED)-F-FCN-DT
+                                       PIC  X(10).
+                   15  (MED)-F-FCN-MED-CD
+                                       PIC  X(01).
+                   15  (MED)-F-FCN-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-C-ADJ-ORIG-TCN-NUM
+                                       PIC S9(17) COMP-3.
+                   15  (MED)-C-ADJ-SEQ-NUM
+                                       PIC S9(02) COMP.
+               10  (MED)-C-HDR-COE-GRP.
+                   15  (MED)-C-HDR-COE-VW OCCURS 0 TO 0004 TIMES
+                           DEPENDING ON (MED)-C-OCC-HDR-COE
+                           INDEXED BY (MED)-C-HDR-COE-VW-X .
+                       20  (MED)-C-SEQ-NUM
+                                       PIC S9(02) COMP.
+                       20  (MED)-B-COE-CD
+                                       PIC  X(03).
+                       20  (MED)-B-FED-MTCH-CD
+                                       PIC  X(01).
+                       20  (MED)-B-FED-CAT-CD
+                                       PIC  X(01).
+                       20  (MED)-B-GEO-CNTY-CD
+                                       PIC  X(02).
+                       20  (MED)-B-ADMIN-CNTY-CD
+                                       PIC  X(02).
+                       20  (MED)-B-MONEY-CD
+                                       PIC  X(01).
+           05  (MED)-C-HDR-ENCTR-VW.
+               10  (MED)-C-MC-PROV-ID
+                                       PIC  X(08).
+               10  (MED)-H-PLN-NUM     PIC  X(04).
+               10  (MED)-H-PLN-TY-CD
+                                       PIC  X(01).
+               10  (MED)-H-PLN-BEG-DT
+                                       PIC  X(10).
+               10  (MED)-C-MCO-TCN-DAT
+                                       PIC  X(20).
+               10  (MED)-C-SUB-CAP-CD
+                                       PIC  X(01).
+               10  (MED)-C-MC-ENCTR-PD-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+           05  (MED)-C-HDR-MCARE-VW.
+               10  (MED)-C-MCARE-PROV-ID
+                                       PIC  X(13).
+               10  (MED)-C-MCARE-CLM-NUM
+                                       PIC  X(26).
+               10  (MED)-C-HD-MCARE-CARR-ID
+                                       PIC  X(06).
+               10  (MED)-C-MCARE-HIC-ID
+                                       PIC  X(19).
+               10  (MED)-C-HD-MCARE-EOMB-DT
+                                       PIC  X(10).
+               10  (MED)-C-HDR-MCAR-STAT-CD
+                                       PIC  X(01).
+               10  (MED)-C-MCARE-ALLOW-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (MED)-C-MCARE-DED-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (MED)-C-MCARE-COINS-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (MED)-C-MCARE-PSY-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (MED)-C-MCARE-O-PR-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (MED)-C-MCARE-PD-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (MED)-C-HDR-MCAR-DED-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (MED)-C-HDR-MCAR-COI-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (MED)-C-HDR-MCAR-PSY-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+               10  (MED)-C-HD-MCAR-O-PR-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+           05  (MED)-C-HDR-DIAG-MED-GRP.
+               10  (MED)-C-HDR-DIAG-VW OCCURS 0 TO 0008 TIMES
+                           DEPENDING ON (MED)-C-OCC-HDR-DIAG
+                           INDEXED BY (MED)-C-HDR-DIAG-VW-X .
+                   15  (MED)-C-SEQ-NUM
+                                       PIC S9(02) COMP.
+                   15  (MED)-R-DIAG-CD
+                                       PIC  X(10).
+           05  (MED)-C-HDR-COB-GRP.
+               10  (MED)-C-HDR-COB-VW OCCURS 0 TO 0001 TIMES
+                           DEPENDING ON (MED)-C-OCC-HDR-COB
+                           INDEXED BY (MED)-C-HDR-COB-VW-X .
+                   15  (MED)-C-SEQ-NUM
+                                       PIC S9(02) COMP.
+                   15  (MED)-C-COB-PYR-ID
+                                       PIC  X(15).
+                   15  (MED)-C-COB-PYR-NAM
+                                       PIC  X(35).
+                   15  (MED)-C-COB-PYR-SEQ-CD
+                                       PIC  X(01).
+                   15  (MED)-C-COB-PLCY-REL-CD
+                                       PIC  X(02).
+                   15  (MED)-C-COB-PLCY-NUM
+                                       PIC  X(09).
+                   15  (MED)-C-COB-GRP-PLN-NAM
+                                       PIC  X(30).
+                   15  (MED)-C-COB-FLN-IND-CD
+                                       PIC  X(02).
+                   15  (MED)-C-COB-PYR-PYMT-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-COB-ADJUD-DT
+                                       PIC  X(10).
+                   15  (MED)-C-COB-CLM-NUM
+                                       PIC  X(26).
+                   15  (MED)-C-CERT-SSN-HIC-ID
+                                       PIC  X(19).
+                   15  (MED)-C-UB92-EST-DUE-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-UB92-PYR-AUTH-CD
+                                       PIC  X(18).
+           05  (MED)-C-HDR-PREV-LOCN-GRP.
+               10  (MED)-C-HDR-PREV-LOCN-VW OCCURS 0 TO 0001 TIMES
+                           DEPENDING ON (MED)-C-OCC-HDR-PREV-LOCN
+                           INDEXED BY (MED)-C-HDR-PREV-LOCN-VW-X .
+                   15  (MED)-C-SEQ-NUM
+                                       PIC S9(02) COMP.
+                   15  W1C41552-C-EXC-LOCN-CD
+                                       PIC  X(03).
+                   15  W1C41552-C-EXC-LOCN-ID
+                                       PIC  X(07).
+                   15  W1C41552-C-SUSP-LOCN-EXC-CD
+                                       PIC  X(04).
+                   15  W1C41552-C-EXC-LOCN-DT
+                                       PIC  X(10).
+           05  (MED)-C-HDR-WARRANT-VW.
+               10  (MED)-C-HDR-RA-NUM
+                                       PIC S9(09) COMP.
+               10  (MED)-C-HDR-WARR-NUM
+                                       PIC  X(11).
+               10  (MED)-C-HDR-WARR-MED-CD
+                                       PIC  X(01).
+               10  (MED)-C-HDR-WARR-AMT
+                                       PIC S9(13)V9(02) COMP-3.
+               10  (MED)-C-HDR-WARR-DT
+                                       PIC  X(10).
+               10  (MED)-C-EFT-TRC-ID
+                                       PIC  X(15).
+           05  (MED)-C-HDR-OVRRD-EOB-M-GRP.
+               10  (MED)-C-HDR-OVRRD-EOB-VW OCCURS 0 TO 0001 TIMES
+                           DEPENDING ON (MED)-C-OCC-HDR-OVRRD-EOB
+                           INDEXED BY (MED)-C-HDR-OVRRD-EOB-VW-X .
+                   15  (MED)-C-LI-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-C-SEQ-NUM
+                                       PIC S9(02) COMP.
+                   15  (MED)-C-OVRRD-EOB-CD
+                                       PIC  X(04).
+                   15  (MED)-C-OVRRD-EOB-ID
+                                       PIC  X(07).
+           05  (MED)-C-HDR-OVRRD-EXC-M-GRP.
+               10  (MED)-C-HDR-OVRRD-EXC-VW OCCURS 0 TO 0001 TIMES
+                           DEPENDING ON (MED)-C-OCC-HDR-OVRRD-EXC
+                           INDEXED BY (MED)-C-HDR-OVRRD-EXC-VW-X .
+                   15  (MED)-C-LI-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-C-SEQ-NUM
+                                       PIC S9(02) COMP.
+                   15  (MED)-C-OVRRD-EXC-CD
+                                       PIC  X(04).
+                   15  (MED)-C-OVRRD-EXC-ID
+                                       PIC  X(07).
+           05  (MED)-C-HDR-RLTD-HIST-GRP.
+               10  (MED)-C-HDR-RLTD-HIST-VW OCCURS 0 TO 0001 TIMES
+                           DEPENDING ON (MED)-C-OCC-HDR-RLTD-HIST
+                           INDEXED BY (MED)-C-HDR-RLTD-HIST-VW-X .
+                   15  (MED)-C-LI-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-C-RLTD-LI-TCN-NUM
+                                       PIC S9(17) COMP-3.
+                   15  (MED)-C-RLTD-LI-NUM
+                                       PIC S9(03) COMP.
+                   15  W1C41552-R-CLM-EXC-CD
+                                       PIC  X(04).
+                   15  W1C41552-C-HDR-PD-DT
+                                       PIC  X(10).
+                   15  W1C41552-C-EXC-STAT-CD
+                                       PIC  X(01).
+                   15  W1C41552-C-HDR-TY-CD
+                                       PIC  X(01).
+                   15  (MED)-C-SYS-REPLCD-IND
+                                       PIC  X(01).
+           05  (MED)-C-LI-MED-GRP.
+               10  (MED)-C-LI-VW  OCCURS 0 TO 0050 TIMES
+                           DEPENDING ON (MED)-C-OCC-LI
+                           INDEXED BY (MED)-C-LI-VW-X .
+                   15  (MED)-C-LI-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-R-PROC-CD
+                                       PIC  X(07).
+                   15  (MED)-C-PROC-MOD-1ST-CD
+                                       PIC  X(02).
+                   15  (MED)-C-PROC-MOD-2ND-CD
+                                       PIC  X(02).
+                   15  (MED)-C-PROC-MOD-3RD-CD
+                                       PIC  X(02).
+                   15  (MED)-C-PROC-MOD-4TH-CD
+                                       PIC  X(02).
+                   15  (MED)-R-PL-OF-SVC-CD
+                                       PIC  X(02).
+                   15  (MED)-R-SVC-AREA-CD
+                                       PIC  X(01).
+                   15  (MED)-C-SVC-COMPONENT-CD
+                                       PIC  X(01).
+                   15  (MED)-A-LI-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-C-PRIOR-AUTH-IND
+                                       PIC  X(01).
+                   15  (MED)-C-LI-AUTH-ID
+                                       PIC  X(11).
+                   15  (MED)-C-LI-CLIA-NUM
+                                       PIC  X(10).
+                   15  (MED)-C-BSE-AMT-SRC-CD
+                                       PIC  X(02).
+                   15  (MED)-C-PRCNG-PROCESS-CD
+                                       PIC  X(02).
+                   15  (MED)-C-COS-CD
+                                       PIC  X(02).
+                   15  (MED)-C-REIMB-STAT-CD
+                                       PIC  X(01).
+                   15  (MED)-C-COST-AVOID-IND
+                                       PIC  X(01).
+                   15  (MED)-C-ONCE-IN-LFTM-IND
+                                       PIC  X(01).
+                   15  (MED)-C-LI-DUPL-CHK-IND
+                                       PIC  X(01).
+                   15  (MED)-C-ALLOW-UNTS-IND
+                                       PIC  X(01).
+                   15  (MED)-C-LI-ABORT-IND
+                                       PIC  X(01).
+                   15  (MED)-C-LI-STERIL-IND
+                                       PIC  X(01).
+                   15  (MED)-C-LI-FAM-PLNG-IND
+                                       PIC  X(01).
+                   15  (MED)-C-LI-HYSTER-IND
+                                       PIC  X(01).
+                   15  (MED)-C-MULTI-SURG-IND
+                                       PIC  X(01).
+                   15  (MED)-C-LI-FST-DOS-DT
+                                       PIC  X(10).
+                   15  (MED)-C-LI-LAST-DOS-DT
+                                       PIC  X(10).
+                   15  (MED)-C-MC-ENCTR-PD-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-TPL-COPAY-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-SUBM-CHRG-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-BSE-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-CLC-ALLW-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-ALLW-CHRG-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-REIMB-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-UNT-MSR-CD
+                                       PIC  X(02).
+                   15  (MED)-C-LI-UNT-MSR-NUM
+                                       PIC S9(07)V9(02) COMP-3.
+                   15  (MED)-C-LI-SUBM-UNT-NUM
+                                       PIC S9(07)V9(02) COMP-3.
+                   15  (MED)-C-LI-ALLOW-UNT-NUM
+                                       PIC S9(07)V9(02) COMP-3.
+                   15  (MED)-C-LI-REIMB-UNT-NUM
+                                       PIC S9(07)V9(02) COMP-3.
+                   15  (MED)-C-LI-FLLWP-LMT-DT
+                                       PIC  X(10).
+                   15  (MED)-R-DRUG-CD
+                                       PIC  X(11).
+                   15  (MED)-C-DIAG-1ST-RLTD-CD
+                                       PIC  X(01).
+                   15  (MED)-C-DIAG-2ND-RLTD-CD
+                                       PIC  X(01).
+                   15  (MED)-C-DIAG-3RD-RLTD-CD
+                                       PIC  X(01).
+                   15  (MED)-C-DIAG-4TH-RLTD-CD
+                                       PIC  X(01).
+                   15  (MED)-C-DIAG-5TH-RLTD-CD
+                                       PIC  X(01).
+                   15  (MED)-C-DIAG-6TH-RLTD-CD
+                                       PIC  X(01).
+                   15  (MED)-C-DIAG-7TH-RLTD-CD
+                                       PIC  X(01).
+                   15  (MED)-C-DIAG-8TH-RLTD-CD
+                                       PIC  X(01).
+                   15  (MED)-R-PROC-ORAL-CAV-CD
+                                       PIC  X(02).
+                   15  (MED)-R-PROC-TOOTH-CD
+                                       PIC  X(02).
+                   15  (MED)-C-DENT-1ST-SURF-CD
+                                       PIC  X(01).
+                   15  (MED)-C-DENT-2ND-SURF-CD
+                                       PIC  X(01).
+                   15  (MED)-C-DENT-3RD-SURF-CD
+                                       PIC  X(01).
+                   15  (MED)-C-DENT-4TH-SURF-CD
+                                       PIC  X(01).
+                   15  (MED)-C-DENT-5TH-SURF-CD
+                                       PIC  X(01).
+                   15  (MED)-C-RNDR-PROV-ID
+                                       PIC  X(08).
+                   15  (MED)-C-RNDR-NPI-ID
+                                       PIC  X(10).
+                   15  (MED)-C-RNDR-TXNMY-CD
+                                       PIC  X(10).
+                   15  (MED)-C-RNDR-NTRPRS-ID
+                                       PIC  X(08).
+                   15  (MED)-C-DSTN-PROV-ID
+                                       PIC  X(08).
+                   15  (MED)-P-TY-CD
+                                       PIC  X(03).
+                   15  (MED)-P-SPECL-CD
+                                       PIC  X(03).
+                   15  (MED)-C-SUBM-FAM-PLN-IND
+                                       PIC  X(01).
+                   15  (MED)-C-SUBM-EPSDT-IND
+                                       PIC  X(01).
+                   15  (MED)-R-REV-CD
+                                       PIC  X(07).
+                   15  (MED)-R-REV-TY-CD
+                                       PIC  X(01).
+                   15  (MED)-B-LEVEL-OF-CARE-CD
+                                       PIC  X(03).
+                   15  (MED)-C-LI-UB92-RATE-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-NN-CVRD-CHRG-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-FUT-1-CD
+                                       PIC  X(03).
+                   15  (MED)-C-LI-FUT-2-CD
+                                       PIC  X(03).
+                   15  (MED)-C-LI-FUT-1-IND
+                                       PIC  X(01).
+                   15  (MED)-C-LI-FUT-2-IND
+                                       PIC  X(01).
+                   15  (MED)-C-LI-FUT-1-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-FUT-2-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-COST-CNTR-CD
+                                       PIC  X(05).
+           05  (MED)-C-LI-CAP-GRP.
+               10  (MED)-C-LI-CAP-VW OCCURS 0 TO 0050 TIMES
+                           DEPENDING ON (MED)-C-OCC-LI-CAP
+                           INDEXED BY (MED)-C-LI-CAP-VW-X .
+                   15  (MED)-C-LI-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-H-COHRT-NUM
+                                       PIC  X(03).
+                   15  (MED)-H-SVC-AREA-CD
+                                       PIC  X(01).
+                   15  (MED)-H-PLN-RATE-BEG-DT
+                                       PIC  X(10).
+           05  (MED)-C-LI-MCARE-MED-GRP.
+               10  (MED)-C-LI-MCARE-VW OCCURS 0 TO 0050 TIMES
+                           DEPENDING ON (MED)-C-OCC-LI-MCARE
+                           INDEXED BY (MED)-C-LI-MCARE-VW-X .
+                   15  (MED)-C-LI-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-C-LI-MCARE-COI-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-MCARE-DED-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-MCARE-PD-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-MCAR-ALLW-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-MCARE-STAT-CD
+                                       PIC  X(01).
+                   15  (MED)-C-LI-MCAR-O-PR-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-LI-MCARE-PSY-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+           05  (MED)-C-LI-COB-MED-GRP.
+               10  (MED)-C-LI-COB-VW OCCURS 0 TO 0050 TIMES
+                           DEPENDING ON (MED)-C-OCC-LI-COB
+                           INDEXED BY (MED)-C-LI-COB-VW-X .
+                   15  (MED)-C-LI-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-C-COB-LI-PYR-ID
+                                       PIC  X(15).
+                   15  (MED)-C-COB-PD-PROC-CD
+                                       PIC  X(08).
+                   15  (MED)-C-LI-PYR-PYMT-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-COB-LI-ADJUD-DT
+                                       PIC  X(10).
+                   15  (MED)-C-COB-REFER-LI-NUM
+                                       PIC S9(03) COMP.
+           05  (MED)-C-LI-CAS-MED-GRP.
+               10  (MED)-C-CAS-VW  OCCURS 0 TO 0050 TIMES
+                           DEPENDING ON (MED)-C-OCC-CAS
+                           INDEXED BY (MED)-C-CAS-VW-X .
+                   15  (MED)-C-LI-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-C-CAS-PYR-ID
+                                       PIC  X(15).
+                   15  (MED)-C-CAS-PROC-CD
+                                       PIC  X(08).
+                   15  (MED)-C-CAS-GRP-CD
+                                       PIC  X(02).
+                   15  (MED)-C-CAS-RSN-CD
+                                       PIC  X(05).
+                   15  (MED)-C-CAS-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+                   15  (MED)-C-CAS-UNT-NUM
+                                       PIC S9(09) COMP.
+           05  (MED)-C-LI-BSE-CHG-MED-GRP.
+               10  (MED)-C-LI-BSE-CHG-VW OCCURS 0 TO 0001 TIMES
+                           DEPENDING ON (MED)-C-OCC-LI-BSE-CHG
+                           INDEXED BY (MED)-C-LI-BSE-CHG-VW-X .
+                   15  (MED)-C-LI-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-C-SEQ-NUM
+                                       PIC S9(02) COMP.
+                   15  (MED)-C-BSE-CHNG-RSN-CD
+                                       PIC  X(02).
+                   15  (MED)-C-BSE-AMT-CHG-AMT
+                                       PIC S9(09)V9(02) COMP-3.
+           05  (MED)-C-LI-TPL-BLNG-GRP.
+               10  (MED)-C-LI-TPL-BLNG-VW  OCCURS 0 TO 0006 TIMES
+                           DEPENDING ON (MED)-C-OCC-LI-TPL-BLNG
+                           INDEXED BY (MED)-C-LI-TPL-BLNG-VW-X .
+                   15  (MED)-C-LI-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-T-PLCY-NUM
+                                       PIC  X(20).
+                   15  (MED)-T-PLCY-SEQ-NUM
+                                       PIC S9(03) COMP.
+                   15  (MED)-T-PLCY-RESRC-CD
+                                       PIC  X(02).
+                   15  (MED)-T-CARR-ID
+                                       PIC  X(06).
+                   15  (MED)-T-CVRG-PLCY-CD
+                                       PIC  X(02).
+

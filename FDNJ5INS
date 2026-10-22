@@ -1,0 +1,780 @@
+000100******************************************************************
+000200*       NEW JERSEY - ENCOUNTER CLAIMS ACTIVITY - VERSION 4       *
+000300******************************************************************
+000400*--------------------- MODIFICATION HISTORY ---------------------*
+000500****************************************************************
+000600* REF#  DATE       PGM DESCRIPTION                              *
+000700* ----  ---------- --- -----------------------------------------*
+000800* 0000  2010-10-27 MXR T+50016: NEW EXPANDED LAYOUT             *
+000900* 0001  2012-10-01 GXG T+100167 RENAME FIELDS                   *
+001000* CC260 2014-01-24 NF  T+139338 ICD-10 UPDATES. EXPANDED DX CDES*
+001100*                      SURG PROC CODES. ADDED ICD VALUES        *
+001200*                      ADDED PHARMACY DIAGNOSIS CODES           *
+001210* 0002  2018-07-25 DSV UPDATED DRG FIELDS (NO NEW VERSION)      *
+001210* 0003  2024-06-01 KAT ADD A FIELD TO A FILLER                  *
+001210* 0004  2024-12-XX RMM UPDATED FILLER                           *
+001300******************************************************************
+001400*
+001500*01 (CLM)-ENC-ACTIVITY-RECORD.
+001600     05 (CLM)-ENC-COMMON-ACTIVITY.
+001700         10 (CLM)-E-ICN.
+001800             15 (CLM)-E-ICN-1-11.
+001900                 20 (CLM)-E-JULIAN.
+002000                     25 (CLM)-E-ICN-YR             PIC 9(4).
+002100                     25 (CLM)-E-ICN-DAY            PIC 9(3).
+002200                 20 (CLM)-E-ICN-BATCH              PIC 9(4).
+002300                 20 (CLM)-E-ICN-SEQ                PIC 9(2).
+002400             15 (CLM)-E-ICN-LINE                   PIC 9(2).
+002500         10 (CLM)-E-ICN-FORMER                     PIC 9(15)
+002600                                                     COMP-3.
+002700         10 (CLM)-E-ICN-ORIGINAL                   PIC 9(15)
+002800                                                     COMP-3.
+002900         10 (CLM)-E-CLM-INVOICE-TYPE               PIC 9(2).
+003000         10 (CLM)-E-CLM-TYPE                       PIC 9(2).
+003100         10 (CLM)-E-CLM-STATUS                     PIC 9(1).
+003200         10 (CLM)-E-CLM-TRANS-TYPE                 PIC 9(1).
+003300         10 (CLM)-E-CLM-MEDIA-CDE                  PIC 9(1).
+003400         10 (CLM)-E-SUBMITTER-ID                   PIC 9(7).
+003500         10 (CLM)-E-PROV-SERV-EIN-SSN              PIC 9(13).
+003600         10 (CLM)-E-PROV-NUM-SERVICE               PIC 9(7).
+003700         10 (CLM)-E-PROV-NAME-SERVICE              PIC X(30).
+003800         10 (CLM)-E-PROV-NUM-BILLING               PIC 9(7).
+003900         10 (CLM)-E-PROV-NUM-SERVICE-NPI           PIC X(10).
+004000         10 (CLM)-E-PROV-NUM-BILLING-NPI           PIC X(10).
+004100         10 (CLM)-E-CURRENT-RECIP-ID-NUM.
+004200             15 (CLM)-E-RECIP-ID-NUM-FIRST-4.
+004300                 20 (CLM)-E-RECIP-ID-NUM-FIRST-1   PIC X(1).
+004400                 20  FILLER                        PIC X(3).
+004500             15 FILLER REDEFINES (CLM)-E-RECIP-ID-NUM-FIRST-4.
+004600                 20  (CLM)-E-RECIP-ID-NUM-FIRST-2  PIC X(2).
+004700                 20  (CLM)-E-RECIP-ID-NUM-NEXT-2   PIC X(2).
+004800             15 (CLM)-E-RECIP-ID-NUM-LAST-8        PIC X(8).
+004900             15 FILLER REDEFINES (CLM)-E-RECIP-ID-NUM-LAST-8.
+005000                 20  (CLM)-E-RECIP-ID-NUM-5-10     PIC X(6).
+005100                 20  (CLM)-E-RECIP-ID-NUM-11-12    PIC X(2).
+005200         10 (CLM)-E-PAT-NAME-PART.
+005300             15 (CLM)-E-PAT-LAST-NAME-PART         PIC X(5).
+005400             15 (CLM)-E-PAT-FIRST-INIT             PIC X(1).
+005500         10 (CLM)-E-PAT-BIRTHDATE                  PIC 9(8).
+005600         10 (CLM)-E-NEWBORN-IND                    PIC X(1).
+005700         10 (CLM)-E-SERVICE-CODE.
+005800             15 (CLM)-E-NDC.
+005900                 20 (CLM)-E-NDC-FIRST-9            PIC X(9).
+006000                 20 (CLM)-E-NDC-LAST-2             PIC X(2).
+006100             15 FILLER                             PIC X(2).
+006200         10 (CLM)-E-PROC-MOD-RE REDEFINES (CLM)-E-SERVICE-CODE.
+006300             15 (CLM)-E-PROC-CDE                   PIC X(5).
+006400             15 (CLM)-E-PROC-MOD                   PIC X(2).
+006500             15 (CLM)-E-PROC-MOD-SECOND            PIC X(2).
+006600             15 (CLM)-E-PROC-MOD-THIRD             PIC X(2).
+006700             15 (CLM)-E-PROC-MOD-FOURTH            PIC X(2).
+006800         10 (CLM)-E-PROC-KEY-CODE.
+006900             15 (CLM)-E-PROC-KEY-CDE               PIC X(5).
+007000             15 (CLM)-E-PROC-KEY-MOD               PIC X(2).
+007100             15 (CLM)-E-PROC-KEY-SECOND            PIC X(2).
+007200             15 (CLM)-E-PROC-KEY-THIRD             PIC X(2).
+007300             15 (CLM)-E-PROC-KEY-FOURTH            PIC X(2).
+007400         10 (CLM)-E-CLM-SERVICE-DTE                PIC 9(8).
+007500         10  FILLER REDEFINES (CLM)-E-CLM-SERVICE-DTE.
+007600             15 (CLM)-E-CLM-SERVICE-DTE-YY         PIC 9(4).
+007700             15 (CLM)-E-CLM-SERVICE-DTE-MM         PIC 9(2).
+007800             15 (CLM)-E-CLM-SERVICE-DTE-DD         PIC 9(2).
+007900         10 (CLM)-E-CLM-SERVICE-DTE-THRU           PIC 9(8).
+008000         10  FILLER REDEFINES (CLM)-E-CLM-SERVICE-DTE-THRU.
+008100             15 (CLM)-E-CLM-SERVICE-DTE-THRU-YY    PIC 9(4).
+008200             15 (CLM)-E-CLM-SERVICE-DTE-THRU-MM    PIC 9(2).
+008300             15 (CLM)-E-CLM-SERVICE-DTE-THRU-DD    PIC 9(2).
+008400         10 (CLM)-E-CLM-SERVICE-UNITS              PIC S9(4).
+008500         10 (CLM)-E-TOTAL-CLAIMS REDEFINES                        TS
+008600                         (CLM)-E-CLM-SERVICE-UNITS PIC S9(4).     TS
+008700         10 (CLM)-E-CLM-CYCLE-NUM.
+008800             15 (CLM)-E-CLM-CYCLE-WEEKLY           PIC X(3).
+008900             15 (CLM)-E-CLM-CYCLE-DAILY            PIC X(1).
+009000         10 (CLM)-E-CLM-ACTIV-DTE                  PIC 9(8)
+009100                                                     COMP-3.
+009200         10 (CLM)-E-CLM-PMT-DTE                    PIC 9(8)
+009300                                                     COMP-3.
+009400         10 (CLM)-E-PMT-DTE-FORMER                 PIC 9(8)
+009500                                                     COMP-3.
+009600         10 (CLM)-E-REMIT-ADVICE-NUM               PIC 9(9)
+009700                                                     COMP-3.
+009800         10 (CLM)-E-CLM-CHRG                       PIC S9(7)V99.
+009900         10 (CLM)-E-CLM-CHRG-DOC                   PIC S9(7)V99.
+010000         10 (CLM)-E-CLM-TPL-PAID                   PIC S9(7)V99
+010100                                                     COMP-3.
+010200         10 (CLM)-E-CLM-TPL-DOC                    PIC S9(7)V99.
+010300         10 (CLM)-E-CLM-PAT-COST-SHARE             PIC S9(5)V99
+010400                                                     COMP-3.
+010500         10 (CLM)-E-CLM-MCAID-COST-SHARE           PIC S9(5)V99
+010600                                                     COMP-3.
+010700         10 (CLM)-E-SPECIAL-PRICE-AMT              PIC S9(7)V99
+010800                                                     COMP-3.
+010900         10 (CLM)-E-CUTBACK-DOLLAR-AMT             PIC S9(7)V99
+011000                                                     COMP-3.
+011100         10 (CLM)-E-CUTBACK-DAYS-UNITS             PIC 9(3)
+011200                                                     COMP-3.
+011300         10 (CLM)-E-CLM-PMT-AMT                    PIC S9(7)V99
+011400                                                     COMP-3.
+011500         10 (CLM)-E-MCAID-TENT-PAY                 PIC S9(7)V99
+011600                                                     COMP-3.
+011700         10 (CLM)-E-MCAID-TENT-SRC                 PIC X(1).
+011800         10 (CLM)-E-PRICING-ACTION-CDE             PIC X(3).
+011900         10 (CLM)-E-ADJUSTMENT-REASON              PIC X(4).
+012000         10 (CLM)-E-CLM-ADJUST-AMT                 PIC S9(7)V99
+012100                                                     COMP-3.
+012200         10 (CLM)-E-FAMILY-PLANNING-IND            PIC X(1).
+012300         10 (CLM)-E-HMO-SERVICE-CAT                PIC X(3).
+012400         10 (CLM)-E-CLM-RECIP-FILE-DATA.
+012500             15 (CLM)-E-RECIP-ID-NUM               PIC X(12).
+012600             15 (CLM)-E-COUNTY-CDE                 PIC 9(02).
+012700             15 (CLM)-E-CNTY-INSTIT-IND            PIC X(01).
+012800             15 (CLM)-E-PROG-STATUS-CDE            PIC 9(03).
+012900             15 (CLM)-E-SPECIAL-PROG-CODES.
+013000                 20 (CLM)-E-SPECIAL-PROG-CDE       PIC 9(02).
+013100                 20 (CLM)-E-SPECIAL-PROG-CDE-2     PIC 9(02).
+013200                 20 (CLM)-E-SPECIAL-PROG-CDE-3     PIC 9(02).
+013300                 20 (CLM)-E-SPECIAL-PROG-CDE-4     PIC 9(02).
+013400             15 (CLM)-E-RECIP-RACE-CDE             PIC X(01).
+013500             15 (CLM)-E-RECIP-SEX-CDE              PIC X(01).
+013600             15 (CLM)-E-DTE-OF-BIRTH               PIC 9(8).
+013700             15 (CLM)-E-DATE-OF-DEATH              PIC 9(8).
+013800             15 (CLM)-E-PAT-LTC-IND                PIC X(1).
+013900             15 (CLM)-E-PAT-CALC-AGE               PIC 9(3)
+014000                                                     COMP-3.
+014100             15 (CLM)-E-ELIG-EXTENSION-CDE         PIC X(01).
+014200             15 (CLM)-E-TPL-IND                    PIC X(01).
+014300             15 (CLM)-E-RECIP-NAME.
+014400                 20 (CLM)-E-RECIP-NAME-LAST        PIC X(12).
+014500                 20 (CLM)-E-RECIP-NAME-FIRST       PIC X(7).
+014600                 20 (CLM)-E-RECIP-NAME-MI          PIC X(1).
+014700         10 (CLM)-E-PROV-TYPE                      PIC 9(2).
+014800         10 (CLM)-E-CLM-EMERGENCY-IND              PIC X(1).
+014900         10 (CLM)-E-CLM-OTHER-INSURANCE-IND        PIC X(1).
+015000         10 (CLM)-E-CLM-WORKERS-COMP-IND           PIC X(1).
+015100         10 (CLM)-E-CLM-ACCIDENT-IND               PIC X(1).
+015200         10 (CLM)-E-TPL-POTENTIAL-DISABLE          PIC X(1).
+015300         10 (CLM)-E-CLM-TRAUMA-CDE                 PIC X(1).
+015400         10 (CLM)-E-CLM-EPSDT-RELATED              PIC X(1).
+015500         10 (CLM)-E-CARRIER-DATA
+015600               OCCURS 5 TIMES INDEXED BY (CLM)-E-CARR-INDX.
+015700             15 (CLM)-E-CARRIER-CDE                PIC X(3).
+015800             15 FILL-E-CARRIER-CDE                 PIC X(6).
+015900             15 (CLM)-E-CARRIER-BILLED             PIC X(1).
+016000             15 FILL-E-CARR-APPROVED-AMOUNT        PIC 9(2).
+016100             15 (CLM)-E-CARR-APPROVED-AMOUNT       PIC S9(7)V99.
+016200             15 FILL-E-CARR-PAID-AMOUNT            PIC 9(2).
+016300             15 (CLM)-E-CARR-PAID-AMOUNT           PIC S9(7)V99.
+016400             15 (CLM)-E-CARR-CO-PAYMENT            PIC S9(5)V99.
+016500             15 (CLM)-E-CARR-COINSURANCE           PIC S9(5)V99.
+016600             15 (CLM)-E-CARR-DEDUCT                PIC S9(5)V99.
+016700             15 (CLM)-E-BEN-EXHAUST-DTE            PIC X(8).
+016800             15 (CLM)-E-CARR-PARTA-EXHAUST-CHGS    PIC S9(9)V99.
+016900             15 FILLER                             PIC X(36).
+017000         10 (CLM)-E-SPECIALTY-CDE                  PIC 9(3).
+017100         10 (CLM)-E-CLM-LINES                      PIC 9(2).
+017200         10 (CLM)-E-CLM-ERROR-LOCATION             PIC X(2).
+017300         10 (CLM)-E-CLM-ERROR-COUNT                PIC 9(2).
+017400         10 (CLM)-E-CLM-ERROR                   OCCURS 10 TIMES
+017500                                 INDEXED BY (CLM)-E-ERR-INDX.
+017600             15 (CLM)-E-CLM-ERROR-CDE              PIC 9(3)
+017700                                                     COMP-3.
+017800             15 (CLM)-E-CLM-ERROR-FLAG             PIC X(1).
+017900         10 (CLM)-E-CLM-HIST-ERROR-COUNT           PIC 9(2).
+018000         10 (CLM)-E-CLM-HIST-ERROR              OCCURS 10 TIMES
+018100                                 INDEXED BY (CLM)-E-HST-INDX.
+018200             15 (CLM)-E-CLM-HIST-ERROR-CDE         PIC 9(3)
+018300                                                     COMP-3.
+018400             15 (CLM)-E-CLM-HIST-ERROR-FLAG        PIC X(1).
+018500         10 (CLM)-E-CLM-OVERRIDE-COUNT             PIC 9(2).
+018600         10 (CLM)-E-CLM-OVERRIDE                OCCURS 10 TIMES
+018700                                 INDEXED BY (CLM)-E-OVER-INDX.
+018800             15 (CLM)-E-CLM-OVERRIDE-CDE           PIC 9(3)
+018900                                                     COMP-3.
+019000             15 (CLM)-E-CLM-OVERRIDE-FLAG          PIC X(1).
+019100         10 (CLM)-E-CLM-ENTRY-DTE                  PIC 9(8)
+019200                                                     COMP-3.
+019300         10 (CLM)-E-RECYCLE-NUM                    PIC 9(2).
+019400         10 (CLM)-E-OPERATOR-ID                    PIC X(4).
+019500         10 (CLM)-E-CLERK-CDE                      PIC X(3).
+019600         10 (CLM)-E-CLM-MULT-SURG-EXCEPT           PIC X(1).
+019700         10 (CLM)-E-CLM-DUP-EXCEPT                 PIC X(1).
+019800         10 (CLM)-E-CLM-HIST-YEARS                 PIC X(1).
+019900         10 (CLM)-E-CLM-SIGN-IND                   PIC X(1).
+020000         10 (CLM)-E-CLM-SIGN-DTE                   PIC 9(8).
+020100         10 (CLM)-E-HMO-PMT-DTE REDEFINES
+020200                              (CLM)-E-CLM-SIGN-DTE PIC 9(8).
+020300         10 (CLM)-E-CLM-TEST-RECIP                 PIC X(1).
+020400         10  (CLM)-E-PAT-ACCOUNT-FULL.
+020500             15  (CLM)-E-PAT-ACCOUNT-NUM.
+020600                 20 (CLM)-E-PAT-ACCOUNT-16         PIC X(16).
+020700                 20 (CLM)-E-PAT-ACCOUNT-4          PIC X(04).
+020800             15  FILLER                            PIC X(11).
+020900         10  FILLER  REDEFINES (CLM)-E-PAT-ACCOUNT-FULL.
+021000             15  FILLER                            PIC X(16).
+021100             15  (CLM)-E-ICN-CONVERT               PIC X(15).
+021200         10 (CLM)-E-PEND-DENY-REASON               PIC 9(3).
+021300         10 (CLM)-E-DUPE-ICN                       PIC 9(15)
+021400                                                     COMP-3.
+021500         10 (CLM)-E-DUPE-RA-DATE                   PIC 9(8)
+021600                                                     COMP-3.
+021700         10 (CLM)-E-VOL-STER-IND                   PIC X(1).
+021800         10 (CLM)-E-MED-CRIT-IND                   PIC X(1).
+021900         10 (CLM)-E-CLM-REPROC-IND                 PIC X(1).
+022000         10 (CLM)-E-CNTY-OF-RES                    PIC X(02).
+022100         10 (CLM)-E-CLM-MANAGED-CARE-DATA.
+022200             15 (CLM)-E-CLM-MC-PLAN.
+022300                 20 (CLM)-E-CLM-MC-PLAN-CODE       PIC X(03).
+022400                 20 (CLM)-E-CLM-MC-PLAN-GUARANTEE  PIC X(01).
+022500                 20 (CLM)-E-CLM-MHC-PAYMENT-CODE REDEFINES
+022600                    (CLM)-E-CLM-MC-PLAN-GUARANTEE PIC X(01).
+022700             15 (CLM)-E-CLM-MC-CAP-CODE.
+022800                 20  FILLER                         PIC X(02).
+022900                 20 (CLM)-E-CLM-MC-MANDATORY-IND   PIC X(01).
+023000                 20  FILLER                        PIC X(02).
+023100             15 (CLM)-E-CLM-MC-HBI-CODE            PIC X(05).
+023200             15 (CLM)-E-CLM-MC-IN-PLAN             PIC X(01).
+023300         10 (CLM)-E-HMO-FAMILY-PLANNING-IND        PIC X(01).
+023400         10 (CLM)-E-RETRIEVAL-NUM-MONTHS-X         PIC X(01).
+023500         10 (CLM)-E-RETRIEVAL-NUM-MONTHS-N
+023600                 REDEFINES (CLM)-E-RETRIEVAL-NUM-MONTHS-X
+023700                                                   PIC 9(01).
+023800         10 (CLM)-E-SUBM-RECIP-ID-NUM              PIC X(12).
+023900         10 (CLM)-E-MHC203-IND                     PIC X(01).
+024000         10 (CLM)-E-HIPAA-VERSION                  PIC X(4).
+024100         10 (CLM)-E-HIPAA-ISA-SEQ-NUM              PIC 9(5).
+024200         10 (CLM)-E-HIPAA-SUBMIT-PROC-CODE.
+024300             15 (CLM)-E-HIPAA-SUBMIT-PROC-CDE      PIC X(05).
+024400             15 (CLM)-E-HIPAA-SUBMIT-PROC-MOD1     PIC X(02).
+024500             15 (CLM)-E-HIPAA-SUBMIT-PROC-MOD2     PIC X(02).
+024600             15 (CLM)-E-HIPAA-SUBMIT-PROC-MOD3     PIC X(02).
+024700             15 (CLM)-E-HIPAA-SUBMIT-PROC-MOD4     PIC X(02).
+024800         10 (CLM)-E-CLM-SEMI-PLCM-CDE              PIC X(01).
+024900         10 (CLM)-E-HIPAA-INTERCHG-CTL-NUM  PIC 9(09) COMP-3.
+025000         10 (CLM)-E-HMO-FQHC-IND                   PIC X(01).
+025100         10 (CLM)-E-TAXONOMY-BILL                  PIC X(10).
+025200         10 (CLM)-E-TAXONOMY-SVC                   PIC X(10).
+025300         10 (CLM)-E-ZIP-CODE-SVC-ALL               PIC 9(09).
+025400         10 FILLER REDEFINES (CLM)-E-ZIP-CODE-SVC-ALL.
+025500            15 (CLM)-E-ZIP-CODE-SVC                PIC 9(05).
+025600            15 FILL-E-ZIP-CODE-SVC-4               PIC 9(04).
+025700         10 (CLM)-E-ZIP-CODE-BILLING-ALL           PIC 9(09).
+025800         10 FILLER REDEFINES (CLM)-E-ZIP-CODE-BILLING-ALL.
+025900            15 (CLM)-E-ZIP-CODE-BILLING            PIC 9(05).
+026000            15 (CLM)-E-ZIP-CODE-BILLING-4          PIC 9(04).
+026100         10 (CLM)-E-NPI-XREF-DATE-BILL             PIC 9(08).
+026200         10 (CLM)-E-NPI-XREF-DATE-SVC              PIC 9(08).
+026300         10 (CLM)-E-PROV-BILL-EIN-SSN              PIC 9(13).
+026400         10 (CLM)-E-SUBMITTED-FACILITY-CD          PIC X(2).
+026500         10 (CLM)-E-SUBMITTED-BILL-FREQ            PIC X.
+026600         10 (CLM)-E-ICD-VERSION-INDICATOR          PIC X.
+026700            88  S-E-ICD10                          VALUE '0'.
+026800            88  S-E-ICD9                           VALUE '9' ' '.
+026900            88  S-E-ICD-BOTH                       VALUE 'B'.
+0004-**********   PRJTASK0411192
+=.2            10 (CLM)-E-MCO-ALLOWED-AMT-DOC   PIC S9(9)V99 COMP-3.
+=.2            10 (CLM)-E-MCO-ALLOWED-AMT       PIC S9(9)V99 COMP-3.
+=              10 (CLM)-E-MCO-PRICE-METHOD-DOC           PIC X(2).
+=              10 (CLM)-E-MCO-PRICE-METHOD-LINE          PIC X(2).
+=              10 FILLER                                 PIC X(100).
+0004-**********10 FILLER                                 PIC X(116).
+027100         10 FILLER-3                               PIC X(03).
+027200         10 (CLM)-E-HIPAA-ISA-CLM-SEQ-NBR REDEFINES FILLER-3
+027300                                          PIC 9(05) COMP-3.
+027400         10 (CLM)-E-PRITY-PAYER-PLAN-ID            PIC X(3).
+027500         10 (CLM)-E-PRITY-PAYR-PLCYHLDR-LNAM       PIC X(12).
+027600         10 (CLM)-E-PRITY-PAYR-PLCYHLDR-FNAM       PIC X(7).
+027700         10 (CLM)-E-RECORD-LENGTH                  PIC 9(4).
+027800      05 (CLM)-INPATIENT-DETAIL.
+027900         10  (CLM)-HNI-TYPE-BILL-CDE.
+028000             15  (CLM)-HNI-TYPE-BILL-CLASS         PIC 9(2).
+028100             15  (CLM)-HNI-TYPE-BILL-FREQ          PIC 9(1).
+028200         10  (CLM)-HNI-PAT-ADMIT-TYPE              PIC X(1).
+028300         10  (CLM)-HNI-PAT-ADMIT-SOURCE            PIC X(1).
+028400         10  (CLM)-HNI-PAT-STATUS                  PIC 9(2).
+028500         10  (CLM)-HNI-CLM-REV-CDE-DATA         OCCURS 45 TIMES
+028600                                 INDEXED BY (CLM)-HNI-INDX
+028700                                            (CLM)-HNI-INDX2.
+028800             15  FILL-HNI-REV-CDE                  PIC 9.
+028900             15  (CLM)-HNI-REV-CDE                 PIC 9(3).
+029000             15  (CLM)-HNI-REV-UNITS               PIC 9(3).
+029100             15  (CLM)-HNI-REV-CHRG                PIC S9(7)V99.
+029200         10  (CLM)-HNI-REV-MCAID-CHG-DOC           PIC S9(7)V99.
+029300         10  (CLM)-HNI-REV-CDE-CTR                 PIC 99.
+029400         10  (CLM)-HNI-DRG-CDE                     PIC X(3).
+029500         10  (CLM)-HNI-OUTLIER-IND                 PIC X(1).
+029600         10  (CLM)-HNI-HOSP-EXEMPT-IND             PIC X(1).
+029700         10  (CLM)-HNI-HOSP-PROG-IND               PIC X(2).
+029800         10  (CLM)-HNI-CLM-AHS-IND                 PIC X(1).
+029900         10  (CLM)-HNI-CLM-SURG-DATA            OCCURS 6 TIMES
+030000                                 INDEXED BY (CLM)-HNI-SURG-INDX.
+030100             15  (CLM)-HNI-SURG-PROC               PIC X(7).
+030200             15  (CLM)-HNI-SURG-DTE.
+030300                 20  (CLM)-HNI-SURG-DTE-Y          PIC 9(4).
+030400                 20  (CLM)-HNI-SURG-DTE-MD         PIC 9(4).
+030500         10  (CLM)-HNI-CLM-OCCUR-DATA           OCCURS 8 TIMES
+030600                                 INDEXED BY (CLM)-HNI-OCCUR-INDX.
+030700             15  (CLM)-HNI-OCCUR-CDE               PIC X(2).
+030800             15  (CLM)-HNI-OCCUR-DTE               PIC 9(8).
+030900         10  (CLM)-HNI-COND-CDE                    PIC X(2)
+031000                                                OCCURS 11 TIMES
+031100                                 INDEXED BY (CLM)-HNI-COND-INDX.
+031200         10  (CLM)-HNI-PAT-PAYOR-ID                PIC X(3)
+031300                                                OCCURS 5 TIMES
+031400                                 INDEXED BY (CLM)-HNI-PAY-INDX.
+031500         10  (CLM)-HNI-PHYS-ATT-EIN-SSN            PIC X(13).
+031600         10  (CLM)-HNI-PHYS-ATTENDING              PIC 9(07).
+031700         10  (CLM)-HNI-PHYS-ATTEND-NPI             PIC X(10).
+031800         10  (CLM)-HNI-PHYS-OTH-EIN-SSN            PIC X(13).
+031900         10  (CLM)-HNI-PHYS-OTHER                  PIC 9(07).
+032000         10  (CLM)-HNI-PHYS-OTHER-NPI              PIC X(10).
+032100         10  (CLM)-HNI-MED-RECORD-NUM              PIC X(16).
+032200         10  (CLM)-HNI-DIAG-CDE-ALL                PIC X(136).
+032300         10  (CLM)-HNI-DIAG-CDE REDEFINES (CLM)-HNI-DIAG-CDE-ALL.
+032400             15  FILLER
+032500                     OCCURS 17 TIMES
+032600                     INDEXED BY (CLM)-HNI-DIAG-INDX.
+032700                 20  (CLM)-HNI-DIAG                PIC X(7).
+032800                 20  FILL-HNI-POA-IND              PIC X(01).
+032900         10  (CLM)-HNI-GESTATION-IND               PIC X(01).
+033000         10  FILLER                                PIC X(19).
+033001         10  (CLM)-HNI-DRG-CDE-SEV                 PIC X(01).
+033002         10  (CLM)-HNI-ORIG-DRG-CDE-SEV            PIC X(01).
+033010*        10  (CLM)-HNI-CAP-RECIP-CAP-CODE          PIC 9(5).
+033100*        10  (CLM)-HNI-CAP-PROV-TYPE               PIC 9(3).
+033200*        10  (CLM)-HNI-CAP-YYYYMM                  PIC 9(6).
+033300*        10  (CLM)-HNI-CAP-MEMBERS                 PIC 9(7).
+033400         10  (CLM)-HNI-ORIG-DRG-CDE                PIC X(3).
+033500         10  (CLM)-HNI-ADMIT-DIAG                  PIC X(7).
+033600         10  (CLM)-HNI-PRINCIPLE-DIAG              PIC X(7).
+033700         10  (CLM)-HNI-ATTND-TAXONOMY-CD           PIC X(10).
+033800         10  (CLM)-HNI-OCCUR-SPAN-GROUP
+033900                  OCCURS 4 TIMES INDEXED BY (CLM)-HNI-SPAN-INDX.
+034000             15  (CLM)-HNI-OCCUR-SPAN-CDE          PIC X(2).
+034100             15  (CLM)-HNI-OCCUR-SPAN-FDTE         PIC X(8).
+034200             15  (CLM)-HNI-OCCUR-SPAN-TDTE         PIC X(8).
+034300         10  (CLM)-HNI-PAT-REASON-VISIT-ALL.
+034400             15  (CLM)-HNI-PAT-RSN-VISIT-DATA
+034500                  OCCURS 3 TIMES INDEXED BY (CLM)-HNI-PAT-INDX.
+034600                 20  (CLM)-HNI-PAT-RSN-VISIT       PIC X(7).
+034700         10  (CLM)-HNI-EIC-CDES-ALL.
+034800             15  (CLM)-HNI-EIC-CDES-DATA
+034900                  OCCURS 3 TIMES INDEXED BY (CLM)-HNI-EIC-INDX.
+035000                 20  (CLM)-HNI-EIC-CDE             PIC X(7).
+035100         10  (CLM)-HNI-UB-VERSION                  PIC X(2).
+035200         10  (CLM)-HNI-PHYS-OPERATING-1            PIC X(7).
+035300         10  (CLM)-HNI-PHYS-OPER-1-NPI             PIC X(10).
+035400         10  (CLM)-HNI-PHYS-OPERATING-2            PIC X(7).
+035500         10  (CLM)-HNI-PHYS-OPER-2-NPI             PIC X(10).
+035600         10  (CLM)-HNI-PHYS-REFERRING              PIC X(7).
+035700         10  (CLM)-HNI-PHYS-REFER-NPI              PIC X(10).
+035800         10  FILLER                                PIC X(140).
+035900      05 (CLM)-OUTPATIENT-DETAIL
+036000                 REDEFINES (CLM)-INPATIENT-DETAIL.
+036100         10  (CLM)-OP-TYPE-BILL-CDE.
+036200             15  (CLM)-OP-TYPE-BILL-CLASS          PIC 9(2).
+036300             15  (CLM)-OP-TYPE-BILL-FREQ           PIC 9(1).
+036400         10  (CLM)-OP-PAT-ADMIT-TYPE               PIC X(1).
+036500         10  (CLM)-OP-PAT-STATUS                   PIC 9(2).
+036600         10  (CLM)-OP-CLM-REV-CDE-DATA.
+036700             15  FILL-OP-REV-CDE                   PIC 9.
+036800             15  (CLM)-OP-REV-CDE                  PIC 9(3).
+036900             15  (CLM)-OP-REV-UNITS                PIC 9(3).
+037000             15  (CLM)-OP-REV-CHRG                 PIC S9(7)V99.
+037100         10  (CLM)-OP-CLINIC-ALL.
+037200             15  (CLM)-OP-CLINIC-CDE               PIC X(2)
+037300                                                OCCURS 4 TIMES
+037400                                 INDEXED BY (CLM)-OP-CLIN-INDX.
+037500         10  (CLM)-OP-HIPAA-SUBMIT-REV-CDE         PIC 9(04).
+037600         10  (CLM)-OP-NOTHING                      PIC X(21).
+037700         10  (CLM)-OP-CLM-SURG-DATA             OCCURS 6 TIMES
+037800                                 INDEXED BY (CLM)-OP-SURG-INDX.
+037900             15  (CLM)-OP-SURG-PROC                PIC X(7).
+038000             15  (CLM)-OP-SURG-DTE                 PIC 9(8).
+038100         10  (CLM)-OP-CLM-OCCUR-DATA            OCCURS 8 TIMES
+038200                                 INDEXED BY (CLM)-OP-OCCUR-INDX.
+038300             15  (CLM)-OP-OCCUR-CDE                PIC X(2).
+038400             15  (CLM)-OP-OCCUR-DTE                PIC 9(8).
+038500         10  (CLM)-OP-COND-CDE                     PIC X(2)
+038600                                                OCCURS 11 TIMES
+038700                                 INDEXED BY (CLM)-OP-COND-INDX.
+038800         10  (CLM)-OP-PAT-PAYOR-ID                 PIC X(3)
+038900                                                OCCURS 5 TIMES
+039000                                 INDEXED BY (CLM)-OP-PAY-INDX.
+039100         10  (CLM)-OP-HOSP-PROG-IND                PIC X(2).
+039200         10  (CLM)-OP-CLM-AHS-IND                  PIC X(1).
+039300         10  (CLM)-OP-PHYS-ATT-EIN-SSN             PIC X(13).
+039400         10  (CLM)-OP-PHYS-ATTENDING               PIC 9(07).
+039500         10  (CLM)-OP-PHYS-ATTEND-NPI              PIC X(10).
+039600         10  (CLM)-OP-PHYS-OTH-EIN-SSN             PIC X(13).
+039700         10  (CLM)-OP-PHYS-OTHER                   PIC 9(07).
+039800         10  (CLM)-OP-PHYS-OTHER-NPI               PIC X(10).
+039900         10  (CLM)-OP-OPD-STATEMENT-DTE            PIC 9(8).
+040000         10  (CLM)-OP-OPD-STATEMENT-DTE-THRU       PIC 9(8).
+040100         10  (CLM)-OP-MED-RECORD-NUM               PIC X(16).
+040200         10  (CLM)-OP-DIAG-CDE-ALL                 PIC X(119).
+040300         10  (CLM)-OP-DIAG-CDE REDEFINES (CLM)-OP-DIAG-CDE-ALL.
+040400             15  FILLER
+040500                     OCCURS 17 TIMES
+040600                     INDEXED BY (CLM)-OP-DIAG-INDX.
+040700                 20  (CLM)-OP-DIAG                 PIC X(7).
+040800         10  (CLM)-OP-GESTATION-IND                PIC X(01).
+040900         10  (CLM)-OP-CAP-RECIP-CAP-CODE           PIC 9(5).
+041000         10  (CLM)-OP-CAP-PROV-TYPE                PIC 9(3).
+041100         10  (CLM)-OP-CAP-YYYYMM                   PIC 9(6).
+041200         10  (CLM)-OP-CAP-MEMBERS                  PIC 9(7).
+041300         10  (CLM)-OP-ADMIT-DIAG                   PIC X(7).
+041400         10  (CLM)-OP-PRINCIPLE-DIAG               PIC X(7).
+041500         10  (CLM)-OP-ATTND-TAXONOMY-CD            PIC X(10).
+041600         10  (CLM)-OP-OCCUR-SPAN-GROUP
+041700                   OCCURS 4 INDEXED BY (CLM)-OP-SPAN-INDX.
+041800             15  (CLM)-OP-OCCUR-SPAN-CDE           PIC X(2).
+041900             15  (CLM)-OP-OCCUR-SPAN-FDTE          PIC X(8).
+042000             15  (CLM)-OP-OCCUR-SPAN-TDTE          PIC X(8).
+042100         10  (CLM)-OP-PAT-REASON-VISIT-ALL.
+042200             15  (CLM)-OP-PAT-RSN-VISIT-DATA
+042300                   OCCURS 3 INDEXED BY (CLM)-OP-PAT-INDX.
+042400                 20  (CLM)-OP-PAT-RSN-VISIT        PIC X(7).
+042500         10  (CLM)-OP-EIC-CDES-ALL.
+042600             15  (CLM)-OP-EIC-CDES-DATA
+042700                   OCCURS 3 INDEXED BY (CLM)-OP-EIC-INDX.
+042800                 20  (CLM)-OP-EIC-CDE              PIC X(7).
+042900         10  (CLM)-OP-UB-VERSION                   PIC X(2).
+043000         10  (CLM)-OP-NDC-CDE                      PIC X(11).
+043100         10  (CLM)-OP-NDC-UNIT-MEASURE             PIC X(2).
+043200         10  (CLM)-OP-NDC-METRIC-UNITS             PIC S9(8)V999
+043300                                                       COMP-3.
+043400         10  (CLM)-OP-DRUG-COST-ALLOWANCE          PIC S9(7)V99
+043500                                                       COMP-3.
+043600         10  (CLM)-OP-CLM-DRUG-PRICE               PIC S9(7)V9(6)
+043700                                                       COMP-3.
+043800         10  (CLM)-OP-DOSE-FORM-IND                PIC X(1).
+043900         10  (CLM)-OP-DRUG-CLASS                   PIC X(1).
+044000         10  (CLM)-OP-GENERIC-CNTL-NMBR            PIC X(5).
+044100         10  (CLM)-OP-GENERIC-SEQ-NMBR             PIC X(6).
+044200         10  (CLM)-OP-MAC-PRICE                    PIC S9(7)V9(6)
+044300                                                       COMP-3.
+044400         10  (CLM)-OP-REBATE-IND                   PIC X(1).
+044500         10  (CLM)-OP-STATE-MAC-PRICE              PIC 9(7)V9(6)
+044600                                                       COMP-3.
+044700         10  (CLM)-OP-THERAPEUTIC-CLASS-GN         PIC X(2).
+044800         10  (CLM)-OP-THERAPEUTIC-CLASS-SP         PIC X(3).
+044900         10  FILLER                                PIC X(819).
+045000      05 (CLM)-HOME-HEALTH-DETAIL
+045100                 REDEFINES (CLM)-INPATIENT-DETAIL.
+045200         10  (CLM)-HH-TYPE-BILL-CDE.
+045300             15  (CLM)-HH-TYPE-BILL-CLASS          PIC 9(2).
+045400             15  (CLM)-HH-TYPE-BILL-FREQ           PIC 9(1).
+045500         10  (CLM)-HH-CLM-REV-CDE-DATA.
+045600             15  FILL-HH-REV-CDE                   PIC 9.
+045700             15  (CLM)-HH-REV-CDE                  PIC 9(3).
+045800             15  (CLM)-HH-REV-UNITS                PIC 9(3).
+045900             15  (CLM)-HH-REV-CHG                  PIC 9(7)V99.
+046000         10  (CLM)-HH-HIPAA-SUBMIT-REV-CDE         PIC 9(04).
+046100         10  (CLM)-HH-NOTHING                      PIC X(21).
+046200         10  (CLM)-HH-CLM-OCCUR-DATA            OCCURS 8 TIMES
+046300                                 INDEXED BY (CLM)-HH-OCCUR-INDX.
+046400             15  (CLM)-HH-OCCUR-CDE                PIC X(2).
+046500             15  (CLM)-HH-OCCUR-DTE                PIC 9(8).
+046600         10  (CLM)-HH-COND-CDE                     PIC X(2)
+046700               OCCURS 11 TIMES   INDEXED BY (CLM)-HH-COND-INDX.
+046800         10  (CLM)-HH-PAT-PAYOR-ID                 PIC X(3)
+046900                                                OCCURS 5 TIMES
+047000                                 INDEXED BY (CLM)-HH-PAY-INDX.
+047100         10  (CLM)-HH-PHYS-ATT-EIN-SSN             PIC X(13).
+047200         10  (CLM)-HH-PHYS-ATTENDING               PIC 9(07).
+047300         10  (CLM)-HH-PHYS-ATTEND-NPI              PIC X(10).
+047400         10  (CLM)-HH-PHYS-OTH-EIN-SSN             PIC X(13).
+047500         10  (CLM)-HH-PHYS-OTHER                   PIC 9(07).
+047600         10  (CLM)-HH-PHYS-OTHER-NPI               PIC X(10).
+047700         10  (CLM)-HH-OPD-STATEMENT-DTE            PIC 9(8).
+047800         10  (CLM)-HH-OPD-STATEMENT-DTE-THRU       PIC 9(8).
+047900         10  (CLM)-HH-MED-RECORD-NUM               PIC X(16).
+048000         10  (CLM)-HH-DIAG-CDE-ALL                 PIC X(119).
+048100         10  (CLM)-HH-DIAG-CDE REDEFINES (CLM)-HH-DIAG-CDE-ALL.
+048200             15  FILLER
+048300                     OCCURS 17 TIMES
+048400                     INDEXED BY (CLM)-HH-DIAG-INDX.
+048500                 20  (CLM)-HH-DIAG                 PIC X(7).
+048600         10  (CLM)-HH-CAP-RECIP-CAP-CODE           PIC 9(5).
+048700         10  (CLM)-HH-CAP-PROV-TYPE                PIC 9(3).
+048800         10  (CLM)-HH-CAP-YYYYMM                   PIC 9(6).
+048900         10  (CLM)-HH-CAP-MEMBERS                  PIC 9(7).
+049000         10  (CLM)-HH-PRINCIPLE-DIAG               PIC X(7).
+049100         10  (CLM)-HH-ATTND-TAXONOMY-CD            PIC X(10).
+049200         10  (CLM)-HH-OCCUR-SPAN-GROUP
+049300                    OCCURS 4 INDEXED BY (CLM)-HH-SPAN-INDX.
+049400             15  (CLM)-HH-OCCUR-SPAN-CDE           PIC X(2).
+049500             15  (CLM)-HH-OCCUR-SPAN-FDTE          PIC X(8).
+049600             15  (CLM)-HH-OCCUR-SPAN-TDTE          PIC X(8).
+049700         10  (CLM)-HH-PAT-RSN-VISIT-DATA
+049800                   OCCURS 3 INDEXED BY (CLM)-HH-PAT-INDX.
+049900                 20  (CLM)-HH-PAT-RSN-VISIT        PIC X(7).
+050000         10  (CLM)-HH-EIC-CDES-ALL.
+050100             15  (CLM)-HH-EIC-CDES-DATA
+050200                   OCCURS 3 INDEXED BY (CLM)-HH-EIC-INDX.
+050300                 20  (CLM)-HH-EIC-CDE              PIC X(7).
+050400         10  (CLM)-HH-UB-VERSION                   PIC X(2).
+050500*>>      10  FILLER                                PIC X(995).
+050600         10  FILLER                                PIC X(932).
+050700      05 (CLM)-PROFESSIONAL-DETAIL
+050800                 REDEFINES (CLM)-INPATIENT-DETAIL.
+050900         10  (CLM)-PR-CLM-TYPE-OF-SERVICE          PIC X(1).
+051000         10  (CLM)-PR-SURG-PCT                     PIC X(1).
+051100         10  (CLM)-PR-PLACE-OF-SVC                 PIC X(1).
+051200         10  (CLM)-PR-PHYS-REF-EIN-SSN             PIC X(13).
+051300         10  (CLM)-PR-PHYS-REFERRING               PIC 9(07).
+051400         10  (CLM)-PR-PHYS-REFER-NPI               PIC X(10).
+051500         10  (CLM)-PR-MED-RECORD-NUM               PIC X(16).
+051600         10  (CLM)-PR-ASC-LVL-NUM                  PIC X(1).
+051700         10  FILL-PR-ASC-LVL-NUM                   PIC X.
+051800         10  (CLM)-PR-DME-PURCHASE-IND             PIC X(1).
+051900         10  (CLM)-PR-DIAG-CDE-ALL                 PIC X(119).
+052000         10  (CLM)-PR-DIAG-CDE REDEFINES (CLM)-PR-DIAG-CDE-ALL.
+052100             15  FILLER
+052200                     OCCURS 17 TIMES
+052300                     INDEXED BY (CLM)-PR-DIAG-INDX.
+052400                 20  (CLM)-PR-DIAG                 PIC X(7).
+052500         10  (CLM)-PR-GESTATION-IND                PIC X(01).
+052600         10  (CLM)-PR-CAP-RECIP-CAP-CODE           PIC 9(5).
+052700         10  (CLM)-PR-CAP-PROV-TYPE                PIC 9(3).
+052800         10  (CLM)-PR-CAP-YYYYMM                   PIC 9(6).
+052801         10  (CLM)-PR-CAP-MEMBERS                  PIC 9(7).
+052802         10  (CLM)-PR-TAXONOMY-CODE.
+052803             15  (CLM)-PR-TAX-PROVIDER-TYPE        PIC X(02).
+052804             15  (CLM)-PR-TAX-CLASSIF-CODE         PIC X(02).
+052805             15  (CLM)-PR-TAX-SPECIAL-AREA         PIC X(05).
+052806             15  (CLM)-PR-TAX-EDUCAT-REQUIREM-IND  PIC X(01).
+052807         10  (CLM)-PR-PRIMARY-CARE-IND             PIC X(01).
+052808         10  (CLM)-PR-NDC-CD                       PIC X(10).
+052809         10  (CLM)-PR-SUBMITTED-MJ-UNITS           PIC S9(5).
+052810         10  (CLM)-PR-SUBMIT-METRIC-UNITS          PIC S9(8)V999
+052820                                                      COMP-3.
+052830         10  (CLM)-PR-CNVRTD-METRIC-UNITS          PIC S9(8)V999
+052840                                                      COMP-3.
+052850         10  (CLM)-PR-SUBMIT-METRIC-UOM            PIC X(02).
+052860         10  (CLM)-PR-CLM-DRUG-PRICE               PIC S9(7)V9(6)
+052870                                                       COMP-3.
+052880         10  (CLM)-PR-DOSE-FORM-IND                PIC X(1).
+052890         10  (CLM)-PR-DRUG-CLASS                   PIC X(1).
+052900         10  (CLM)-PR-GENERIC-CNTL-NMBR            PIC X(5).
+053000         10  (CLM)-PR-GENERIC-SEQ-NMBR             PIC X(6).
+053100         10  (CLM)-PR-MAC-PRICE                    PIC S9(7)V9(6)
+053200                                                       COMP-3.
+053300         10  (CLM)-PR-REBATE-IND                   PIC X(1).
+053400         10  (CLM)-PR-STATE-MAC-PRICE              PIC 9(7)V9(6)
+053500                                                       COMP-3.
+053600         10  (CLM)-PR-THERAPEUTIC-CLASS-GN         PIC X(2).
+053700         10  (CLM)-PR-THERAPEUTIC-CLASS-SP         PIC X(3).
+053800         10  (CLM)-PR-HSP-FCLTY-PRVDR-NMBR         PIC X(7).
+053900         10  FILLER                                PIC X(1241).
+054000      05 (CLM)-TRANSPORT-DETAIL
+054100                 REDEFINES (CLM)-INPATIENT-DETAIL.
+054200         10  (CLM)-TR-TRANS-ORIGIN-CDE             PIC X(1).
+054300         10  (CLM)-TR-TRANS-DEST-CDE               PIC X(1).
+054400         10  (CLM)-TR-MCARE-COV-IND                PIC X(1).
+054500         10  (CLM)-TR-DIAG-CDE-ALL                 PIC X(119).
+054600         10  (CLM)-TR-DIAG-CDE REDEFINES (CLM)-TR-DIAG-CDE-ALL.
+054700             15  FILLER
+054800                     OCCURS 17 TIMES
+054900                     INDEXED BY (CLM)-TR-DIAG-INDX.
+055000                 20  (CLM)-TR-DIAG                 PIC X(7).
+055100         10  (CLM)-TR-PHYS-REF-EIN-SSN             PIC X(13).
+055200         10  (CLM)-TR-PHYS-REFERRING               PIC 9(07).
+055300         10  (CLM)-TR-PHYS-REFER-NPI               PIC X(10).
+055400         10  (CLM)-TR-CAP-RECIP-CAP-CODE           PIC 9(5).
+055500         10  (CLM)-TR-CAP-PROV-TYPE                PIC 9(3).
+055600         10  (CLM)-TR-CAP-YYYYMM                   PIC 9(6).
+055601         10  (CLM)-TR-CAP-MEMBERS                  PIC 9(7).
+055602         10  (CLM)-TR-TAXONOMY-CODE.
+055603             15  (CLM)-TR-TAX-PROVIDER-TYPE        PIC X(02).
+055604             15  (CLM)-TR-TAX-CLASSIF-CODE         PIC X(02).
+055605             15  (CLM)-TR-TAX-SPECIAL-AREA         PIC X(05).
+055606             15  (CLM)-TR-TAX-EDUCAT-REQUIREM-IND  PIC X(01).
+055607         10  FILLER                                PIC X(1338).
+055608      05 (CLM)-VISION-DETAIL
+055609                 REDEFINES (CLM)-INPATIENT-DETAIL.
+055610         10  FILLER                                PIC X(10).
+055620         10  (CLM)-VI-PHYS-REF-EIN-SSN             PIC X(13).
+055630         10  (CLM)-VI-PHYS-REFERRING               PIC 9(07).
+055640         10  (CLM)-VI-PHYS-REFER-NPI               PIC X(10).
+055650         10  (CLM)-VI-PREVIOUS-EXAM-ALPH.
+055660             15  (CLM)-VI-PREVIOUS-EXAM            PIC 9(8).
+055670         10  (CLM)-VI-CURRENT-EXAM                 PIC 9(8).
+055680         10  (CLM)-VI-PRESCR-EIN-SSN               PIC X(13).
+055690         10  (CLM)-VI-PHYS-PRESCRIBER              PIC 9(07).
+055700         10  (CLM)-VI-PHYS-PRESCR-NPI              PIC X(10).
+055800         10  (CLM)-VI-PLACE-OF-SVC                 PIC X(1).
+055900         10  (CLM)-VI-DISP-DTE-ALPH.
+056000             15  (CLM)-VI-DISP-DTE                 PIC 9(8).
+056100         10  (CLM)-VI-DIAG-CDE-ALL                 PIC X(119).
+056200         10  (CLM)-VI-DIAG-CDE REDEFINES (CLM)-VI-DIAG-CDE-ALL.
+056300             15  FILLER
+056400                     OCCURS 17 TIMES
+056500                     INDEXED BY (CLM)-VI-DIAG-INDX.
+056600                 20  (CLM)-VI-DIAG                 PIC X(7).
+056700         10  (CLM)-VI-CAP-RECIP-CAP-CODE           PIC 9(5).
+056800         10  (CLM)-VI-CAP-PROV-TYPE                PIC 9(3).
+056900         10  (CLM)-VI-CAP-YYYYMM                   PIC 9(6).
+056901         10  (CLM)-VI-CAP-MEMBERS                  PIC 9(7).
+056902         10  (CLM)-VI-TAXONOMY-CODE.
+056903             15  (CLM)-VI-TAX-PROVIDER-TYPE        PIC X(02).
+056904             15  (CLM)-VI-TAX-CLASSIF-CODE         PIC X(02).
+056905             15  (CLM)-VI-TAX-SPECIAL-AREA         PIC X(05).
+056906             15  (CLM)-VI-TAX-EDUCAT-REQUIREM-IND  PIC X(01).
+056907         10  FILLER                                PIC X(1276).
+056908      05 (CLM)-DENTAL-DETAIL
+056909                 REDEFINES (CLM)-INPATIENT-DETAIL.
+056910         10  (CLM)-DA-PLACE-OF-SVC                 PIC X(1).
+056920         10  (CLM)-DA-TOOTH-NUM.
+056930             15  (CLM)-DA-TOOTH-NUM-1              PIC X(1).
+056940             15  (CLM)-DA-TOOTH-NUM-2              PIC X(1).
+056950         10  (CLM)-DA-TOOTH-SURFACE-ALL.
+056960             15  (CLM)-DA-TOOTH-SURFACE            PIC X(1)
+056970                                                OCCURS 5 TIMES
+056980                                 INDEXED BY (CLM)-DA-SURF-INDX.
+056990             15  FILLER                            PIC X(5).
+057000         10  (CLM)-DA-PHYS-REF-EIN-SSN             PIC X(13).
+057100         10  (CLM)-DA-PHYS-REFERRING               PIC 9(07).
+057200         10  (CLM)-DA-PHYS-REFER-NPI               PIC X(10).
+057300         10  (CLM)-DA-SURG-PCT                     PIC X(1).
+057400         10  (CLM)-DA-DIAG-CDE-ALL                 PIC X(119).
+057500         10  (CLM)-DA-DIAG-CDE REDEFINES (CLM)-DA-DIAG-CDE-ALL.
+057600             15  FILLER
+057700                     OCCURS 17 TIMES
+057800                     INDEXED BY (CLM)-DA-DIAG-INDX.
+057900                 20  (CLM)-DA-DIAG                 PIC X(7).
+058000         10  (CLM)-DA-CAP-RECIP-CAP-CODE           PIC 9(5).
+058100         10  (CLM)-DA-CAP-PROV-TYPE                PIC 9(3).
+058200         10  (CLM)-DA-CAP-YYYYMM                   PIC 9(6).
+058300         10  (CLM)-DA-CAP-MEMBERS                  PIC 9(7).
+058400         10  (CLM)-DA-REFER-TAXONOMY-CD            PIC X(10).
+058500         10  FILLER                                PIC X(1327).
+058600      05 (CLM)-PHARMACY-DETAIL
+058700                 REDEFINES (CLM)-INPATIENT-DETAIL.
+058800         10  (CLM)-PH-PRESCR-EIN-SSN               PIC X(13).
+058900         10  (CLM)-PH-PHYS-PRESCRIBER              PIC 9(07).
+059000         10  (CLM)-PH-PHYS-PRESCR-NPI              PIC X(10).
+059100         10 (CLM)-PH-PRESC-NUMBER.
+059200             15 (CLM)-PH-PRESC-NUM                 PIC X(7).
+059300             15 FILL-PH-PRESC-NUM                  PIC X(5).
+059400         10  (CLM)-PH-MAC-OVERRIDE                 PIC X(1).
+059500         10  (CLM)-PH-CLM-DRUG-PRICE               PIC S9(3)V9(4).
+059600         10  (CLM)-PH-MAC-PRICE-EXPANDED           PIC 9(7)V9(6)
+059700                                                     COMP-3.
+059800         10  FILLER REDEFINES (CLM)-PH-MAC-PRICE-EXPANDED.
+059900             15  FILL-PH-MAC-PRICE                 PIC X(2).
+060000             15  (CLM)-PH-MAC-PRICE                PIC 9(3)V9(6)
+060100                                                     COMP-3.
+060200         10  (CLM)-PH-DISPENSING-FEE               PIC 9(3)V99.
+060300         10  (CLM)-PH-DRUG-DAYS-SUPPLY             PIC 9(3).
+060400         10  (CLM)-PH-DRUG-CLASS                   PIC X(1).
+060500         10  (CLM)-PH-THERAPEUTIC-CLASS-GN         PIC X(2).
+060600         10  (CLM)-PH-COMPOUND-DRUG-IND            PIC X(1).
+060700         10  (CLM)-PH-PHARM-NH-IND                 PIC X(1).
+060800         10  (CLM)-PH-BASE-DISP-FEE                PIC 9(5)V99.
+060900         10  (CLM)-PH-PHARM-DEDUCT-CDE             PIC X(2).
+061000         10  (CLM)-PH-PHARM-EMERGENCY-IND          PIC X(1).
+061100         10  (CLM)-PH-EMERG-DISP-AMT               PIC 9(5)V99.
+061200         10  (CLM)-PH-PHARM-CONSULT-IND            PIC X(1).
+061300         10  (CLM)-PH-CONSULT-DISP-AMT             PIC 9(5)V99.
+061400         10  (CLM)-PH-PHARM-IMPACT-IND             PIC X(1).
+061500         10  (CLM)-PH-PHARM-REFILL-IND             PIC X(1).
+061600         10  (CLM)-PH-IMPACT-DISP-AMT              PIC 9(5)V99.
+061700         10  (CLM)-PH-LOCKIN-IND                   PIC X(1).
+061800         10  (CLM)-PH-THERAPEUTIC-CLASS-SP         PIC X(3).
+061900         10  (CLM)-PH-CLM-AHS-IND                  PIC X(1).
+062000         10  (CLM)-PH-REBATE-IND                   PIC X(1).
+062100         10  (CLM)-PH-DOSE-FORM-IND                PIC X(1).
+062200         10  (CLM)-PH-CAP-RECIP-CAP-CODE           PIC 9(5).
+062300         10  (CLM)-PH-CAP-PROV-TYPE                PIC 9(3).
+062400         10  (CLM)-PH-CAP-YYYYMM                   PIC 9(6).
+062500         10  (CLM)-PH-CAP-MEMBERS                  PIC 9(7).
+062600         10  (CLM)-PH-GCN                          PIC X(5).
+062700         10  (CLM)-PH-VERSION-NUM                  PIC X(2).
+062800         10  (CLM)-PH-INTERNAL-CNTL-NUM            PIC X(30).
+062900         10  (CLM)-PH-GENERIC-SEQ-NMBR             PIC X(6).
+063000         10  (CLM)-PH-STATE-MAC-PRICE              PIC S9(7)V9(6)
+063100                                                     COMP-3.
+063200         10  (CLM)-PH-INCENTIVE-DATA
+063300                                   OCCURS 3 TIMES.
+063400             15 (CLM)-PH-INCENTIVE-PAYMENT         PIC S9(4)V9(3)
+063500                                                     COMP-3.
+063600             15 (CLM)-PH-INCENTIVE-REASON          PIC X(20).
+063700         10  (CLM)-PH-SUBMISSION-CLARIFIER         PIC X(02).
+063800         10  (CLM)-PH-SUBMISSION-CLARIFIER2        PIC X(02).
+063900         10  (CLM)-PH-SUBMISSION-CLARIFIER3        PIC X(02).
+064000*        10  FILLER                                PIC X(1261).
+064100         10  (CLM)-PH-DIAG-CDE-ALL             PIC X(35).
+064200         10  (CLM)-PH-DIAG-CDE REDEFINES (CLM)-PH-DIAG-CDE-ALL.
+064300             15  FILLER
+064400                     OCCURS 5 TIMES
+064500                     INDEXED BY (CLM)-PH-DIAG-INDX.
+064600                 20  (CLM)-PH-DIAG                 PIC X(7).
+0003           10  (CLM)-PH-MME-AMT                      PIC X(19).
+0003           10  FILLER                                PIC X(1207).
+      *****************************************************************
+      * COPYLIB: FDNTRXSP- NJ ENCT RX SUPPLEMENTAL FILE  (FFS)
+      * RECORD LENGTH: 290
+      *****************************************************************
+      *   MODIFICATION HISTORY:
+      *
+      * CHG     DATE    PGM  DESCRIPTION
+      * ----  --------  ---  ------------------------------------------
+      * 0000  03/22/23  KAT  NEW COPYLIB
+      *****************************************************************
+      *01  (CLM)-RX-SUPPLEMENTAL-FILE.
+             05 (CLM)-CG2O-ICN                           PIC X(15).
+             05 (CLM)-CG2O-QUANT-INT-DISP                PIC 9(7)V999.
+             05 (CLM)-CG2O-DAYS-SUPPLY-INT-DISP          PIC X(03).
+             05 (CLM)-CG2O-UNIT-OF-MEASURE               PIC X(02).
+             05 (CLM)-CG2O-DISPENSE-STATUS               PIC X(01).
+             05 (CLM)-CG2O-METRIC-QTY                    PIC 9(7)V999.
+             05 (CLM)-CG2O-CUTBACK-METRIC-QTY            PIC 9(7)V999.
+             05 (CLM)-CG2O-DATE-PRESC-WRITTEN            PIC X(08).
+             05 (CLM)-CG2O-PREGNANCY-IND                 PIC X(01).
+             05 (CLM)-CG2O-INGRED-COST                   PIC S9(6)V99.
+             05 (CLM)-CG2O-DISP-FEE-SUBMITTED            PIC S9(6)V99.
+             05 (CLM)-CG2O-PRESCRIBER-QUALIFIER          PIC X(02).
+             05 (CLM)-CG2O-PRESCRIBER-ID                 PIC X(15).
+             05 (CLM)-CG2O-COMPOUND-CODE                 PIC X(01).
+             05 (CLM)-CG2O-SMOKER-IND                    PIC X(01).
+             05 (CLM)-CG2O-NUM-REFILLS-AUTH              PIC X(02).
+             05 (CLM)-CG2O-SUBMITTED-RECIP               PIC X(20).
+             05 (CLM)-CG2O-SUBMITTED-PERSON-CODE         PIC X(02).
+             05 (CLM)-CG2O-SUBMITTED-FIRST-NAME          PIC X(12).
+             05 (CLM)-CG2O-SUBMITTED-LAST-NAME           PIC X(15).
+             05 (CLM)-CG2O-SOFTWARE-VEND-CERT-ID         PIC X(10).
+             05 (CLM)-CG2O-SERV-PROV-ID-QUAL             PIC X(02).
+             05 (CLM)-CG2O-CG2O-PR-SRV-REF-NM-QL         PIC X(01).
+             05 (CLM)-CG2O-CG2O-PROD-SERV-ID-QL          PIC X(02).
+             05 (CLM)-CG2O-CG2O-ASSOC-PRESC-DATE         PIC X(08).
+             05 (CLM)-CG2O-CG2O-ASSOC-PR-REF-NUM         PIC X(07).
+             05 (CLM)-CG2O-DIAG-CODE1                    PIC X(05).
+             05 (CLM)-CG2O-DIAG-CODE2                    PIC X(05).
+             05 (CLM)-CG2O-DIAG-CODE3                    PIC X(05).
+             05 (CLM)-CG2O-DIAG-CODE4                    PIC X(05).
+             05 (CLM)-CG2O-DIAG-CODE5                    PIC X(05).
+             05 (CLM)-CG2O-DIAG-CODE-QUAL1               PIC X(02).
+             05 (CLM)-CG2O-DIAG-CODE-QUAL2               PIC X(02).
+             05 (CLM)-CG2O-DIAG-CODE-QUAL3               PIC X(02).
+             05 (CLM)-CG2O-DIAG-CODE-QUAL4               PIC X(02).
+             05 (CLM)-CG2O-DIAG-CODE-QUAL5               PIC X(02).
+             05 (CLM)-CG2O-OTHER-PAYER-ID1               PIC X(10).
+             05 (CLM)-CG2O-OTHER-PAYER-ID2               PIC X(10).
+             05 (CLM)-CG2O-OTHER-PAYER-ID3               PIC X(10).
+             05 (CLM)-CG2O-OTHER-PAYER-ID-QUAL1          PIC X(02).
+             05 (CLM)-CG2O-OTHER-PAYER-ID-QUAL2          PIC X(02).
+             05 (CLM)-CG2O-OTHER-PAYER-ID-QUAL3          PIC X(02).
+             05 (CLM)-CG2O-OTHER-PYR-REJ-CDE1            PIC X(03).
+             05 (CLM)-CG2O-OTHER-PYR-REJ-CDE2            PIC X(03).
+             05 (CLM)-CG2O-OTHER-PYR-REJ-CDE3            PIC X(03).
+             05 (CLM)-CG2O-OTHER-PYR-AMT-PAID1           PIC S9(6)V99.
+             05 (CLM)-CG2O-OTHER-PYR-AMT-PAID2           PIC S9(6)V99.
+             05 (CLM)-CG2O-OTHER-PYR-AMT-PAID3           PIC S9(6)V99.
+             05 (CLM)-CG2O-CLM-STATUS                    PIC X(01).
+             05 (CLM)-CG2O-CLM-TRANS-TYPE                PIC X(01).
+             05 (CLM)-CG2O-PMT-DTE                       PIC X(8).
+
+      ************* END OF COPYBOOK           ******************
+064800
+
