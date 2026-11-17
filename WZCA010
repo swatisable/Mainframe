@@ -1,0 +1,7 @@
+****************************************************************
+***   ACCEPTABLE VALUES FOR CLAIM SOURCE ARE:                 **
+***      00 =  TPL MEDICAID                                   **
+***      01 =  CO DSS                                         **
+***      02 =  CA OTHER 35                                    **
+1. ENTER VALUE FOR CREATE-SOURCE: 00;                         **
+
